@@ -24,11 +24,6 @@ Config.Menu = {
 	clavier = Keys["M"],
 }
 
-Config.TPMarker = {
-	clavier1 = Keys["LEFTALT"],
-	clavier2 = Keys["E"],
-}
-
 Config.handsUP = {
 	clavier = Keys["~"],
 }
@@ -37,6 +32,15 @@ Config.pointing = {
 	clavier = Keys["B"],
 }
 
+Config.stopAnim = {
+	clavier = Keys["X"],
+}
+
 Config.crouch = {
 	clavier = Keys["LEFTCTRL"],
+}
+
+Config.TPMarker = {
+	clavier1 = Keys["LEFTALT"],
+	clavier2 = Keys["E"],
 }
