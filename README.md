@@ -1,6 +1,10 @@
 # krz_personalmenu
 **krz_personalmenu** is a **PersonalMenu** for FiveM developed on top of [ESX](https://github.com/ESX-Org/es_extended) and [NativeUILua-Reloaded](https://github.com/iTexZoz/NativeUILua_Reloaded)
 
+### Important
+- **You are not allowed to modify the repository and re-release it, you can only fork it**
+- **If you want to contribute you can make a pull request or open a new issue**
+
 ### Links & Support
 - [Discord](https://discord.gg/bqcebpj)
 - **Dicord Username**: Korioz#0478
@@ -33,6 +37,7 @@ This order also applies in the startup order.
 - [esx_society](https://github.com/ESX-Org/esx_society)
 - [skinchanger](https://github.com/ESX-Org/skinchanger)
 - [esx_skin](https://github.com/ESX-Org/async)
+- [jsfour-idcard](https://github.com/jonassvensson4/jsfour-idcard)
 
 ### Download & Installation
 
