@@ -8,22 +8,22 @@ Citizen.CreateThread(function()
 
         local plyPed = PlayerPedId()
 
-        if (DoesEntityExist(plyPed) and not IsEntityDead(plyPed)) then 
+        if DoesEntityExist(plyPed) and not IsEntityDead(plyPed) then 
             DisableControlAction(1, Config.crouch.clavier, true)
             DisableControlAction(2, Config.crouch.manette, true)
 
-            if (not IsPauseMenuActive()) then 
-                if (IsDisabledControlJustPressed(1, Config.crouch.clavier)) or (IsDisabledControlJustPressed(2, Config.crouch.manette)) then 
+            if not IsPauseMenuActive() then 
+                if IsDisabledControlJustPressed(1, Config.crouch.clavier) or IsDisabledControlJustPressed(2, Config.crouch.manette) then 
                     RequestAnimSet("move_ped_crouched")
 
-                    while (not HasAnimSetLoaded("move_ped_crouched")) do 
+                    while not HasAnimSetLoaded("move_ped_crouched") do 
                         Citizen.Wait(100)
                     end 
 
-                    if (crouched == true) then 
+                    if crouched == true then 
                         ResetPedMovementClipset(plyPed, 0)
                         crouched = false 
-                    elseif (crouched == false) then
+                    elseif crouched == false then
                         SetPedMovementClipset(plyPed, "move_ped_crouched", 0.25)
                         crouched = true 
                     end 

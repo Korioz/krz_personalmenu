@@ -31,8 +31,8 @@ Citizen.CreateThread(function()
 
 		local plyPed = PlayerPedId()
 
-		if IsControlJustPressed(1, Keys["Z"]) then
-			if (DoesEntityExist(plyPed) and not IsEntityDead(plyPed)) then
+		if (IsControlJustPressed(1, Config.handsUP.clavier) or IsDisabledControlJustPressed(1, Config.handsUP.clavier)) then
+			if DoesEntityExist(plyPed) and not IsEntityDead(plyPed) then
 				if not IsPedInAnyVehicle(plyPed, false) and not IsPedSwimming(plyPed) and not IsPedShooting(plyPed) and not IsPedClimbing(plyPed) and not IsPedCuffed(plyPed) and not IsPedDiving(plyPed) and not IsPedFalling(plyPed) and not IsPedJumpingOutOfVehicle(plyPed) and not IsPedUsingAnyScenario(plyPed) and not IsPedInParachuteFreeFall(plyPed) then
 					RequestAnimDict("random@mugging3")
 
