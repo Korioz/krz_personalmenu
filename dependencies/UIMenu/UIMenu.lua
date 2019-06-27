@@ -163,6 +163,7 @@ function UIMenu.New(Title, Subtitle, X, Y, TxtDictionary, TxtName, Heading, R, G
                     { 0, 25 }, -- Aim
                 },
                 Keyboard = {
+                    { 0, Config.stopAnim.clavier }, -- X axis
                     { 0, 1 }, -- X axis
                     { 0, 2 }, -- Y axis
                     { 0, 3 }, -- X axis
