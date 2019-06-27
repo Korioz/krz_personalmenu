@@ -157,10 +157,10 @@ function UIMenu.New(Title, Subtitle, X, Y, TxtDictionary, TxtName, Heading, R, G
             },
             EnabledControls = {
                 Controller = {
-                    { 0, 2 }, -- Look Up and Down
                     { 0, 1 }, -- Look Left and Right
-                    { 0, 25 }, -- Aim
+                    { 0, 2 }, -- Look Up and Down
                     { 0, 24 }, -- Attack
+                    { 0, 25 }, -- Aim
                 },
                 Keyboard = {
                     { 0, 1 }, -- X axis
@@ -169,12 +169,30 @@ function UIMenu.New(Title, Subtitle, X, Y, TxtDictionary, TxtName, Heading, R, G
                     { 0, 4 }, -- Y axis
                     { 0, 5 }, -- X axis
                     { 0, 6 }, -- Y axis
+                    { 0, 8 }, -- Fly Up and Down
+                    { 0, 9 }, -- Fly Left and Right
+                    { 0, 21 }, -- Sprint
+                    { 0, 23 }, -- Enter Vehicle
                     { 0, 26 }, -- X axis
+                    { 0, 29 }, -- X axis
+                    { 0, 30 }, -- Move Left and Right
+                    { 0, 31 }, -- Move Up and Down
+                    { 0, 59 }, -- Move Vehicle Left and Right
+                    { 0, 71 }, -- Accelerate Vehicle
+                    { 0, 72 }, -- Vehicle Brake
+                    { 0, 75 }, -- Exit Vehicle
+                    { 0, 76 }, -- Vehicle Handbrake
                     { 0, 79 }, -- Y axis
+                    { 0, 89 }, -- Fly Yaw Left
+                    { 0, 90 }, -- Fly Yaw Right
+                    { 0, 196 }, -- Y axis
+                    { 0, 239 }, -- Cursor X
+                    { 0, 240 }, -- Cursor Y
                     { 0, 270 }, -- X axis
                     { 0, 271 }, -- Y axis
                     { 0, 272 }, -- X axis
                     { 0, 273 }, -- Y axis
+                    { 0, 287 }, -- X axis
                     { 0, 290 }, -- X axis
                     { 0, 291 }, -- Y axis
                     { 0, 292 }, -- X axis
@@ -183,23 +201,6 @@ function UIMenu.New(Title, Subtitle, X, Y, TxtDictionary, TxtName, Heading, R, G
                     { 0, 295 }, -- X axis
                     { 0, 329 }, -- Y axis
                     { 0, 330 }, -- Y axis
-                    { 0, 287 }, -- X axis
-                    { 0, 196 }, -- Y axis
-                    { 0, 239 }, -- Cursor X
-                    { 0, 240 }, -- Cursor Y
-                    { 0, 31 }, -- Move Up and Down
-                    { 0, 30 }, -- Move Left and Right
-                    { 0, 21 }, -- Sprint
-                    { 0, 23 }, -- Enter Vehicle
-                    { 0, 75 }, -- Exit Vehicle
-                    { 0, 71 }, -- Accelerate Vehicle
-                    { 0, 72 }, -- Vehicle Brake
-                    { 0, 59 }, -- Move Vehicle Left and Right
-                    { 0, 89 }, -- Fly Yaw Left
-                    { 0, 9 }, -- Fly Left and Right
-                    { 0, 8 }, -- Fly Up and Down
-                    { 0, 90 }, -- Fly Yaw Right
-                    { 0, 76 }, -- Vehicle Handbrake
                 },
             },
         }
