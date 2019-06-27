@@ -1942,7 +1942,7 @@ Citizen.CreateThread(function()
 			end
 		end
 
-		if IsControlJustReleased(0, Config.handsUP.clavier) and GetLastInputMethod(2) and not isDead then
+		if IsControlJustReleased(0, Config.stopAnim.clavier) and GetLastInputMethod(2) and not isDead then
 			ClearPedTasks(plyPed)
 		end
 
