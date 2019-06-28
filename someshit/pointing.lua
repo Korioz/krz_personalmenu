@@ -39,19 +39,19 @@ Citizen.CreateThread(function()
         end
 
         if not keyPressed then
-            if (IsControlPressed(1, Config.pointing.clavier) or IsControlPressed(2, Config.pointing.manette)) and not mp_pointing and IsPedOnFoot(PlayerPedId()) then
+            if IsControlPressed(1, Config.pointing.clavier) and not mp_pointing and IsPedOnFoot(PlayerPedId()) then
                 Citizen.Wait(200)
-                if not (IsControlPressed(1, Config.pointing.clavier) or IsControlPressed(2, Config.pointing.manette)) then
+                if not IsControlPressed(1, Config.pointing.clavier) then
                     keyPressed = true
                     startPointing()
                     mp_pointing = true
                 else
                     keyPressed = true
-                    while (IsControlPressed(1, Config.pointing.clavier) or IsControlPressed(2, Config.pointing.manette)) do
+                    while IsControlPressed(1, Config.pointing.clavier) do
                         Citizen.Wait(50)
                     end
                 end
-            elseif ((IsControlPressed(1, Config.pointing.clavier) or IsControlPressed(2, Config.pointing.manette)) and mp_pointing) or (not IsPedOnFoot(PlayerPedId()) and mp_pointing) then
+            elseif (IsControlPressed(1, Config.pointing.clavier) and mp_pointing) or (not IsPedOnFoot(PlayerPedId()) and mp_pointing) then
                 keyPressed = true
                 mp_pointing = false
                 stopPointing()
@@ -59,7 +59,7 @@ Citizen.CreateThread(function()
         end
 
         if keyPressed then
-            if not (IsControlPressed(1, Config.pointing.clavier) or IsControlPressed(2, Config.pointing.manette)) then
+            if not IsControlPressed(1, Config.pointing.clavier) then
                 keyPressed = false
             end
         end
