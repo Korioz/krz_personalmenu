@@ -26,7 +26,7 @@ local actualVoix, actualVoixIndex = "Normal", 2
 local isDead = false
 local inAnim = false
 
-local playergroup = nil
+local playerGroup = nil
 
 local societymoney, societymoney2 = nil, nil
 
@@ -49,6 +49,11 @@ Citizen.CreateThread(function()
 	end
 
 	ESX.PlayerData = ESX.GetPlayerData()
+
+	while playerGroup == nil do
+		ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(group) playerGroup = group end)
+		Citizen.Wait(10)
+	end
 
 	while actualSkin == nil do
 		TriggerEvent('skinchanger:getSkin', function(skin) actualSkin = skin end)
@@ -2162,11 +2167,21 @@ function GeneratePersonalMenu()
 	AddMenuFacturesMenu(mainMenu)
 	AddMenuDemarcheVoixGPS(mainMenu)
 
-	ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(playerGroup)
-		if playerGroup == 'mod' or playerGroup == 'admin' or playerGroup == 'superadmin' or playerGroup == 'owner' then
-			AddMenuAdminMenu(mainMenu)
-		end
-	end)
+	if playerGroup == 'mod' or playerGroup == 'admin' or playerGroup == 'superadmin' or playerGroup == 'owner' then
+		AddMenuAdminMenu(mainMenu)
+	end
 
 	_menuPool:RefreshIndex()
 end
+
+Citizen.CreateThread(function()
+	while true do
+		if ESX ~= nil then
+			ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(group) playerGroup = group end)
+
+			Citizen.Wait(30 * 1000)
+		else
+			Citizen.Wait(100)
+		end
+	end
+end)
