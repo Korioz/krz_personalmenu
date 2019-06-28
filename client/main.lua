@@ -26,6 +26,8 @@ local actualVoix, actualVoixIndex = "Normal", 2
 local isDead = false
 local inAnim = false
 
+local noclip, godmode, visible = false, false, false
+
 local playerGroup = nil
 
 local societymoney, societymoney2 = nil, nil
@@ -282,7 +284,7 @@ end
 
 -- GOD MODE
 function admin_godmode()
-	local godmode = not godmode
+	godmode = not godmode
 
 	if godmode then
 		SetEntityInvincible(plyPed, true)
@@ -296,7 +298,7 @@ end
 
 -- INVISIBLE
 function admin_mode_fantome()
-	local invisible = not invisible
+	invisible = not invisible
 
 	if invisible then
 		SetEntityVisible(plyPed, false, false)
