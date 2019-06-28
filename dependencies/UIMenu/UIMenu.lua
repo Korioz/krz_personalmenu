@@ -164,6 +164,7 @@ function UIMenu.New(Title, Subtitle, X, Y, TxtDictionary, TxtName, Heading, R, G
                 },
                 Keyboard = {
                     { 0, Config.stopAnim.clavier }, -- X axis
+                    { 0, 0 }, -- X axis
                     { 0, 1 }, -- X axis
                     { 0, 2 }, -- Y axis
                     { 0, 3 }, -- X axis
@@ -184,6 +185,7 @@ function UIMenu.New(Title, Subtitle, X, Y, TxtDictionary, TxtName, Heading, R, G
                     { 0, 75 }, -- Exit Vehicle
                     { 0, 76 }, -- Vehicle Handbrake
                     { 0, 79 }, -- Y axis
+                    { 0, 80 }, -- Fly Yaw Left
                     { 0, 89 }, -- Fly Yaw Left
                     { 0, 90 }, -- Fly Yaw Right
                     { 0, 196 }, -- Y axis
