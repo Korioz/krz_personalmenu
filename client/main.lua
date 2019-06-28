@@ -19,6 +19,7 @@ local billItem = {}
 
 local plyPed, plyVehicle = nil, nil
 
+local actualGPS, actualGPSIndex = "Aucun", 1
 local actualDemarche, actualDemarcheIndex = "Normal", 1
 local actualVoix, actualVoixIndex = "Normal", 2
 
@@ -475,7 +476,7 @@ end
 
 function startAnim(lib, anim)
 	ESX.Streaming.RequestAnimDict(lib, function()
-		TaskPlayAnim(plyPed, lib, anim, 8.0, -8.0, -1, 0, 0, false, false, false)
+		TaskPlayAnim(plyPed, lib, anim, 8.0, 1.0, -1, 49, 0, false, false, false)
 	end)
 end
 
@@ -760,16 +761,91 @@ end
 function AddMenuClothesMenu(menu)
 	clothesMenu = _menuPool:AddSubMenu(menu, "Vêtements")
 
-	local earsItem = NativeUI.CreateItem("Accessoire d'Oreilles", "")
-	clothesMenu.SubMenu:AddItem(earsItem)
-	local glassesItem = NativeUI.CreateItem("Lunettes", "")
-	clothesMenu.SubMenu:AddItem(glassesItem)
-	local helmetItem = NativeUI.CreateItem("Chapeau/Casque", "")
-	clothesMenu.SubMenu:AddItem(helmetItem)
-	local maskItem = NativeUI.CreateItem("Masque", "")
-	clothesMenu.SubMenu:AddItem(maskItem)
+	local torsoItem = NativeUI.CreateItem("Haut", "")
+	clothesMenu.SubMenu:AddItem(torsoItem)
+	local pantsItem = NativeUI.CreateItem("Bas", "")
+	clothesMenu.SubMenu:AddItem(pantsItem)
+	local shoesItem = NativeUI.CreateItem("Chaussures", "")
+	clothesMenu.SubMenu:AddItem(shoesItem)
+	local bagItem = NativeUI.CreateItem("Sac", "")
+	clothesMenu.SubMenu:AddItem(bagItem)
+	local bproofItem = NativeUI.CreateItem("Gilet Par Balle", "")
+	clothesMenu.SubMenu:AddItem(bproofItem)
 
 	clothesMenu.SubMenu.OnItemSelect = function(sender, item, index)
+		if item == torsoItem then
+			setUniform('torso', plyPed)
+		elseif item == pantsItem then
+			setUniform('pants', plyPed)
+		elseif item == shoesItem then
+			setUniform('shoes', plyPed)
+		elseif item == bagItem then
+			setUniform('bag', plyPed)
+		elseif item == bproofItem then
+			setUniform('bproof', plyPed)
+		end
+	end
+end
+
+function setUniform(value, plyPed)
+	ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin)
+		TriggerEvent('skinchanger:getSkin', function(skina)
+			if value == 'torso' then
+				startAnim("clothingtie", "try_tie_neutral_a")
+				Citizen.Wait(1000)
+				ClearPedTasks(plyPed)
+
+				if skin.torso_1 ~= skina.torso_1 then
+					TriggerEvent('skinchanger:loadClothes', skina, {['torso_1'] = skin.torso_1, ['torso_2'] = skin.torso_2, ['tshirt_1'] = skin.tshirt_1, ['tshirt_2'] = skin.tshirt_2, ['arms'] = skin.arms})
+				else
+					TriggerEvent('skinchanger:loadClothes', skina, {['torso_1'] = 15, ['torso_2'] = 0, ['tshirt_1'] = 15, ['tshirt_2'] = 0, ['arms'] = 15})
+				end
+			elseif value == 'pants' then
+				if skin.pants_1 ~= skina.pants_1 then
+					TriggerEvent('skinchanger:loadClothes', skina, {['pants_1'] = skin.pants_1, ['pants_2'] = skin.pants_2})
+				else
+					TriggerEvent('skinchanger:loadClothes', skina, {['pants_1'] = 61, ['pants_2'] = 1})
+				end
+			elseif value == 'shoes' then
+				if skin.shoes_1 ~= skina.shoes_1 then
+					TriggerEvent('skinchanger:loadClothes', skina, {['shoes_1'] = skin.shoes_1, ['shoes_2'] = skin.shoes_2})
+				else
+					TriggerEvent('skinchanger:loadClothes', skina, {['shoes_1'] = 34, ['shoes_2'] = 0})
+				end
+			elseif value == 'bag' then
+				if skin.bags_1 ~= skina.bags_1 then
+					TriggerEvent('skinchanger:loadClothes', skina, {['bags_1'] = skin.bags_1, ['bags_2'] = skin.bags_2})
+				else
+					TriggerEvent('skinchanger:loadClothes', skina, {['bags_1'] = 0, ['bags_2'] = 0})
+				end
+			elseif value == 'bproof' then
+				startAnim("clothingtie", "try_tie_neutral_a")
+				Citizen.Wait(1000)
+				ClearPedTasks(plyPed)
+
+				if skin.bproof_1 ~= skina.bproof_1 then
+					TriggerEvent('skinchanger:loadClothes', skina, {['bproof_1'] = skin.bproof_1, ['bproof_2'] = skin.bproof_2})
+				else
+					TriggerEvent('skinchanger:loadClothes', skina, {['bproof_1'] = 0, ['bproof_2'] = 0})
+				end
+			end
+		end)
+	end)
+end
+
+function AddMenuAccessoryMenu(menu)
+	accessoryMenu = _menuPool:AddSubMenu(menu, "Accessoires")
+
+	local earsItem = NativeUI.CreateItem("Accessoire d'Oreilles", "")
+	accessoryMenu.SubMenu:AddItem(earsItem)
+	local glassesItem = NativeUI.CreateItem("Lunettes", "")
+	accessoryMenu.SubMenu:AddItem(glassesItem)
+	local helmetItem = NativeUI.CreateItem("Chapeau/Casque", "")
+	accessoryMenu.SubMenu:AddItem(helmetItem)
+	local maskItem = NativeUI.CreateItem("Masque", "")
+	accessoryMenu.SubMenu:AddItem(maskItem)
+
+	accessoryMenu.SubMenu.OnItemSelect = function(sender, item, index)
 		if item == earsItem then
 			SetUnsetAccessory('Ears')
 		elseif item == glassesItem then
@@ -791,8 +867,21 @@ function SetUnsetAccessory(accessory)
 				local mAccessory = -1
 				local mColor = 0
 
-				if _accessory == "mask" then
+				if _accessory == 'ears' then
+				elseif _accessory == "glasses" then
 					mAccessory = 0
+					startAnim("clothingspecs", "try_glasses_positive_a")
+					Citizen.Wait(1000)
+					ClearPedTasks(plyPed)
+				elseif _accessory == 'helmet' then
+					startAnim("missfbi4", "takeoff_mask")
+					Citizen.Wait(1000)
+					ClearPedTasks(plyPed)
+				elseif _accessory == "mask" then
+					mAccessory = 0
+					startAnim("missfbi4", "takeoff_mask")
+					Citizen.Wait(850)
+					ClearPedTasks(plyPed)
 				end
 
 				if skin[_accessory .. '_1'] == mAccessory then
@@ -806,13 +895,13 @@ function SetUnsetAccessory(accessory)
 				TriggerEvent('skinchanger:loadClothes', skin, accessorySkin)
 			end)
 		else
-			if _accessory == ears then
+			if _accessory == 'ears' then
 				ESX.ShowNotification("Vous ne possédez pas d'Accessoire d'Oreilles")
-			elseif _accessory == glasses then
+			elseif _accessory == 'glasses' then
 				ESX.ShowNotification("Vous ne possédez pas de Lunettes")
-			elseif _accessory == helmet then
+			elseif _accessory == 'helmet' then
 				ESX.ShowNotification("Vous ne possédez pas de Casque/Chapeau")
-			elseif _accessory == mask then
+			elseif _accessory == 'mask' then
 				ESX.ShowNotification("Vous ne possédez pas de Masque")
 			end
 		end
@@ -1586,7 +1675,19 @@ function AddMenuBossMenu2(menu)
 	end
 end
 
-function AddMenuDemarcheVoix(menu)
+function AddMenuDemarcheVoixGPS(menu)
+    personalmenu.gps = {
+		"Aucun",
+		"Poste de Police",
+		"Garage Central",
+        "Hôpital",
+		"Concessionnaire",
+        "Benny's Custom",
+		"Pôle Emploie",
+        "Auto école",
+		"Téquila-la"
+	}
+
 	personalmenu.demarche = {
 		"Normal",
 		"Homme effiminer",
@@ -1629,17 +1730,49 @@ function AddMenuDemarcheVoix(menu)
 		"Crier"
 	}
 
-	local demarcheitem = NativeUI.CreateListItem("Démarche", personalmenu.demarche, actualDemarcheIndex)
-	menu:AddItem(demarcheitem)
-	local voixitem = NativeUI.CreateListItem("Voix", personalmenu.nivVoix, actualVoixIndex)
-	menu:AddItem(voixitem)
+	local gpsItem = NativeUI.CreateListItem("GPS", personalmenu.gps, actualGPSIndex)
+	menu:AddItem(gpsItem)
+	local demarcheItem = NativeUI.CreateListItem("Démarche", personalmenu.demarche, actualDemarcheIndex)
+	menu:AddItem(demarcheItem)
+	local voixItem = NativeUI.CreateListItem("Voix", personalmenu.nivVoix, actualVoixIndex)
+	menu:AddItem(voixItem)
 
 	menu.OnListSelect = function(sender, item, index)
-		if item == demarcheitem then
+		if item == gpsItem then
+			actualGPS = item:IndexToItem(index)
+			actualGPSIndex = index
+
+			ESX.ShowNotification("GPS: ~b~" .. actualGPS)
+
+			if actualGPS == "Aucun" then
+				local plyCoords = GetEntityCoords(plyPed)
+				SetNewWaypoint(plyCoords.x, plyCoords.y)
+			elseif actualGPS == "Poste de Police" then
+				SetNewWaypoint(425.130, -979.558)
+			elseif actualGPS == "Hôpital" then
+				SetNewWaypoint(-449.67, -340.83)
+			elseif actualGPS == "Concessionnaire" then
+				SetNewWaypoint(-33.88771, -1102.373)
+			elseif actualGPS == "Garage Central" then
+				SetNewWaypoint(215.066, -791.56)
+			elseif actualGPS == "Benny's Custom" then
+				SetNewWaypoint(-212.1378, -1325.277)
+			elseif actualGPS == "Pôle Emploie" then
+				SetNewWaypoint(-264.8365, -964.5458)
+			elseif actualGPS == "Auto école" then
+				SetNewWaypoint(-829.2257, -696.9993)
+			elseif actualGPS == "Téquila-la" then
+				SetNewWaypoint(-565.0996, 273.455139)
+			elseif actualGPS == "Bahama Mamas" then
+				SetNewWaypoint(-1391.06311, -590.34497)
+			end
+		elseif item == demarcheItem then
 			TriggerEvent('skinchanger:getSkin', function(skin)
 				actualDemarche = item:IndexToItem(index)
 				actualDemarcheIndex = index
+
 				ESX.ShowNotification("Démarche: ~b~" .. actualDemarche)
+
 				if actualDemarche == "Normal" then
 					if skin.sex == 0 then
 						startAttitude("move_m@multiplayer", "move_m@multiplayer")
@@ -1712,16 +1845,18 @@ function AddMenuDemarcheVoix(menu)
 					startAttitude("move_m@gangster@generic","move_m@gangster@generic")
 				end
 			end)
-		elseif item == voixitem then
+		elseif item == voixItem then
 			actualVoix = item:IndexToItem(index)
 			actualVoixIndex = index
+
 			ESX.ShowNotification("Voix: ~b~" .. actualVoix)
-			if index == 2 then
+
+			if index == 1 then
+				NetworkSetTalkerProximity(1.0)
+			elseif index == 2 then
 				NetworkSetTalkerProximity(8.0)
 			elseif index == 3 then
 				NetworkSetTalkerProximity(14.0)
-			elseif index == 1 then
-				NetworkSetTalkerProximity(1.0)
 			end
 		end
 	end
@@ -2002,10 +2137,11 @@ function GeneratePersonalMenu()
 	_menuPool:Add(weaponItemMenu)
 	
 	AddMenuInventoryMenu(mainMenu)
+	AddMenuWeaponMenu(mainMenu)
 	AddMenuWalletMenu(mainMenu)
 	AddMenuClothesMenu(mainMenu)
+	AddMenuAccessoryMenu(mainMenu)
 	AddMenuAnimationMenu(mainMenu)
-	AddMenuWeaponMenu(mainMenu)
 
 	if IsPedSittingInAnyVehicle(plyPed) then
 		if (GetPedInVehicleSeat(plyVehicle, -1) == plyPed) then
@@ -2024,7 +2160,7 @@ function GeneratePersonalMenu()
 	end
 
 	AddMenuFacturesMenu(mainMenu)
-	AddMenuDemarcheVoix(mainMenu)
+	AddMenuDemarcheVoixGPS(mainMenu)
 
 	if playergroup == 'mod' or playergroup == 'admin' or playergroup == 'superadmin' or playergroup == 'owner' then
 		AddMenuAdminMenu(mainMenu)
