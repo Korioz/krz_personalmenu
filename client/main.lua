@@ -68,10 +68,27 @@ Citizen.CreateThread(function()
 	RefreshMoney2()
 end)
 
+Citizen.CreateThread(function()
+	local fixingVoice = true
+
+	NetworkSetTalkerProximity(0.1)
+
+	while true do
+		NetworkSetTalkerProximity(8.0)
+		if not fixingVoice then
+			break
+		end
+		Citizen.Wait(10)
+	end
+
+	SetTimeout(10000, function()
+		fixingVoice = false
+	end)
+end)
+
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(xPlayer)
 	ESX.PlayerData = xPlayer
-	NetworkSetTalkerProximity(8.0)
 end)
 
 AddEventHandler('esx:onPlayerDeath', function(data)
@@ -402,8 +419,10 @@ end
 function modo_showname()
 	showname = not showname
 
-	if not showname then
+	if showname then
 		ESX.ShowNotification("Ouvrir/Fermer le menu pause pour afficher les noms")
+		showname = false
+	else
 		showname = true
 	end
 end
