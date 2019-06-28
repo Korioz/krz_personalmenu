@@ -408,11 +408,7 @@ end
 
 -- Afficher Nom
 function modo_showname()
-	if showname then
-		showname = false
-	else
-		showname = true
-	end
+	showname = not showname
 end
 -- FIN Afficher Nom
 
@@ -2123,17 +2119,7 @@ Citizen.CreateThread(function()
 		if showname then
 			for id = 0, 255 do
 				if NetworkIsPlayerActive(id) and GetPlayerPed(id) ~= plyPed then
-					ped = GetPlayerPed(id)
-					blip = GetBlipFromEntity(ped)
-					headId = Citizen.InvokeNative(0xBFEFE3321A3F5015, ped, (GetPlayerServerId(id) .. ' - ' .. GetPlayerName(id)), false, false, "", false)
-				end
-			end
-		else
-			for id = 0, 255 do
-				if NetworkIsPlayerActive(id) and GetPlayerPed(id) ~= plyPed then
-					ped = GetPlayerPed(id)
-					blip = GetBlipFromEntity(ped)
-					headId = Citizen.InvokeNative(0xBFEFE3321A3F5015, ped, (' '), false, false, "", false )
+					local headId = Citizen.InvokeNative(0xBFEFE3321A3F5015, GetPlayerPed(id), (GetPlayerServerId(id) .. ' - ' .. GetPlayerName(id)), false, false, "", false)
 				end
 			end
 		end
