@@ -55,15 +55,6 @@ Citizen.CreateThread(function()
 		Citizen.Wait(10)
 	end
 
-	while playergroup == nil do
-		if ESX ~= nil then
-			ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(group) playergroup = group end)
-			Citizen.Wait(10)
-		else
-			Citizen.Wait(10)
-		end
-	end
-
 	RefreshMoney()
 	RefreshMoney2()
 end)
@@ -417,10 +408,7 @@ end
 
 -- Afficher Nom
 function modo_showname()
-	showname = not showname
-
 	if showname then
-		ESX.ShowNotification("Ouvrir/Fermer le menu pause pour afficher les noms")
 		showname = false
 	else
 		showname = true
@@ -2135,8 +2123,17 @@ Citizen.CreateThread(function()
 		if showname then
 			for id = 0, 255 do
 				if NetworkIsPlayerActive(id) and GetPlayerPed(id) ~= plyPed then
-					local ped = GetPlayerPed(id)
-					local headId = Citizen.InvokeNative(0xBFEFE3321A3F5015, ped, (GetPlayerServerId(id) .. ' - ' .. GetPlayerName(id)), false, false, "", false)
+					ped = GetPlayerPed(id)
+					blip = GetBlipFromEntity(ped)
+					headId = Citizen.InvokeNative(0xBFEFE3321A3F5015, ped, (GetPlayerServerId(id) .. ' - ' .. GetPlayerName(id)), false, false, "", false)
+				end
+			end
+		else
+			for id = 0, 255 do
+				if NetworkIsPlayerActive(id) and GetPlayerPed(id) ~= plyPed then
+					ped = GetPlayerPed(id)
+					blip = GetBlipFromEntity(ped)
+					headId = Citizen.InvokeNative(0xBFEFE3321A3F5015, ped, (' '), false, false, "", false )
 				end
 			end
 		end
