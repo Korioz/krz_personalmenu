@@ -1865,7 +1865,7 @@ function AddMenuDemarcheVoixGPS(menu)
 	end
 end
 
-function AddMenuAdminMenu(menu)
+function AddMenuAdminMenu(menu, playerGroup)
 	adminMenu = _menuPool:AddSubMenu(menu, "Administration")
 
 		if playerGroup == 'mod' then
@@ -2163,8 +2163,9 @@ function GeneratePersonalMenu()
 	AddMenuDemarcheVoixGPS(mainMenu)
 
 	ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(playerGroup)
+
 		if playerGroup == 'mod' or playerGroup == 'admin' or playerGroup == 'superadmin' or playerGroup == 'owner' then
-			AddMenuAdminMenu(mainMenu)
+			AddMenuAdminMenu(mainMenu, playerGroup)
 		end
 	end)
 
