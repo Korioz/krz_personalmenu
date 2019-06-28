@@ -47,10 +47,10 @@ ESX.RegisterServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(so
         if playerGroup ~= nil then 
             cb(playerGroup)
         else
-            cb("user")
+            cb(nil)
         end
 	else
-		cb("user")
+		cb(nil)
 	end
 end)
 
