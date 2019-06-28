@@ -17,6 +17,7 @@
 - Reworked Inventory UI
 - Reworked Wallet UI
 - Reworked Clothes UI
+- Reworked Accessory UI
 - Reworked Animation UI
 - Reworked Loadouts UI
 - Reworked Vehicle UI
@@ -33,10 +34,13 @@ This order also applies in the startup order.
 
 - [es_extended](https://github.com/ESX-Org/es_extended)
 - [esx_addonaccount](https://github.com/ESX-Org/esx_addonaccount)
+- [esx_addoninventory](https://github.com/ESX-Org/esx_addoninventory)
+- [esx_datastore](https://github.com/ESX-Org/esx_datastore)
 - [esx_billing](https://github.com/ESX-Org/esx_billing)
 - [esx_society](https://github.com/ESX-Org/esx_society)
 - [skinchanger](https://github.com/ESX-Org/skinchanger)
-- [esx_skin](https://github.com/ESX-Org/async)
+- [esx_skin](https://github.com/ESX-Org/esx_skin)
+- [esx_accessories](https://github.com/ESX-Org/esx_accessories)
 - [jsfour-idcard](https://github.com/jonassvensson4/jsfour-idcard)
 
 ### Download & Installation
