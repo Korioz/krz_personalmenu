@@ -1868,7 +1868,6 @@ end
 function AddMenuAdminMenu(menu)
 	adminMenu = _menuPool:AddSubMenu(menu, "Administration")
 
-	ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(playerGroup)
 		if playerGroup == 'mod' then
 			local tptoPlrItem = NativeUI.CreateItem("TP sur joueur", "")
 			adminMenu.SubMenu:AddItem(tptoPlrItem)
@@ -2024,7 +2023,6 @@ function AddMenuAdminMenu(menu)
 				end
 			end
 		end
-	end)
 end
 
 Citizen.CreateThread(function()
@@ -2164,9 +2162,11 @@ function GeneratePersonalMenu()
 	AddMenuFacturesMenu(mainMenu)
 	AddMenuDemarcheVoixGPS(mainMenu)
 
-	if playergroup == 'mod' or playergroup == 'admin' or playergroup == 'superadmin' or playergroup == 'owner' then
-		AddMenuAdminMenu(mainMenu)
-	end
+	ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(playerGroup)
+		if playerGroup == 'mod' or playerGroup == 'admin' or playerGroup == 'superadmin' or playerGroup == 'owner' then
+			AddMenuAdminMenu(mainMenu)
+		end
+	end)
 
 	_menuPool:RefreshIndex()
 end
