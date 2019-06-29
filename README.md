@@ -15,20 +15,22 @@
 ![screenshot](https://i.gyazo.com/c0a947cb8188cd10bd197ddd096d1b0e.png)
 
 ### Features
-- Reworked Inventory UI
-- Reworked Wallet UI
-- Reworked Clothes UI
-- Reworked Accessory UI
-- Reworked Animation UI
-- Reworked Loadouts UI
-- Reworked Vehicle UI
-- Reworked Job Boss UI
-- Reworked Job 2 Boss UI
-- Reworked Billing UI
-- Reworked Admin UI
+- Inventory UI
+- Wallet UI
+- Clothes UI
+- Accessory UI
+- Animation UI
+- Loadouts UI
+- Vehicle UI
+- Job Boss UI
+- Job 2 Boss UI
+- Billing UI
+- Admin UI
+- Voice System Included (With the OneSync fix)
 - All of the function of nb_menuperso reworked (credits to [nlmarcio](https://github.com/nlmarcio))
 - Changeable Header (Just need to change the commonmenu.ytd file in OpenIV)
-- Support EMOTE in inventory
+- EMOTE in UI
+- Coloured Title
 
 ### Requirements
 This order also applies in the startup order.
