@@ -1467,7 +1467,7 @@ function AddMenuVehicleMenu(menu)
 
 	local vehEngineItem = NativeUI.CreateItem(_U('vehicle_engine_button'), "")
 	vehicleMenu.SubMenu:AddItem(vehEngineItem)
-	local vehDoorListItem = NativeUI.CreateListItem(_U('vehicle_door_button'), personalmenu.porteList, 1)
+	local vehDoorListItem = NativeUI.CreateListItem(_U('vehicle_door_button'), personalmenu.doorList, 1)
 	vehicleMenu.SubMenu:AddItem(vehDoorListItem)
 	local vehHoodItem = NativeUI.CreateItem(_U('vehicle_hood_button'), "")
 	vehicleMenu.SubMenu:AddItem(vehHoodItem)
