@@ -4,7 +4,7 @@
 ### Important
 - **You are not allowed to modify the resource name**
 - **You are not allowed to modify the repository and re-release it, you can only fork it**
-- **If you want to contribute you can make a pull request or open a new issue**
+- **If you want to contribute (like translation) you can make a pull request or open a new issue**
 
 ### Links & Support
 - [Discord](https://discord.gg/bqcebpj)
@@ -23,10 +23,10 @@
 - Reworked Loadouts UI
 - Reworked Vehicle UI
 - Reworked Job Boss UI
-- Reworked Double Job Boss UI
+- Reworked Job 2 Boss UI
 - Reworked Billing UI
 - Reworked Admin UI
-- All of the function of nb_menuperso reworked
+- All of the function of nb_menuperso reworked (credits to [nlmarcio])(https://github.com/nlmarcio)
 - Changeable Header (Just need to change the commonmenu.ytd file in OpenIV)
 - Support EMOTE in inventory
 
@@ -42,7 +42,7 @@ This order also applies in the startup order.
 - [skinchanger](https://github.com/ESX-Org/skinchanger)
 - [esx_skin](https://github.com/ESX-Org/esx_skin)
 - [esx_accessories](https://github.com/ESX-Org/esx_accessories)
-- [jsfour-idcard](https://github.com/jonassvensson4/jsfour-idcard)
+- Optional: [jsfour-idcard](https://github.com/jonassvensson4/jsfour-idcard)
 
 ### Download & Installation
 
