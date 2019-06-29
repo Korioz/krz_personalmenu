@@ -26,7 +26,7 @@
 - Reworked Job 2 Boss UI
 - Reworked Billing UI
 - Reworked Admin UI
-- All of the function of nb_menuperso reworked (credits to [nlmarcio])(https://github.com/nlmarcio)
+- All of the function of nb_menuperso reworked (credits to [nlmarcio](https://github.com/nlmarcio))
 - Changeable Header (Just need to change the commonmenu.ytd file in OpenIV)
 - Support EMOTE in inventory
 
