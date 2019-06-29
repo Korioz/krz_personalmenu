@@ -628,37 +628,37 @@ function AddMenuWalletMenu(menu)
 	walletmenu.SubMenu:AddItem(walletMoney)
 
 	local walletdirtyMoney = nil
-	local walletPoint = nil
+	local showID = nil
+	local checkID = nil
 
 	for i = 1, #ESX.PlayerData.accounts, 1 do
 		if ESX.PlayerData.accounts[i].name == 'black_money' then
 			walletdirtyMoney = NativeUI.CreateListItem(_U('wallet_blackmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), moneyOption, 1)
 			walletmenu.SubMenu:AddItem(walletdirtyMoney)
-		elseif ESX.PlayerData.accounts[i].name == 'point' then
-			walletPoint = NativeUI.CreateItem(_U('wallet_point_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), "")
-			walletmenu.SubMenu:AddItem(walletPoint)
 		end
 	end
 
 	if Config.EnableESXIdentity then
-		local showID = NativeUI.CreateItem(_U('wallet_show_idcard_button'), "")
+		showID = NativeUI.CreateItem(_U('wallet_show_idcard_button'), "")
 		walletmenu.SubMenu:AddItem(showID)
 
-		local checkID = NativeUI.CreateItem(_U('wallet_check_idcard_button'), "")
+		checkID = NativeUI.CreateItem(_U('wallet_check_idcard_button'), "")
 		walletmenu.SubMenu:AddItem(checkID)
 	end
 
 	walletmenu.SubMenu.OnItemSelect = function(sender, item, index)
-		if item == showID then
-			personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
-										
-			if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3.0 then
-				TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(personalmenu.closestPlayer))
-			else
-				ESX.ShowNotification(_U('players_nearby'))
+		if Config.EnableESXIdentity then
+			if item == showID then
+				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
+											
+				if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3.0 then
+					TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(personalmenu.closestPlayer))
+				else
+					ESX.ShowNotification(_U('players_nearby'))
+				end
+			elseif item == checkID then
+				TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(PlayerId()))
 			end
-		elseif item == checkID then
-			TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(PlayerId()))
 		end
 	end
 
@@ -2040,106 +2040,6 @@ function AddMenuAdminMenu(menu)
 	end
 end
 
-Citizen.CreateThread(function()
-	while true do
-		while _menuPool:IsAnyMenuOpen() do
-			Citizen.Wait(0)
-
-			if not _menuPool:IsAnyMenuOpen() then
-				mainMenu:Clear()
-				itemMenu:Clear()
-				weaponItemMenu:Clear()
-
-				_menuPool:Clear()
-				_menuPool:Remove()
-
-				personalmenu = {}
-
-				invItem = {}
-				wepItem = {}
-				billItem = {}
-
-				collectgarbage()
-			end
-		end
-
-		Citizen.Wait(0)
-	end
-end)
-
-Citizen.CreateThread(function()
-	mainMenu = NativeUI.CreateMenu(Config.servername, _U('mainmenu_subtitle'))
-	itemMenu = NativeUI.CreateMenu(Config.servername, _U('inventory_actions_subtitle'))
-	weaponItemMenu = NativeUI.CreateMenu(Config.servername, _U('loadout_actions_subtitle'))
-	_menuPool:Add(mainMenu)
-	_menuPool:Add(itemMenu)
-	_menuPool:Add(weaponItemMenu)
-
-	while true do
-		if _menuPool then
-			_menuPool:ProcessMenus()
-		end
-
-		plyPed = PlayerPedId()
-
-		if IsControlJustReleased(0, Config.Menu.clavier) and GetLastInputMethod(2) and not isDead then
-			if mainMenu:Visible() then
-				mainMenu:Visible(false)
-			elseif not mainMenu:Visible() then
-				ESX.PlayerData = ESX.GetPlayerData()
-				GeneratePersonalMenu()
-				mainMenu:Visible(true)
-			end
-		end
-
-		if IsControlJustReleased(0, Config.stopAnim.clavier) and GetLastInputMethod(2) and not isDead then
-			ClearPedTasks(plyPed)
-		end
-
-		if IsControlPressed(1, Config.TPMarker.clavier1) and IsControlJustReleased(1, Config.TPMarker.clavier2) and GetLastInputMethod(2) and not isDead then
-			admin_tp_marker()
-		end
-
-		if showcoord then
-			local playerPos = GetEntityCoords(plyPed)
-			local playerHeading = GetEntityHeading(plyPed)
-			Text("~r~X~s~: " .. playerPos.x .. " ~b~Y~s~: " .. playerPos.y .. " ~g~Z~s~: " .. playerPos.z .. " ~y~Angle~s~: " .. playerHeading)
-		end
-
-		if noclip then
-			local x, y, z = getPosition()
-			local dx, dy, dz = getCamDirection()
-			local speed = Config.noclip_speed
-
-			SetEntityVelocity(plyPed, 0.0001, 0.0001, 0.0001)
-
-			if IsControlPressed(0, 32) then
-				x = x + speed * dx
-				y = y + speed * dy
-				z = z + speed * dz
-			end
-
-			if IsControlPressed(0, 269) then
-				x = x - speed * dx
-				y = y - speed * dy
-				z = z - speed * dz
-			end
-
-			SetEntityCoordsNoOffset(plyPed, x, y, z, true, true, true)
-		end
-
-		if showname then
-			for id = 0, 255 do
-				if NetworkIsPlayerActive(id) and GetPlayerPed(id) ~= plyPed then
-					local headId = Citizen.InvokeNative(0xBFEFE3321A3F5015, GetPlayerPed(id), (GetPlayerServerId(id) .. ' - ' .. GetPlayerName(id)), false, false, "", false)
-				end
-			end
-		end
-		
-		Citizen.Wait(0)
-	end
-end)
-
 function GeneratePersonalMenu()
 	_menuPool = NativeUI.CreatePool()
 
@@ -2184,6 +2084,66 @@ function GeneratePersonalMenu()
 end
 
 Citizen.CreateThread(function()
+	mainMenu = NativeUI.CreateMenu(Config.servername, _U('mainmenu_subtitle'))
+	itemMenu = NativeUI.CreateMenu(Config.servername, _U('inventory_actions_subtitle'))
+	weaponItemMenu = NativeUI.CreateMenu(Config.servername, _U('loadout_actions_subtitle'))
+	_menuPool:Add(mainMenu)
+	_menuPool:Add(itemMenu)
+	_menuPool:Add(weaponItemMenu)
+
+	while true do
+		if _menuPool then
+			_menuPool:ProcessMenus()
+		end
+
+		plyPed = PlayerPedId()
+
+		if IsControlJustReleased(0, Config.Menu.clavier) and GetLastInputMethod(2) and not isDead then
+			if mainMenu:Visible() then
+				mainMenu:Visible(false)
+			elseif not mainMenu:Visible() then
+				ESX.PlayerData = ESX.GetPlayerData()
+				GeneratePersonalMenu()
+				mainMenu:Visible(true)
+			end
+		end
+
+		if IsControlJustReleased(0, Config.stopAnim.clavier) and GetLastInputMethod(2) and not isDead then
+			ClearPedTasks(plyPed)
+		end
+		
+		Citizen.Wait(0)
+	end
+end)
+
+Citizen.CreateThread(function()
+	while true do
+		while _menuPool:IsAnyMenuOpen() do
+			Citizen.Wait(0)
+
+			if not _menuPool:IsAnyMenuOpen() then
+				mainMenu:Clear()
+				itemMenu:Clear()
+				weaponItemMenu:Clear()
+
+				_menuPool:Clear()
+				_menuPool:Remove()
+
+				personalmenu = {}
+
+				invItem = {}
+				wepItem = {}
+				billItem = {}
+
+				collectgarbage()
+			end
+		end
+
+		Citizen.Wait(0)
+	end
+end)
+
+Citizen.CreateThread(function()
 	while true do
 		if ESX ~= nil then
 			ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(group) playerGroup = group end)
@@ -2192,5 +2152,51 @@ Citizen.CreateThread(function()
 		else
 			Citizen.Wait(100)
 		end
+	end
+end)
+
+Citizen.CreateThread(function()
+	while true do
+		if IsControlPressed(1, Config.TPMarker.clavier1) and IsControlJustReleased(1, Config.TPMarker.clavier2) and GetLastInputMethod(2) and not isDead then
+			admin_tp_marker()
+		end
+
+		if showcoord then
+			local playerPos = GetEntityCoords(plyPed)
+			local playerHeading = GetEntityHeading(plyPed)
+			Text("~r~X~s~: " .. playerPos.x .. " ~b~Y~s~: " .. playerPos.y .. " ~g~Z~s~: " .. playerPos.z .. " ~y~Angle~s~: " .. playerHeading)
+		end
+
+		if noclip then
+			local x, y, z = getPosition()
+			local dx, dy, dz = getCamDirection()
+			local speed = Config.noclip_speed
+
+			SetEntityVelocity(plyPed, 0.0001, 0.0001, 0.0001)
+
+			if IsControlPressed(0, 32) then
+				x = x + speed * dx
+				y = y + speed * dy
+				z = z + speed * dz
+			end
+
+			if IsControlPressed(0, 269) then
+				x = x - speed * dx
+				y = y - speed * dy
+				z = z - speed * dz
+			end
+
+			SetEntityCoordsNoOffset(plyPed, x, y, z, true, true, true)
+		end
+
+		if showname then
+			for id = 0, 255 do
+				if NetworkIsPlayerActive(id) and GetPlayerPed(id) ~= plyPed then
+					local headId = Citizen.InvokeNative(0xBFEFE3321A3F5015, GetPlayerPed(id), (GetPlayerServerId(id) .. ' - ' .. GetPlayerName(id)), false, false, "", false)
+				end
+			end
+		end
+		
+		Citizen.Wait(0)
 	end
 end)

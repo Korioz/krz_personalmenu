@@ -75,7 +75,6 @@ Locales['fr'] = {
   ['wallet_job2_button'] = 'Organisation: %s - %s',
   ['wallet_money_button'] = 'Argent: $%s',
   ['wallet_blackmoney_button'] = 'Argent Sale: $%s',
-  ['wallet_point_button'] = 'Point de Loyauté: %s',
   ['wallet_show_idcard_button'] = 'Montrer sa carte d\'identité',
   ['wallet_check_idcard_button'] = 'Regarder sa carte d\'identité',
 
