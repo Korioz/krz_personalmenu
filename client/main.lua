@@ -2088,7 +2088,7 @@ Citizen.CreateThread(function()
 				ESX.PlayerData = ESX.GetPlayerData()
 				GeneratePersonalMenu()
 				mainMenu:Visible(true)
-				Citizen.Wait(50)
+				Citizen.Wait(10)
 			end
 		end
 		
