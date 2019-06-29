@@ -21,7 +21,7 @@ Config.EnableESXIdentity = false -- enable if you're using jsfour-idcard
 
 -- GENERAL
 Config.Menu = {
-	clavier = Keys["F5"],
+	clavier = Keys["M"],
 }
 
 Config.handsUP = {

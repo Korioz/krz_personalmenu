@@ -1,14 +1,18 @@
-local Keys = {
-  ["ESC"] = 322, ["F1"] = 288, ["F2"] = 289, ["F3"] = 170, ["F5"] = 166, ["F6"] = 167, ["F7"] = 168, ["F8"] = 169, ["F9"] = 56, ["F10"] = 57, 
-  ["~"] = 243, ["1"] = 157, ["2"] = 158, ["3"] = 160, ["4"] = 164, ["5"] = 165, ["6"] = 159, ["7"] = 161, ["8"] = 162, ["9"] = 163, ["-"] = 84, ["="] = 83, ["BACKSPACE"] = 177, 
-  ["TAB"] = 37, ["Q"] = 44, ["W"] = 32, ["E"] = 38, ["R"] = 45, ["T"] = 245, ["Y"] = 246, ["U"] = 303, ["P"] = 199, ["["] = 39, ["]"] = 40, ["ENTER"] = 18,
-  ["CAPS"] = 137, ["A"] = 34, ["S"] = 8, ["D"] = 9, ["F"] = 23, ["G"] = 47, ["H"] = 74, ["K"] = 311, ["L"] = 182,
-  ["LEFTSHIFT"] = 21, ["Z"] = 20, ["X"] = 73, ["C"] = 26, ["V"] = 0, ["B"] = 29, ["N"] = 249, ["M"] = 244, [","] = 82, ["."] = 81,
-  ["LEFTCTRL"] = 36, ["LEFTALT"] = 19, ["SPACE"] = 22, ["RIGHTCTRL"] = 70, 
-  ["HOME"] = 213, ["PAGEUP"] = 10, ["PAGEDOWN"] = 11, ["DELETE"] = 178,
-  ["LEFT"] = 174, ["RIGHT"] = 175, ["TOP"] = 27, ["DOWN"] = 173,
-  ["NENTER"] = 201, ["N4"] = 108, ["N5"] = 60, ["N6"] = 107, ["N+"] = 96, ["N-"] = 97, ["N7"] = 117, ["N8"] = 61, ["N9"] = 118
-}
+Citizen.Trace("\n")
+Citizen.Trace("\n")
+Citizen.Trace("\n")
+Citizen.Trace("\n")
+Citizen.Trace("\n")
+Citizen.Trace("PERSONAL MENU v1.1 by KorioZ")
+Citizen.Trace("\n")
+Citizen.Trace("Created for ESX FrameWork")
+Citizen.Trace("\n")
+Citizen.Trace("Korioz#0478 for any Support")
+Citizen.Trace("\n")
+Citizen.Trace("\n")
+Citizen.Trace("\n")
+Citizen.Trace("\n")
+Citizen.Trace("\n")
 
 ESX = nil
 
@@ -19,9 +23,9 @@ local billItem = {}
 
 local plyPed, plyVehicle = nil, nil
 
-local actualGPS, actualGPSIndex = "Aucun", 1
-local actualDemarche, actualDemarcheIndex = "Normal", 1
-local actualVoix, actualVoixIndex = "Normal", 2
+local actualGPS, actualGPSIndex = _U('default_gps'), 1
+local actualDemarche, actualDemarcheIndex = _U('default_demarche'), 1
+local actualVoice, actualVoiceIndex = _U('default_voice'), 2
 
 local isDead = false
 local inAnim = false
@@ -63,7 +67,10 @@ Citizen.CreateThread(function()
 	end
 
 	RefreshMoney()
-	RefreshMoney2()
+
+	if Config.doublejob then
+		RefreshMoney2()
+	end
 end)
 
 Citizen.CreateThread(function()
@@ -196,7 +203,7 @@ end)
 
 -- GOTO JOUEUR
 function admin_tp_toplayer()
-	local plyId = KeyboardInput("KORIOZ_BOX_ID", "ID du Joueur (8 Caractères Maximum):", "", 8)
+	local plyId = KeyboardInput("KORIOZ_BOX_ID", _U('dialogbox_playerid'), "", 8)
 
 	if plyId ~= nil then
 		plyId = tonumber(plyId)
@@ -211,7 +218,7 @@ end
 
 -- TP UN JOUEUR A MOI
 function admin_tp_playertome()
-	local plyId = KeyboardInput("KORIOZ_BOX_ID", "ID du Joueur (8 Caractères Maximum):", "", 8)
+	local plyId = KeyboardInput("KORIOZ_BOX_ID", _U('dialogbox_playerid'), "", 8)
 
 	if plyId ~= nil then
 		plyId = tonumber(plyId)
@@ -227,7 +234,7 @@ end
 
 -- TP A POSITION
 function admin_tp_pos()
-	local pos = KeyboardInput("KORIOZ_BOX_XYZ", "Position (50 Caractères Maximum):", "", 50)
+	local pos = KeyboardInput("KORIOZ_BOX_XYZ", _U('dialogbox_xyz'), "", 50)
 
 	local _, _, x, y, z = string.find(pos, "([%d%.]+) ([%d%.]+) ([%d%.]+)")
 			
@@ -244,11 +251,11 @@ function admin_no_clip()
 	if noclip then
 		SetEntityInvincible(plyPed, true)
 		SetEntityVisible(plyPed, false, false)
-		ESX.ShowNotification("Noclip ~g~activé")
+		ESX.ShowNotification(_U('admin_noclipon'))
 	else
 		SetEntityInvincible(plyPed, false)
 		SetEntityVisible(plyPed, true, false)
-		ESX.ShowNotification("Noclip ~r~désactivé")
+		ESX.ShowNotification(_U('admin_noclipoff'))
 	end
 end
 
@@ -288,10 +295,10 @@ function admin_godmode()
 
 	if godmode then
 		SetEntityInvincible(plyPed, true)
-		ESX.ShowNotification("Mode invincible ~g~activé")
+		ESX.ShowNotification(_U('admin_godmodeon'))
 	else
 		SetEntityInvincible(plyPed, false)
-		ESX.ShowNotification("Mode invincible ~r~désactivé")
+		ESX.ShowNotification(_U('admin_godmodeoff'))
 	end
 end
 -- FIN GOD MODE
@@ -302,17 +309,17 @@ function admin_mode_fantome()
 
 	if invisible then
 		SetEntityVisible(plyPed, false, false)
-		ESX.ShowNotification("Mode fantôme : activé")
+		ESX.ShowNotification(_U('admin_ghoston'))
 	else
 		SetEntityVisible(plyPed, true, false)
-		ESX.ShowNotification("Mode fantôme : désactivé")
+		ESX.ShowNotification(_U('admin_ghostoff'))
 	end
 end
 -- FIN INVISIBLE
 
 -- Réparer vehicule
 function admin_vehicle_repair()
-	local car = GetVehiclePedIsUsing(plyPed)
+	local car = GetVehiclePedIsIn(plyPed, false)
 
 	SetVehicleFixed(car)
 	SetVehicleDirtLevel(car, 0.0)
@@ -321,7 +328,7 @@ end
 
 -- Spawn vehicule
 function admin_vehicle_spawn()
-	local vehicleName = KeyboardInput("KORIOZ_BOX_VEHICLE_NAME", "Nom du Véhicule (50 Caractères Maximum):", "", 50)
+	local vehicleName = KeyboardInput("KORIOZ_BOX_VEHICLE_NAME", _U('dialogbox_vehiclespawner'), "", 50)
 
 	if vehicleName ~= nil then
 		vehicleName = tostring(vehicleName)
@@ -361,13 +368,13 @@ function admin_vehicle_flip()
 
 	SetEntityCoords(closestCar, plyCoords)
 
-	ESX.ShowNotification("Voiture retourné")
+	ESX.ShowNotification(_U('admin_vehicleflip'))
 end
 -- FIN flipVehicle
 
 -- GIVE DE L'ARGENT
 function admin_give_money()
-	local amount = KeyboardInput("KORIOZ_BOX_AMOUNT", "Montant (8 Caractères Maximum):", "", 8)
+	local amount = KeyboardInput("KORIOZ_BOX_AMOUNT", _U('dialogbox_amount'), "", 8)
 
 	if amount ~= nil then
 		amount = tonumber(amount)
@@ -381,7 +388,7 @@ end
 
 -- GIVE DE L'ARGENT EN BANQUE
 function admin_give_bank()
-	local amount = KeyboardInput("KORIOZ_BOX_AMOUNT", "Montant (8 Caractères Maximum):", "", 8)
+	local amount = KeyboardInput("KORIOZ_BOX_AMOUNT", _U('dialogbox_amount'), "", 8)
 
 	if amount ~= nil then
 		amount = tonumber(amount)
@@ -395,7 +402,7 @@ end
 
 -- GIVE DE L'ARGENT SALE
 function admin_give_dirty()
-	local amount = KeyboardInput("KORIOZ_BOX_AMOUNT", "Montant (8 Caractères Maximum):", "", 8)
+	local amount = KeyboardInput("KORIOZ_BOX_AMOUNT", _U('dialogbox_amount'), "", 8)
 
 	if amount ~= nil then
 		amount = tonumber(amount)
@@ -440,16 +447,16 @@ function admin_tp_marker()
 			Citizen.Wait(0)
 		end
 
-		ESX.ShowNotification("Téléporté sur le marqueur !")
+		ESX.ShowNotification(_U('admin_tpmarker'))
 	else
-		ESX.ShowNotification("Pas de marqueur sur la carte !")
+		ESX.ShowNotification(_U('admin_nomarker'))
 	end
 end
 -- FIN TP MARKER
 
 -- HEAL JOUEUR
 function admin_heal_player()
-	local plyId = KeyboardInput("KORIOZ_BOX_ID", "ID du Joueur (8 Caractères Maximum):", "", 8)
+	local plyId = KeyboardInput("KORIOZ_BOX_ID", _U('dialogbox_playerid'), "", 8)
 
 	if plyId ~= nil then
 		plyId = tonumber(plyId)
@@ -495,7 +502,7 @@ function startScenario(anim)
 end
 
 function AddMenuInventoryMenu(menu)
-	inventorymenu = _menuPool:AddSubMenu(menu, "Inventaire")
+	inventorymenu = _menuPool:AddSubMenu(menu, _U('inventory_title'))
 	local invCount = {}
 
 	for i=1, #ESX.PlayerData.inventory, 1 do
@@ -522,13 +529,13 @@ function AddMenuInventoryMenu(menu)
 		end
 	end
 
-	local useItem = NativeUI.CreateItem("Utiliser", "")
+	local useItem = NativeUI.CreateItem(_U('inventory_use_button'), "")
 	itemMenu:AddItem(useItem)
 
-	local giveItem = NativeUI.CreateItem("Donner", "")
+	local giveItem = NativeUI.CreateItem(_U('inventory_give_button'), "")
 	itemMenu:AddItem(giveItem)
 
-	local dropItem = NativeUI.CreateItem("Jeter", "")
+	local dropItem = NativeUI.CreateItem(_U('inventory_drop_button'), "")
 	dropItem:SetRightBadge(4)
 	itemMenu:AddItem(dropItem)
 
@@ -551,7 +558,7 @@ function AddMenuInventoryMenu(menu)
 						if usable then
 							TriggerServerEvent('esx:useItem', value)
 						else
-							ESX.ShowNotification(label .. " n'est pas utilisable")
+							ESX.ShowNotification(_U('not_usable', label))
 						end
 					elseif item == giveItem then
 						local foundPlayers = false
@@ -569,28 +576,28 @@ function AddMenuInventoryMenu(menu)
 									TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_standard', value, quantity)
 									_menuPool:CloseAllMenus()
 								else
-									ESX.ShowNotification("Montant Invalide")
+									ESX.ShowNotification(_U('amount_invalid'))
 								end
 							else
-								ESX.ShowNotification("Impossible de donner " .. label .. " dans un véhicule")
+								ESX.ShowNotification(_U('in_vehicle_give'))
 							end
 						else
-							ESX.ShowNotification("Aucun citoyen à proximité")
+							ESX.ShowNotification(_U('players_nearby'))
 						end
 					elseif item == dropItem then
 						if canRemove then
-							if not IsPedSittingInAnyVehicle(closestPed) then
+							if not IsPedSittingInAnyVehicle(plyPed) then
 								if quantity ~= nil then
 									TriggerServerEvent('esx:removeInventoryItem', 'item_standard', value, quantity)
 									_menuPool:CloseAllMenus()
 								else
-									ESX.ShowNotification("Montant Invalide")
+									ESX.ShowNotification(_U('amount_invalid'))
 								end
 							else
-								ESX.ShowNotification("Impossible de jeter de l'argent dans un véhicule")
+								ESX.ShowNotification(_U('in_vehicle_drop'))
 							end
 						else
-							ESX.ShowNotification(label .. " n'est pas jetable")
+							ESX.ShowNotification(_U('not_droppable', label))
 						end
 					end
 				end
@@ -603,61 +610,62 @@ function AddMenuWalletMenu(menu)
 	local moneyOption = {}
 	
 	moneyOption = {
-		"Donner",
-		"Jeter"
+		_U('wallet_option_give'),
+		_U('wallet_option_drop')
 	}
 
-	walletmenu = _menuPool:AddSubMenu(menu, "Portefeuille")
+	walletmenu = _menuPool:AddSubMenu(menu, _U('wallet_title'))
 
-	local walletJob = NativeUI.CreateItem("Métier: " .. ESX.PlayerData.job.label .. " - " .. ESX.PlayerData.job.grade_label, "")
+	local walletJob = NativeUI.CreateItem(_U('wallet_job_button', ESX.PlayerData.job.label, ESX.PlayerData.job.grade_label), "")
 	walletmenu.SubMenu:AddItem(walletJob)
 
 	if Config.doublejob then
-		local walletJob2 = NativeUI.CreateItem("Organisation: " .. ESX.PlayerData.job2.label .. " - " .. ESX.PlayerData.job2.grade_label, "")
+		local walletJob2 = NativeUI.CreateItem(_U('wallet_job2_button', ESX.PlayerData.job2.label, ESX.PlayerData.job2.grade_label), "")
 		walletmenu.SubMenu:AddItem(walletJob2)
 	end
 
-	local walletMoney = NativeUI.CreateListItem("Argent: $" .. ESX.Math.GroupDigits(ESX.PlayerData.money), moneyOption, 1)
+	local walletMoney = NativeUI.CreateListItem(_U('wallet_money_button', ESX.Math.GroupDigits(ESX.PlayerData.money)), moneyOption, 1)
 	walletmenu.SubMenu:AddItem(walletMoney)
 
 	local walletdirtyMoney = nil
+	local walletPoint = nil
 
 	for i = 1, #ESX.PlayerData.accounts, 1 do
 		if ESX.PlayerData.accounts[i].name == 'black_money' then
-			walletdirtyMoney = NativeUI.CreateListItem("Argent Sale: $" .. ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money), moneyOption, 1)
+			walletdirtyMoney = NativeUI.CreateListItem(_U('wallet_blackmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), moneyOption, 1)
 			walletmenu.SubMenu:AddItem(walletdirtyMoney)
 		elseif ESX.PlayerData.accounts[i].name == 'point' then
-			walletPoint = NativeUI.CreateItem("Point de Loyauté: " .. ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money), "")
+			walletPoint = NativeUI.CreateItem(_U('wallet_point_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), "")
 			walletmenu.SubMenu:AddItem(walletPoint)
 		end
 	end
 
 	if Config.EnableESXIdentity then
-		local showID = NativeUI.CreateItem("Montrer sa carte d'identité", "")
+		local showID = NativeUI.CreateItem(_U('wallet_show_idcard_button'), "")
 		walletmenu.SubMenu:AddItem(showID)
 
-		local checkID = NativeUI.CreateItem("Regarder sa carte d'identité", "")
+		local checkID = NativeUI.CreateItem(_U('wallet_check_idcard_button'), "")
 		walletmenu.SubMenu:AddItem(checkID)
+	end
 
-		walletmenu.SubMenu.OnItemSelect = function(sender, item, index)
-			if item == showID then
-				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
-											
-				if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3.0 then
-					TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(personalmenu.closestPlayer))
-				else
-					ESX.ShowNotification("Aucun citoyen à proximité")
-				end
-			elseif item == checkID then
-				TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(PlayerId()))
+	walletmenu.SubMenu.OnItemSelect = function(sender, item, index)
+		if item == showID then
+			personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
+										
+			if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3.0 then
+				TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(personalmenu.closestPlayer))
+			else
+				ESX.ShowNotification(_U('players_nearby'))
 			end
+		elseif item == checkID then
+			TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(PlayerId()))
 		end
 	end
 
 	walletmenu.SubMenu.OnListSelect = function(sender, item, index)
 		if item == walletMoney or item == walletdirtyMoney then
 			if index == 1 then
-				local quantity = KeyboardInput("KORIOZ_BOX_AMOUNT", "Montant (8 Caractères Maximum):", "", 8)
+				local quantity = KeyboardInput("KORIOZ_BOX_AMOUNT", _U('dialogbox_amount'), "", 8)
 
 				if quantity ~= nil then
 					local post = true
@@ -691,17 +699,17 @@ function AddMenuWalletMenu(menu)
 									_menuPool:CloseAllMenus()
 								end
 							else
-								ESX.ShowNotification("Montant Invalide")
+								ESX.ShowNotification(_U('amount_invalid'))
 							end
 						else
-							ESX.ShowNotification("Impossible de donner de l'argent dans un véhicule")
+							ESX.ShowNotification(_U('in_vehicle_give'))
 						end
 					else
-						ESX.ShowNotification("Aucun citoyen à proximité")
+						ESX.ShowNotification(_U('players_nearby'))
 					end
 				end
 			elseif index == 2 then
-				local quantity = KeyboardInput("KORIOZ_BOX_AMOUNT", "Montant (8 Caractères Maximum):", "", 8)
+				local quantity = KeyboardInput("KORIOZ_BOX_AMOUNT", _U('dialogbox_amount'), "", 8)
 
 				if quantity ~= nil then
 					local post = true
@@ -715,7 +723,7 @@ function AddMenuWalletMenu(menu)
 						end
 					end
 
-					if not IsPedSittingInAnyVehicle(closestPed) then
+					if not IsPedSittingInAnyVehicle(plyPed) then
 						if post == true then
 							if item == walletMoney then
 								TriggerServerEvent('esx:removeInventoryItem', 'item_money', 'money', quantity)
@@ -725,10 +733,10 @@ function AddMenuWalletMenu(menu)
 								_menuPool:CloseAllMenus()
 							end
 						else
-							ESX.ShowNotification("Montant Invalide")
+							ESX.ShowNotification(_U('amount_invalid'))
 						end
 					else
-						ESX.ShowNotification("Impossible de jeter de l'argent dans un véhicule")
+						ESX.ShowNotification(_U('in_vehicle_drop'))
 					end
 				end
 			end
@@ -737,7 +745,7 @@ function AddMenuWalletMenu(menu)
 end
 
 function AddMenuFacturesMenu(menu)
-	billMenu = _menuPool:AddSubMenu(menu, "Factures")
+	billMenu = _menuPool:AddSubMenu(menu, _U('bills_title'))
 	billItem = {}
 	
 	ESX.TriggerServerCallback('KorioZ-PersonalMenu:Bill_getBills', function(bills)
@@ -769,17 +777,17 @@ function AddMenuFacturesMenu(menu)
 end
 
 function AddMenuClothesMenu(menu)
-	clothesMenu = _menuPool:AddSubMenu(menu, "Vêtements")
+	clothesMenu = _menuPool:AddSubMenu(menu, _U('clothes_title'))
 
-	local torsoItem = NativeUI.CreateItem("Haut", "")
+	local torsoItem = NativeUI.CreateItem(_U('clothes_top'), "")
 	clothesMenu.SubMenu:AddItem(torsoItem)
-	local pantsItem = NativeUI.CreateItem("Bas", "")
+	local pantsItem = NativeUI.CreateItem(_U('clothes_pants'), "")
 	clothesMenu.SubMenu:AddItem(pantsItem)
-	local shoesItem = NativeUI.CreateItem("Chaussures", "")
+	local shoesItem = NativeUI.CreateItem(_U('clothes_shoes'), "")
 	clothesMenu.SubMenu:AddItem(shoesItem)
-	local bagItem = NativeUI.CreateItem("Sac", "")
+	local bagItem = NativeUI.CreateItem(_U('clothes_bag'), "")
 	clothesMenu.SubMenu:AddItem(bagItem)
-	local bproofItem = NativeUI.CreateItem("Gilet Par Balle", "")
+	local bproofItem = NativeUI.CreateItem(_U('clothes_bproof'), "")
 	clothesMenu.SubMenu:AddItem(bproofItem)
 
 	clothesMenu.SubMenu.OnItemSelect = function(sender, item, index)
@@ -844,15 +852,15 @@ function setUniform(value, plyPed)
 end
 
 function AddMenuAccessoryMenu(menu)
-	accessoryMenu = _menuPool:AddSubMenu(menu, "Accessoires")
+	accessoryMenu = _menuPool:AddSubMenu(menu, _U('accessories_title'))
 
-	local earsItem = NativeUI.CreateItem("Accessoire d'Oreilles", "")
+	local earsItem = NativeUI.CreateItem(_U('accessories_ears'), "")
 	accessoryMenu.SubMenu:AddItem(earsItem)
-	local glassesItem = NativeUI.CreateItem("Lunettes", "")
+	local glassesItem = NativeUI.CreateItem(_U('accessories_glasses'), "")
 	accessoryMenu.SubMenu:AddItem(glassesItem)
-	local helmetItem = NativeUI.CreateItem("Chapeau/Casque", "")
+	local helmetItem = NativeUI.CreateItem(_U('accessories_helmet'), "")
 	accessoryMenu.SubMenu:AddItem(helmetItem)
-	local maskItem = NativeUI.CreateItem("Masque", "")
+	local maskItem = NativeUI.CreateItem(_U('accessories_mask'), "")
 	accessoryMenu.SubMenu:AddItem(maskItem)
 
 	accessoryMenu.SubMenu.OnItemSelect = function(sender, item, index)
@@ -906,13 +914,13 @@ function SetUnsetAccessory(accessory)
 			end)
 		else
 			if _accessory == 'ears' then
-				ESX.ShowNotification("Vous ne possédez pas d'Accessoire d'Oreilles")
+				ESX.ShowNotification(_U('accessories_no_ears'))
 			elseif _accessory == 'glasses' then
-				ESX.ShowNotification("Vous ne possédez pas de Lunettes")
+				ESX.ShowNotification(_U('accessories_no_glasses'))
 			elseif _accessory == 'helmet' then
-				ESX.ShowNotification("Vous ne possédez pas de Casque/Chapeau")
+				ESX.ShowNotification(_U('accessories_no_helmet'))
 			elseif _accessory == 'mask' then
-				ESX.ShowNotification("Vous ne possédez pas de Masque")
+				ESX.ShowNotification(_U('accessories_no_mask'))
 			end
 		end
 
@@ -920,47 +928,47 @@ function SetUnsetAccessory(accessory)
 end
 
 function AddMenuAnimationMenu(menu)
-	animMenu = _menuPool:AddSubMenu(menu, "Animations")
+	animMenu = _menuPool:AddSubMenu(menu, _U('animation_title'))
 
-	AddSubMenuFestivesMenu(animMenu)
-	AddSubMenuSalutationsMenu(animMenu)
-	AddSubMenuTravailMenu(animMenu)
-	AddSubMenuHumeursMenu(animMenu)
+	AddSubMenuPartyMenu(animMenu)
+	AddSubMenuSaluteMenu(animMenu)
+	AddSubMenuWorkMenu(animMenu)
+	AddSubMenuMoodMenu(animMenu)
 	AddSubMenuSportsMenu(animMenu)
-	AddSubMenuDiversMenu(animMenu)
+	AddSubMenuOtherMenu(animMenu)
 	AddSubMenuPEGI21Menu(animMenu)
 end
 
-function AddSubMenuFestivesMenu(menu)
-	animFeteMenu = _menuPool:AddSubMenu(menu.SubMenu, "Festives")
+function AddSubMenuPartyMenu(menu)
+	animPartyMenu = _menuPool:AddSubMenu(menu.SubMenu, _U('animation_party_title'))
 
-	local cigaretteItem = NativeUI.CreateItem("Fumer une cigarette", "")
-	animFeteMenu.SubMenu:AddItem(cigaretteItem)
-	local musiqueItem = NativeUI.CreateItem("Jouer de la musique", "")
-	animFeteMenu.SubMenu:AddItem(musiqueItem)
-	local DJItem = NativeUI.CreateItem("DJ", "")
-	animFeteMenu.SubMenu:AddItem(DJItem)
-	local zikItem = NativeUI.CreateItem("Bière en zik", "")
-	animFeteMenu.SubMenu:AddItem(zikItem)
-	local guitarItem = NativeUI.CreateItem("Air Guitar", "")
-	animFeteMenu.SubMenu:AddItem(guitarItem)
-	local shaggingItem = NativeUI.CreateItem("Air Shagging", "")
-	animFeteMenu.SubMenu:AddItem(shaggingItem)
-	local rockItem = NativeUI.CreateItem("Rock'n'roll", "")
-	animFeteMenu.SubMenu:AddItem(rockItem)
-	local bourreItem = NativeUI.CreateItem("Bourré sur place", "")
-	animFeteMenu.SubMenu:AddItem(bourreItem)
-	local vomirItem = NativeUI.CreateItem("Vomir en voiture", "")
-	animFeteMenu.SubMenu:AddItem(vomirItem)
+	local cigaretteItem = NativeUI.CreateItem(_U('animation_party_smoke'), "")
+	animPartyMenu.SubMenu:AddItem(cigaretteItem)
+	local musiqueItem = NativeUI.CreateItem(_U('animation_party_playsong'), "")
+	animPartyMenu.SubMenu:AddItem(musiqueItem)
+	local DJItem = NativeUI.CreateItem(_U('animation_party_dj'), "")
+	animPartyMenu.SubMenu:AddItem(DJItem)
+	local dancingItem = NativeUI.CreateItem(_U('animation_party_dancing'), "")
+	animPartyMenu.SubMenu:AddItem(dancingItem)
+	local guitarItem = NativeUI.CreateItem(_U('animation_party_airguitar'), "")
+	animPartyMenu.SubMenu:AddItem(guitarItem)
+	local shaggingItem = NativeUI.CreateItem(_U('animation_party_shagging'), "")
+	animPartyMenu.SubMenu:AddItem(shaggingItem)
+	local rockItem = NativeUI.CreateItem(_U('animation_party_rock'), "")
+	animPartyMenu.SubMenu:AddItem(rockItem)
+	local bourreItem = NativeUI.CreateItem(_U('animation_party_drunk'), "")
+	animPartyMenu.SubMenu:AddItem(bourreItem)
+	local vomitItem = NativeUI.CreateItem(_U('animation_party_vomit'), "")
+	animPartyMenu.SubMenu:AddItem(vomitItem)
 
-	animFeteMenu.SubMenu.OnItemSelect = function(sender, item, index)
+	animPartyMenu.SubMenu.OnItemSelect = function(sender, item, index)
 		if item == cigaretteItem then
 			startScenario("WORLD_HUMAN_SMOKING")
 		elseif item == musiqueItem then
 			startScenario("WORLD_HUMAN_MUSICIAN")
 		elseif item == DJItem then
 			startAnim("anim@mp_player_intcelebrationmale@dj", "dj")
-		elseif item == zikItem then
+		elseif item == dancingItem then
 			startScenario("WORLD_HUMAN_PARTYING")
 		elseif item == guitarItem then
 			startAnim("anim@mp_player_intcelebrationmale@air_guitar", "air_guitar")
@@ -970,25 +978,25 @@ function AddSubMenuFestivesMenu(menu)
 			startAnim("mp_player_int_upperrock", "mp_player_int_rock")
 		elseif item == bourreItem then
 			startAnim("amb@world_human_bum_standing@drunk@idle_a", "idle_a")
-		elseif item == vomirItem then
+		elseif item == vomitItem then
 			startAnim("oddjobs@taxi@tie", "vomit_outside")
 		end
 	end
 end
 
-function AddSubMenuSalutationsMenu(menu)
-	animSaluteMenu = _menuPool:AddSubMenu(menu.SubMenu, "Salutations")
+function AddSubMenuSaluteMenu(menu)
+	animSaluteMenu = _menuPool:AddSubMenu(menu.SubMenu, _U('animation_salute_title'))
 
-	local saluerItem = NativeUI.CreateItem("Saluer", "")
+	local saluerItem = NativeUI.CreateItem(_U('animation_salute_saluate'), "")
 	animSaluteMenu.SubMenu:AddItem(saluerItem)
-	local serrerItem = NativeUI.CreateItem("Serrer la main", "")
+	local serrerItem = NativeUI.CreateItem(_U('animation_salute_serrer'), "")
 	animSaluteMenu.SubMenu:AddItem(serrerItem)
-	local tchekItem = NativeUI.CreateItem("Tchek", "")
+	local tchekItem = NativeUI.CreateItem(_U('animation_salute_tchek'), "")
 	animSaluteMenu.SubMenu:AddItem(tchekItem)
-	local banditItem = NativeUI.CreateItem("Salut bandit", "")
+	local banditItem = NativeUI.CreateItem(_U('animation_salute_bandit'), "")
 	animSaluteMenu.SubMenu:AddItem(banditItem)
-	local militaireItem = NativeUI.CreateItem("Salut Militaire", "")
-	animSaluteMenu.SubMenu:AddItem(militaireItem)
+	local militaryItem = NativeUI.CreateItem(_U('animation_salute_military'), "")
+	animSaluteMenu.SubMenu:AddItem(militaryItem)
 
 	animSaluteMenu.SubMenu.OnItemSelect = function(sender, item, index)
 		if item == saluerItem then
@@ -999,86 +1007,86 @@ function AddSubMenuSalutationsMenu(menu)
 			startAnim("mp_ped_interaction", "handshake_guy_a")
 		elseif item == banditItem then
 			startAnim("mp_ped_interaction", "hugs_guy_a")
-		elseif item == militaireItem then
+		elseif item == militaryItem then
 			startAnim("mp_player_int_uppersalute", "mp_player_int_salute")
 		end
 	end
 end
 
-function AddSubMenuTravailMenu(menu)
-	animTravailMenu = _menuPool:AddSubMenu(menu.SubMenu, "Travail")
+function AddSubMenuWorkMenu(menu)
+	animWorkMenu = _menuPool:AddSubMenu(menu.SubMenu, _U('animation_work_title'))
 
-	local suspectItem = NativeUI.CreateItem("Se rendre", "")
-	animTravailMenu.SubMenu:AddItem(suspectItem)
-	local pecheurItem = NativeUI.CreateItem("Pêcheur", "")
-	animTravailMenu.SubMenu:AddItem(pecheurItem)
-	local pEnqueterItem = NativeUI.CreateItem("Police : enquêter", "")
-	animTravailMenu.SubMenu:AddItem(pEnqueterItem)
-	local pRadioItem = NativeUI.CreateItem("Police : parler à la radio", "")
-	animTravailMenu.SubMenu:AddItem(pRadioItem)
-	local pCirculationItem = NativeUI.CreateItem("Police : circulation", "")
-	animTravailMenu.SubMenu:AddItem(pCirculationItem)
-	local pJumelleItem = NativeUI.CreateItem("Police : jumelles", "")
-	animTravailMenu.SubMenu:AddItem(pJumelleItem)
-	local aRecolterItem = NativeUI.CreateItem("Agriculture : récolter", "")
-	animTravailMenu.SubMenu:AddItem(aRecolterItem)
-	local dReparerItem = NativeUI.CreateItem("Dépanneur : réparer le moteur", "")
-	animTravailMenu.SubMenu:AddItem(dReparerItem)
-	local mObserverItem = NativeUI.CreateItem("Médecin : observer", "")
-	animTravailMenu.SubMenu:AddItem(mObserverItem)
-	local tParlerItem = NativeUI.CreateItem("Taxi : parler au client", "")
-	animTravailMenu.SubMenu:AddItem(tParlerItem)
-	local tFacturerItem = NativeUI.CreateItem("Taxi : donner la facture", "")
-	animTravailMenu.SubMenu:AddItem(tFacturerItem)
-	local eCoursesItem = NativeUI.CreateItem("Epicier : donner les courses", "")
-	animTravailMenu.SubMenu:AddItem(eCoursesItem)
-	local bShotItem = NativeUI.CreateItem("Barman : servir un shot", "")
-	animTravailMenu.SubMenu:AddItem(bShotItem)
-	local jPhotoItem = NativeUI.CreateItem("Journaliste : Prendre une photo", "")
-	animTravailMenu.SubMenu:AddItem(jPhotoItem)
-	local NotesItem = NativeUI.CreateItem("Tout : Prendre des notes", "")
-	animTravailMenu.SubMenu:AddItem(NotesItem)
-	local MarteauItem = NativeUI.CreateItem("Tout : Coup de marteau", "")
-	animTravailMenu.SubMenu:AddItem(MarteauItem)
-	local sdfMancheItem = NativeUI.CreateItem("SDF : Faire la manche", "")
-	animTravailMenu.SubMenu:AddItem(sdfMancheItem)
-	local sdfStatueItem = NativeUI.CreateItem("SDF : Faire la statue", "")
-	animTravailMenu.SubMenu:AddItem(sdfStatueItem)
+	local suspectItem = NativeUI.CreateItem(_U('animation_work_suspect'), "")
+	animWorkMenu.SubMenu:AddItem(suspectItem)
+	local fishermanItem = NativeUI.CreateItem(_U('animation_work_fisherman'), "")
+	animWorkMenu.SubMenu:AddItem(fishermanItem)
+	local pInspectItem = NativeUI.CreateItem(_U('animation_work_inspect'), "")
+	animWorkMenu.SubMenu:AddItem(pInspectItem)
+	local pRadioItem = NativeUI.CreateItem(_U('animation_work_radio'), "")
+	animWorkMenu.SubMenu:AddItem(pRadioItem)
+	local pCirculationItem = NativeUI.CreateItem(_U('animation_work_circulation'), "")
+	animWorkMenu.SubMenu:AddItem(pCirculationItem)
+	local pBinocularsItem = NativeUI.CreateItem(_U('animation_work_binoculars'), "")
+	animWorkMenu.SubMenu:AddItem(pBinocularsItem)
+	local aHarvestItem = NativeUI.CreateItem(_U('animation_work_harvest'), "")
+	animWorkMenu.SubMenu:AddItem(aHarvestItem)
+	local dRepairItem = NativeUI.CreateItem(_U('animation_work_repair'), "")
+	animWorkMenu.SubMenu:AddItem(dRepairItem)
+	local mObserveItem = NativeUI.CreateItem(_U('animation_work_observe'), "")
+	animWorkMenu.SubMenu:AddItem(mObserveItem)
+	local tTalkItem = NativeUI.CreateItem(_U('animation_work_talk'), "")
+	animWorkMenu.SubMenu:AddItem(tTalkItem)
+	local tBillItem = NativeUI.CreateItem(_U('animation_work_bill'), "")
+	animWorkMenu.SubMenu:AddItem(tBillItem)
+	local eBuyItem = NativeUI.CreateItem(_U('animation_work_buy'), "")
+	animWorkMenu.SubMenu:AddItem(eBuyItem)
+	local bShotItem = NativeUI.CreateItem(_U('animation_work_shot'), "")
+	animWorkMenu.SubMenu:AddItem(bShotItem)
+	local jPictureItem = NativeUI.CreateItem(_U('animation_work_picture'), "")
+	animWorkMenu.SubMenu:AddItem(jPictureItem)
+	local NotesItem = NativeUI.CreateItem(_U('animation_work_notes'), "")
+	animWorkMenu.SubMenu:AddItem(NotesItem)
+	local HammerItem = NativeUI.CreateItem(_U('animation_work_hammer'), "")
+	animWorkMenu.SubMenu:AddItem(HammerItem)
+	local sdfBegItem = NativeUI.CreateItem(_U('animation_work_beg'), "")
+	animWorkMenu.SubMenu:AddItem(sdfBegItem)
+	local sdfStatueItem = NativeUI.CreateItem(_U('animation_work_statue'), "")
+	animWorkMenu.SubMenu:AddItem(sdfStatueItem)
 
-	animTravailMenu.SubMenu.OnItemSelect = function(sender, item, index)
+	animWorkMenu.SubMenu.OnItemSelect = function(sender, item, index)
 		if item == suspectItem then
 			startAnim("random@arrests@busted", "idle_c")
-		elseif item == pecheurItem then
+		elseif item == fishermanItem then
 			startScenario("world_human_stand_fishing")
-		elseif item == pEnqueterItem then
+		elseif item == pInspectItem then
 			startAnim("amb@code_human_police_investigate@idle_b", "idle_f")
 		elseif item == pRadioItem then
 			startAnim("random@arrests", "generic_radio_chatter")
 		elseif item == pCirculationItem then
 			startScenario("WORLD_HUMAN_CAR_PARK_ATTENDANT")
-		elseif item == pJumelleItem then
+		elseif item == pBinocularsItem then
 			startScenario("WORLD_HUMAN_BINOCULARS")
-		elseif item == aRecolterItem then
+		elseif item == aHarvestItem then
 			startScenario("world_human_gardener_plant")
-		elseif item == dReparerItem then
+		elseif item == dRepairItem then
 			startAnim("mini@repair", "fixing_a_ped")
-		elseif item == mObserverItem then
+		elseif item == mObserveItem then
 			startScenario("CODE_HUMAN_MEDIC_KNEEL")
-		elseif item == tParlerItem then
+		elseif item == tTalkItem then
 			startAnim("oddjobs@taxi@driver", "leanover_idle")
-		elseif item == tFacturerItem then
+		elseif item == tBillItem then
 			startAnim("oddjobs@taxi@cyi", "std_hand_off_ps_passenger")
-		elseif item == eCoursesItem then
+		elseif item == eBuyItem then
 			startAnim("mp_am_hold_up", "purchase_beerbox_shopkeeper")
 		elseif item == bShotItem then
 			startAnim("mini@drinking", "shots_barman_b")
-		elseif item == jPhotoItem then
+		elseif item == jPictureItem then
 			startScenario("WORLD_HUMAN_PAPARAZZI")
 		elseif item == NotesItem then
 			startScenario("WORLD_HUMAN_CLIPBOARD")
-		elseif item == MarteauItem then
+		elseif item == HammerItem then
 			startScenario("WORLD_HUMAN_HAMMERING")
-		elseif item == sdfMancheItem then
+		elseif item == sdfBegItem then
 			startScenario("WORLD_HUMAN_BUM_FREEWAY")
 		elseif item == sdfStatueItem then
 			startScenario("WORLD_HUMAN_HUMAN_STATUE")
@@ -1086,113 +1094,113 @@ function AddSubMenuTravailMenu(menu)
 	end
 end
 
-function AddSubMenuHumeursMenu(menu)
-	animHumeurMenu = _menuPool:AddSubMenu(menu.SubMenu, "Humeurs")
+function AddSubMenuMoodMenu(menu)
+	animMoodMenu = _menuPool:AddSubMenu(menu.SubMenu, _U('animation_mood_title'))
 
-	local feliciterItem = NativeUI.CreateItem("Féliciter", "")
-	animHumeurMenu.SubMenu:AddItem(feliciterItem)
-	local superItem = NativeUI.CreateItem("Super", "")
-	animHumeurMenu.SubMenu:AddItem(superItem)
-	local toiItem = NativeUI.CreateItem("Toi", "")
-	animHumeurMenu.SubMenu:AddItem(toiItem)
-	local viensItem = NativeUI.CreateItem("Viens", "")
-	animHumeurMenu.SubMenu:AddItem(viensItem)
-	local keskyaItem = NativeUI.CreateItem("Keskya ?", "")
-	animHumeurMenu.SubMenu:AddItem(keskyaItem)
-	local moiItem = NativeUI.CreateItem("A moi", "")
-	animHumeurMenu.SubMenu:AddItem(moiItem)
-	local putainItem = NativeUI.CreateItem("Je le savais, putain", "")
-	animHumeurMenu.SubMenu:AddItem(putainItem)
-	local epuiserItem = NativeUI.CreateItem("Etre épuisé", "")
-	animHumeurMenu.SubMenu:AddItem(epuiserItem)
-	local merdeItem = NativeUI.CreateItem("Je suis dans la merde", "")
-	animHumeurMenu.SubMenu:AddItem(merdeItem)
-	local facepalmItem = NativeUI.CreateItem("Facepalm", "")
-	animHumeurMenu.SubMenu:AddItem(facepalmItem)
-	local calmeItem = NativeUI.CreateItem("Calme-toi ", "")
-	animHumeurMenu.SubMenu:AddItem(calmeItem)
-	local jaifaitItem = NativeUI.CreateItem("Qu'est ce que j'ai fait ?", "")
-	animHumeurMenu.SubMenu:AddItem(jaifaitItem)
-	local peurItem = NativeUI.CreateItem("Avoir peur", "")
-	animHumeurMenu.SubMenu:AddItem(peurItem)
-	local fightItem = NativeUI.CreateItem("Fight ?", "")
-	animHumeurMenu.SubMenu:AddItem(fightItem)
-	local paspossibleItem = NativeUI.CreateItem("C'est pas Possible !", "")
-	animHumeurMenu.SubMenu:AddItem(paspossibleItem)
-	local enlacerItem = NativeUI.CreateItem("Enlacer", "")
-	animHumeurMenu.SubMenu:AddItem(enlacerItem)
-	local doigtItem = NativeUI.CreateItem("Doigt d'honneur", "")
-	animHumeurMenu.SubMenu:AddItem(doigtItem)
-	local branleurItem = NativeUI.CreateItem("Branleur", "")
-	animHumeurMenu.SubMenu:AddItem(branleurItem)
-	local balleItem = NativeUI.CreateItem("Balle dans la tete", "")
-	animHumeurMenu.SubMenu:AddItem(balleItem)
+	local felicitateItem = NativeUI.CreateItem(_U('animation_mood_felicitate'), "")
+	animMoodMenu.SubMenu:AddItem(felicitateItem)
+	local niceItem = NativeUI.CreateItem(_U('animation_mood_nice'), "")
+	animMoodMenu.SubMenu:AddItem(niceItem)
+	local youItem = NativeUI.CreateItem(_U('animation_mood_you'), "")
+	animMoodMenu.SubMenu:AddItem(youItem)
+	local comeItem = NativeUI.CreateItem(_U('animation_mood_come'), "")
+	animMoodMenu.SubMenu:AddItem(comeItem)
+	local whatItem = NativeUI.CreateItem(_U('animation_mood_what'), "")
+	animMoodMenu.SubMenu:AddItem(whatItem)
+	local meItem = NativeUI.CreateItem(_U('animation_mood_me'), "")
+	animMoodMenu.SubMenu:AddItem(meItem)
+	local seriouslyItem = NativeUI.CreateItem(_U('animation_mood_seriously'), "")
+	animMoodMenu.SubMenu:AddItem(seriouslyItem)
+	local tiredItem = NativeUI.CreateItem(_U('animation_mood_tired'), "")
+	animMoodMenu.SubMenu:AddItem(tiredItem)
+	local shitItem = NativeUI.CreateItem(_U('animation_mood_shit'), "")
+	animMoodMenu.SubMenu:AddItem(shitItem)
+	local facepalmItem = NativeUI.CreateItem(_U('animation_mood_facepalm'), "")
+	animMoodMenu.SubMenu:AddItem(facepalmItem)
+	local calmItem = NativeUI.CreateItem(_U('animation_mood_calm'), "")
+	animMoodMenu.SubMenu:AddItem(calmItem)
+	local whyItem = NativeUI.CreateItem(_U('animation_mood_why'), "")
+	animMoodMenu.SubMenu:AddItem(whyItem)
+	local fearItem = NativeUI.CreateItem(_U('animation_mood_fear'), "")
+	animMoodMenu.SubMenu:AddItem(fearItem)
+	local fightItem = NativeUI.CreateItem(_U('animation_mood_fight'), "")
+	animMoodMenu.SubMenu:AddItem(fightItem)
+	local notpossibleItem = NativeUI.CreateItem(_U('animation_mood_notpossible'), "")
+	animMoodMenu.SubMenu:AddItem(notpossibleItem)
+	local embraceItem = NativeUI.CreateItem(_U('animation_mood_embrace'), "")
+	animMoodMenu.SubMenu:AddItem(embraceItem)
+	local fuckyouItem = NativeUI.CreateItem(_U('animation_mood_fuckyou'), "")
+	animMoodMenu.SubMenu:AddItem(fuckyouItem)
+	local wankerItem = NativeUI.CreateItem(_U('animation_mood_wanker'), "")
+	animMoodMenu.SubMenu:AddItem(wankerItem)
+	local suicideItem = NativeUI.CreateItem(_U('animation_mood_suicide'), "")
+	animMoodMenu.SubMenu:AddItem(suicideItem)
 
-	animHumeurMenu.SubMenu.OnItemSelect = function(sender, item, index)
-		if item == feliciterItem then
+	animMoodMenu.SubMenu.OnItemSelect = function(sender, item, index)
+		if item == felicitateItem then
 			startScenario("WORLD_HUMAN_CHEERING")
-		elseif item == superItem then
+		elseif item == niceItem then
 			startAnim("mp_action", "thanks_male_06")
-		elseif item == toiItem then
+		elseif item == youItem then
 			startAnim("gestures@m@standing@casual", "gesture_point")
-		elseif item == viensItem then
+		elseif item == comeItem then
 			startAnim("gestures@m@standing@casual", "gesture_come_here_soft")
-		elseif item == keskyaItem then
+		elseif item == whatItem then
 			startAnim("gestures@m@standing@casual", "gesture_bring_it_on")
-		elseif item == moiItem then
+		elseif item == meItem then
 			startAnim("gestures@m@standing@casual", "gesture_me")
-		elseif item == putainItem then
+		elseif item == seriouslyItem then
 			startAnim("anim@am_hold_up@male", "shoplift_high")
-		elseif item == epuiserItem then
+		elseif item == tiredItem then
 			startAnim("amb@world_human_jog_standing@male@idle_b", "idle_d")
-		elseif item == merdeItem then
+		elseif item == shitItem then
 			startAnim("amb@world_human_bum_standing@depressed@idle_a", "idle_a")
 		elseif item == facepalmItem then
 			startAnim("anim@mp_player_intcelebrationmale@face_palm", "face_palm")
-		elseif item == calmeItem then
+		elseif item == calmItem then
 			startAnim("gestures@m@standing@casual", "gesture_easy_now")
-		elseif item == jaifaitItem then
+		elseif item == whyItem then
 			startAnim("oddjobs@assassinate@multi@", "react_big_variations_a")
-		elseif item == peurItem then
+		elseif item == fearItem then
 			startAnim("amb@code_human_cower_stand@male@react_cowering", "base_right")
 		elseif item == fightItem then
 			startAnim("anim@deathmatch_intros@unarmed", "intro_male_unarmed_e")
-		elseif item == paspossibleItem then
+		elseif item == notpossibleItem then
 			startAnim("gestures@m@standing@casual", "gesture_damn")
-		elseif item == enlacerItem then
+		elseif item == embraceItem then
 			startAnim("mp_ped_interaction", "kisses_guy_a")
-		elseif item == doigtItem then
+		elseif item == fuckyouItem then
 			startAnim("mp_player_int_upperfinger", "mp_player_int_finger_01_enter")
-		elseif item == branleurItem then
+		elseif item == wankerItem then
 			startAnim("mp_player_int_upperwank", "mp_player_int_wank_01")
-		elseif item == balleItem then
+		elseif item == suicideItem then
 			startAnim("mp_suicide", "pistol")
 		end
 	end
 end
 
 function AddSubMenuSportsMenu(menu)
-	animSportMenu = _menuPool:AddSubMenu(menu.SubMenu, "Sports")
+	animSportMenu = _menuPool:AddSubMenu(menu.SubMenu, _U('animation_sports_title'))
 
-	local muscleItem = NativeUI.CreateItem("Montrer ses muscles", "")
+	local muscleItem = NativeUI.CreateItem(_U('animation_sports_muscle'), "")
 	animSportMenu.SubMenu:AddItem(muscleItem)
-	local muscuItem = NativeUI.CreateItem("Barre de musculation", "")
-	animSportMenu.SubMenu:AddItem(muscuItem)
-	local pompeItem = NativeUI.CreateItem("Faire des pompes", "")
-	animSportMenu.SubMenu:AddItem(pompeItem)
-	local abdoItem = NativeUI.CreateItem("Faire des abdos", "")
-	animSportMenu.SubMenu:AddItem(abdoItem)
-	local yogaItem = NativeUI.CreateItem("Faire du yoga", "")
+	local weightbarItem = NativeUI.CreateItem(_U('animation_sports_weightbar'), "")
+	animSportMenu.SubMenu:AddItem(weightbarItem)
+	local pushupItem = NativeUI.CreateItem(_U('animation_sports_pushup'), "")
+	animSportMenu.SubMenu:AddItem(pushupItem)
+	local absItem = NativeUI.CreateItem(_U('animation_sports_abs'), "")
+	animSportMenu.SubMenu:AddItem(absItem)
+	local yogaItem = NativeUI.CreateItem(_U('animation_sports_yoga'), "")
 	animSportMenu.SubMenu:AddItem(yogaItem)
 
 	animSportMenu.SubMenu.OnItemSelect = function(sender, item, index)
 		if item == muscleItem then
 			startAnim("amb@world_human_muscle_flex@arms_at_side@base", "base")
-		elseif item == muscuItem then
+		elseif item == weightbarItem then
 			startAnim("amb@world_human_muscle_free_weights@male@barbell@base", "base")
-		elseif item == pompeItem then
+		elseif item == pushupItem then
 			startAnim("amb@world_human_push_ups@male@base", "base")
-		elseif item == abdoItem then
+		elseif item == absItem then
 			startAnim("amb@world_human_sit_ups@male@base", "base")
 		elseif item == yogaItem then
 			startAnim("amb@world_human_yoga@male@base", "base_a")
@@ -1200,80 +1208,80 @@ function AddSubMenuSportsMenu(menu)
 	end
 end
 
-function AddSubMenuDiversMenu(menu)
-	animDiversMenu = _menuPool:AddSubMenu(menu.SubMenu, "Divers")
+function AddSubMenuOtherMenu(menu)
+	animOtherMenu = _menuPool:AddSubMenu(menu.SubMenu, _U('animation_other_title'))
 
-	local zikItem = NativeUI.CreateItem("Bière en Zik", "")
-	animDiversMenu.SubMenu:AddItem(zikItem)
-	local asseoirItem = NativeUI.CreateItem("S'asseoir", "")
-	animDiversMenu.SubMenu:AddItem(asseoirItem)
-	local murItem = NativeUI.CreateItem("Attendre contre un mur", "")
-	animDiversMenu.SubMenu:AddItem(murItem)
-	local dosItem = NativeUI.CreateItem("Couché sur le dos", "")
-	animDiversMenu.SubMenu:AddItem(dosItem)
-	local ventreItem = NativeUI.CreateItem("Couché sur le ventre", "")
-	animDiversMenu.SubMenu:AddItem(ventreItem)
-	local nettoyerItem = NativeUI.CreateItem("Nettoyer quelque chose", "")
-	animDiversMenu.SubMenu:AddItem(nettoyerItem)
-	local mangerItem = NativeUI.CreateItem("Préparer à manger", "")
-	animDiversMenu.SubMenu:AddItem(mangerItem)
-	local fouilleItem = NativeUI.CreateItem("Position de Fouille", "")
-	animDiversMenu.SubMenu:AddItem(fouilleItem)
-	local selfieItem = NativeUI.CreateItem("Prendre un selfie", "")
-	animDiversMenu.SubMenu:AddItem(selfieItem)
-	local porteItem = NativeUI.CreateItem("Ecouter à une porte", "")
-	animDiversMenu.SubMenu:AddItem(porteItem)
+	local beerItem = NativeUI.CreateItem(_U('animation_other_beer'), "")
+	animOtherMenu.SubMenu:AddItem(beerItem)
+	local sitItem = NativeUI.CreateItem(_U('animation_other_sit'), "")
+	animOtherMenu.SubMenu:AddItem(sitItem)
+	local waitwallItem = NativeUI.CreateItem(_U('animation_other_waitwall'), "")
+	animOtherMenu.SubMenu:AddItem(waitwallItem)
+	local onthebackItem = NativeUI.CreateItem(_U('animation_other_ontheback'), "")
+	animOtherMenu.SubMenu:AddItem(onthebackItem)
+	local stomachItem = NativeUI.CreateItem(_U('animation_other_stomach'), "")
+	animOtherMenu.SubMenu:AddItem(stomachItem)
+	local cleanItem = NativeUI.CreateItem(_U('animation_other_clean'), "")
+	animOtherMenu.SubMenu:AddItem(cleanItem)
+	local cookingItem = NativeUI.CreateItem(_U('animation_other_cooking'), "")
+	animOtherMenu.SubMenu:AddItem(cookingItem)
+	local searchItem = NativeUI.CreateItem(_U('animation_other_search'), "")
+	animOtherMenu.SubMenu:AddItem(searchItem)
+	local selfieItem = NativeUI.CreateItem(_U('animation_other_selfie'), "")
+	animOtherMenu.SubMenu:AddItem(selfieItem)
+	local doorItem = NativeUI.CreateItem(_U('animation_other_door'), "")
+	animOtherMenu.SubMenu:AddItem(doorItem)
 
-	animDiversMenu.SubMenu.OnItemSelect = function(sender, item, index)
-		if item == zikItem then
+	animOtherMenu.SubMenu.OnItemSelect = function(sender, item, index)
+		if item == beerItem then
 			startScenario("WORLD_HUMAN_DRINKING")
-		elseif item == asseoirItem then
+		elseif item == sitItem then
 			startAnim("anim@heists@prison_heistunfinished_biztarget_idle", "target_idle")
-		elseif item == murItem then
+		elseif item == waitwallItem then
 			startScenario("world_human_leaning")
-		elseif item == dosItem then
+		elseif item == onthebackItem then
 			startScenario("WORLD_HUMAN_SUNBATHE_BACK")
-		elseif item == ventreItem then
+		elseif item == stomachItem then
 			startScenario("WORLD_HUMAN_SUNBATHE")
-		elseif item == nettoyerItem then
+		elseif item == cleanItem then
 			startScenario("world_human_maid_clean")
-		elseif item == mangerItem then
+		elseif item == cookingItem then
 			startScenario("PROP_HUMAN_BBQ")
-		elseif item == fouilleItem then
+		elseif item == searchItem then
 			startAnim("mini@prostitutes@sexlow_veh", "low_car_bj_to_prop_female")
 		elseif item == selfieItem then
 			startScenario("world_human_tourist_mobile")
-		elseif item == porteItem then
+		elseif item == doorItem then
 			startAnim("mini@safe_cracking", "idle_base")
 		end
 	end
 end
 
 function AddSubMenuPEGI21Menu(menu)
-	animPegiMenu = _menuPool:AddSubMenu(menu.SubMenu, "PEGI 21")
+	animPegiMenu = _menuPool:AddSubMenu(menu.SubMenu, _U('animation_pegi_title'))
 
-	local hSuceItem = NativeUI.CreateItem("Homme se faire su* en voiture", "")
-	animPegiMenu.SubMenu:AddItem(hSuceItem)
-	local fSuceItem = NativeUI.CreateItem("Femme faire une gaterie en voiture", "")
-	animPegiMenu.SubMenu:AddItem(fSuceItem)
-	local hBaiserItem = NativeUI.CreateItem("Homme bais en voiture", "")
-	animPegiMenu.SubMenu:AddItem(hBaiserItem)
-	local fBaiserItem = NativeUI.CreateItem("Femme bais** en voiture", "")
-	animPegiMenu.SubMenu:AddItem(fBaiserItem)
-	local gratterItem = NativeUI.CreateItem("Se gratter les couilles", "")
-	animPegiMenu.SubMenu:AddItem(gratterItem)
-	local charmeItem = NativeUI.CreateItem("Faire du charme", "")
-	animPegiMenu.SubMenu:AddItem(charmeItem)
-	local michtoItem = NativeUI.CreateItem("Pose michto", "")
-	animPegiMenu.SubMenu:AddItem(michtoItem)
-	local poitrineItem = NativeUI.CreateItem("Montrer sa poitrine", "")
-	animPegiMenu.SubMenu:AddItem(poitrineItem)
-	local strip1Item = NativeUI.CreateItem("Strip Tease 1", "")
+	local hSuckItem = NativeUI.CreateItem(_U('animation_pegi_hsuck'), "")
+	animPegiMenu.SubMenu:AddItem(hSuckItem)
+	local fSuckItem = NativeUI.CreateItem(_U('animation_pegi_fsuck'), "")
+	animPegiMenu.SubMenu:AddItem(fSuckItem)
+	local hFuckItem = NativeUI.CreateItem(_U('animation_pegi_hfuck'), "")
+	animPegiMenu.SubMenu:AddItem(hFuckItem)
+	local fFuckItem = NativeUI.CreateItem(_U('animation_pegi_ffuck'), "")
+	animPegiMenu.SubMenu:AddItem(fFuckItem)
+	local scratchItem = NativeUI.CreateItem(_U('animation_pegi_scratch'), "")
+	animPegiMenu.SubMenu:AddItem(scratchItem)
+	local charmItem = NativeUI.CreateItem(_U('animation_pegi_charm'), "")
+	animPegiMenu.SubMenu:AddItem(charmItem)
+	local golddiggerItem = NativeUI.CreateItem(_U('animation_pegi_golddigger'), "")
+	animPegiMenu.SubMenu:AddItem(golddiggerItem)
+	local breastItem = NativeUI.CreateItem(_U('animation_pegi_breast'), "")
+	animPegiMenu.SubMenu:AddItem(breastItem)
+	local strip1Item = NativeUI.CreateItem(_U('animation_pegi_strip1'), "")
 	animPegiMenu.SubMenu:AddItem(strip1Item)
-	local strip2Item = NativeUI.CreateItem("Strip Tease 2", "")
+	local strip2Item = NativeUI.CreateItem(_U('animation_pegi_strip2'), "")
 	animPegiMenu.SubMenu:AddItem(strip2Item)
-	local stripsolItem = NativeUI.CreateItem("Stip Tease au sol", "")
-	animPegiMenu.SubMenu:AddItem(stripsolItem)
+	local stripfloorItem = NativeUI.CreateItem(_U('animation_pegi_stripfloor'), "")
+	animPegiMenu.SubMenu:AddItem(stripfloorItem)
 
 	animPegiMenu.SubMenu.OnItemSelect = function(sender, item, index)
 		if item == hSuceItem then
@@ -1303,7 +1311,7 @@ function AddSubMenuPEGI21Menu(menu)
 end
 
 function AddMenuWeaponMenu(menu)
-	weaponMenu = _menuPool:AddSubMenu(menu, "Gestion des armes")
+	weaponMenu = _menuPool:AddSubMenu(menu, _U('loadout_title'))
 
 	for i=1, #Config.Weapons, 1 do
 		local weaponHash = GetHashKey(Config.Weapons[i].name)
@@ -1324,13 +1332,13 @@ function AddMenuWeaponMenu(menu)
 		end
 	end
 
-	local giveItem = NativeUI.CreateItem("Donner", "")
+	local giveItem = NativeUI.CreateItem(_U('loadout_give_button'), "")
 	weaponItemMenu:AddItem(giveItem)
 
-	local giveMunItem = NativeUI.CreateItem("Donner Munitions", "")
+	local giveMunItem = NativeUI.CreateItem(_U('loadout_givemun_button'), "")
 	weaponItemMenu:AddItem(giveMunItem)
 
-	local dropItem = NativeUI.CreateItem("Jeter", "")
+	local dropItem = NativeUI.CreateItem(_U('loadout_drop_button'), "")
 	dropItem:SetRightBadge(4)
 	weaponItemMenu:AddItem(dropItem)
 
@@ -1369,13 +1377,13 @@ function AddMenuWeaponMenu(menu)
 									TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_weapon', value, sourceAmmo)
 									_menuPool:CloseAllMenus()
 								else
-									ESX.ShowNotification("Impossible de donner " .. label .. " dans un véhicule")
+									ESX.ShowNotification(_U('in_vehicle_give'))
 								end
 							else
-								ESX.ShowNotification("Aucun citoyen à proximité")
+								ESX.ShowNotification(_U('players_nearby'))
 							end
 						elseif item == giveMunItem then
-							local quantity = KeyboardInput("KORIOZ_BOX_AMMO_AMOUNT", "Montant de Munitions (8 Caractères Maximum):", "", 8)
+							local quantity = KeyboardInput("KORIOZ_BOX_AMMO_AMOUNT", _U('dialogbox_amount_ammo'), "", 8)
 
 							if quantity ~= nil then
 								local post = true
@@ -1408,30 +1416,30 @@ function AddMenuWeaponMenu(menu)
 													SetPedAmmo(plyPed, value, finalAmmoSource)
 													TriggerServerEvent('KorioZ-PersonalMenu:Weapon_addAmmoToPedS', personalmenu.closestPlayer, value, quantity)
 
-													ESX.ShowNotification("Vous avez donné x" .. quantity .. " munitions à " .. GetPlayerName(personalmenu.closestPlayer))
+													ESX.ShowNotification(_U('gave_ammo', quantity, GetPlayerName(personalmenu.closestPlayer)))
 													_menuPool:CloseAllMenus()
 												else
-													ESX.ShowNotification("Vous ne possédez pas autant de munitions")
+													ESX.ShowNotification(_U('not_enough_ammo'))
 												end
 											else
-												ESX.ShowNotification("Montant Invalide")
+												ESX.ShowNotification(_U('amount_invalid'))
 											end
 										else
-											ESX.ShowNotification("Vous ne possédez pas de munitions")
+											ESX.ShowNotification(_U('no_ammo'))
 										end
 									else
-										ESX.ShowNotification("Impossible de donner " .. label .. " dans un véhicule")
+										ESX.ShowNotification(_U('in_vehicle_give'))
 									end
 								else
-									ESX.ShowNotification("Aucun citoyen à proximité")
+									ESX.ShowNotification(_U('players_nearby'))
 								end
 							end
 						elseif item == dropItem then
-							if not IsPedSittingInAnyVehicle(closestPed) then
+							if not IsPedSittingInAnyVehicle(plyPed) then
 								TriggerServerEvent('esx:removeInventoryItem', 'item_weapon', value)
 								_menuPool:CloseAllMenus()
 							else
-								ESX.ShowNotification("Impossible de jeter " .. label .. " dans un véhicule")
+								ESX.ShowNotification(_U('in_vehicle_drop'))
 							end
 						end
 					end
@@ -1442,99 +1450,99 @@ function AddMenuWeaponMenu(menu)
 end
 
 function AddMenuVehicleMenu(menu)
-	personalmenu.avantgaucheDoorOpen = false
-	personalmenu.avantdroiteDoorOpen = false
-	personalmenu.arrieregaucheDoorOpen = false
-	personalmenu.arrieredroiteDoorOpen = false
-	personalmenu.capotDoorOpen = false
-	personalmenu.coffreDoorOpen = false
-	personalmenu.porteListe = {
-		"Avant Gauche",
-		"Avant Droite",
-		"Arrière Gauche",
-		"Arrière Droite"
+	personalmenu.frontLeftDoorOpen = false
+	personalmenu.frontRightDoorOpen = false
+	personalmenu.backLeftDoorOpen = false
+	personalmenu.backRightDoorOpen = false
+	personalmenu.hoodDoorOpen = false
+	personalmenu.trunkDoorOpen = false
+	personalmenu.doorList = {
+		_U('vehicle_door_frontleft'),
+		_U('vehicle_door_frontright'),
+		_U('vehicle_door_backleft'),
+		_U('vehicle_door_backright')
 	}
 
-	vehiclemenu = _menuPool:AddSubMenu(menu, "Gestion véhicule")
+	vehicleMenu = _menuPool:AddSubMenu(menu, _U('vehicle_title'))
 
-	local vehMotorItem = NativeUI.CreateItem("Allumer/Eteindre le Moteur", "")
-	vehiclemenu.SubMenu:AddItem(vehMotorItem)
-	local vehPorteListItem = NativeUI.CreateListItem("Ouvrir/Fermer Porte", personalmenu.porteListe, "1")
-	vehiclemenu.SubMenu:AddItem(vehPorteListItem)
-	local vehCapotItem = NativeUI.CreateItem("Ouvrir/Fermer le Capot", "")
-	vehiclemenu.SubMenu:AddItem(vehCapotItem)
-	local vehCoffreItem = NativeUI.CreateItem("Ouvrir/Fermer le Coffre", "")
-	vehiclemenu.SubMenu:AddItem(vehCoffreItem)
+	local vehEngineItem = NativeUI.CreateItem(_U('vehicle_engine_button'), "")
+	vehicleMenu.SubMenu:AddItem(vehEngineItem)
+	local vehDoorListItem = NativeUI.CreateListItem(_U('vehicle_door_button'), personalmenu.porteList, 1)
+	vehicleMenu.SubMenu:AddItem(vehDoorListItem)
+	local vehHoodItem = NativeUI.CreateItem(_U('vehicle_hood_button'), "")
+	vehicleMenu.SubMenu:AddItem(vehHoodItem)
+	local vehTrunkItem = NativeUI.CreateItem(_U('vehicle_trunk_button'), "")
+	vehicleMenu.SubMenu:AddItem(vehTrunkItem)
 
-	vehiclemenu.SubMenu.OnItemSelect = function(sender, item, index)
+	vehicleMenu.SubMenu.OnItemSelect = function(sender, item, index)
 		if not IsPedSittingInAnyVehicle(plyPed) then
-			ESX.ShowNotification("Vous n'êtes pas dans un véhicule")
+			ESX.ShowNotification(_U('no_vehicle'))
 		elseif IsPedSittingInAnyVehicle(plyPed) then
-			if item == vehMotorItem then
+			plyVehicle = GetVehiclePedIsIn(plyPed, false)
+			if item == vehEngineItem then
 				if GetIsVehicleEngineRunning(plyVehicle) then
-					ESX.ShowNotification("Moteur coupé")
 					SetVehicleEngineOn(plyVehicle, false, false, true)
 					SetVehicleUndriveable(plyVehicle, true)
 				elseif not GetIsVehicleEngineRunning(plyVehicle) then
-					ESX.ShowNotification("Moteur allumé")
 					SetVehicleEngineOn(plyVehicle, true, false, true)
 					SetVehicleUndriveable(plyVehicle, false)
 				end
-			elseif item == vehCapotItem then
-				if personalmenu.capotDoorOpen == false then
-					personalmenu.capotDoorOpen = true
+			elseif item == vehHoodItem then
+				if not personalmenu.hoodDoorOpen then
+					personalmenu.hoodDoorOpen = true
 					SetVehicleDoorOpen(plyVehicle, 4, false, false)
-				elseif personalmenu.capotDoorOpen == true then
-					personalmenu.capotDoorOpen = false
+				elseif personalmenu.hoodDoorOpen then
+					personalmenu.hoodDoorOpen = false
 					SetVehicleDoorShut(plyVehicle, 4, false, false)
 				end
-			elseif item == vehCoffreItem then
-				if personalmenu.coffreDoorOpen == false then
-					personalmenu.coffreDoorOpen = true
+			elseif item == vehTrunkItem then
+				if not personalmenu.trunkDoorOpen then
+					personalmenu.trunkDoorOpen = true
 					SetVehicleDoorOpen(plyVehicle, 5, false, false)
-				elseif personalmenu.coffreDoorOpen == true then
-					personalmenu.coffreDoorOpen = false
+				elseif personalmenu.trunkDoorOpen then
+					personalmenu.trunkDoorOpen = false
 					SetVehicleDoorShut(plyVehicle, 5, false, false)
 				end
 			end
 		end
 	end
 
-	vehiclemenu.SubMenu.OnListSelect = function(sender, item, index)
+	vehicleMenu.SubMenu.OnListSelect = function(sender, item, index)
 		if not IsPedSittingInAnyVehicle(plyPed) then
-			ESX.ShowNotification("Vous n'êtes pas dans un véhicule")
+			ESX.ShowNotification(_U('no_vehicle'))
 		elseif IsPedSittingInAnyVehicle(plyPed) then
-			if item == vehPorteListItem then
+			plyVehicle = GetVehiclePedIsIn(plyPed, false)
+			if item == vehDoorListItem then
 				if index == 1 then
-					if personalmenu.avantgaucheDoorOpen == false then
-						personalmenu.avantgaucheDoorOpen = true
+					if not personalmenu.frontLeftDoorOpen then
+						personalmenu.frontLeftDoorOpen = true
 						SetVehicleDoorOpen(plyVehicle, 0, false, false)
-					elseif personalmenu.avantgaucheDoorOpen == true then
-						personalmenu.avantgaucheDoorOpen = false
+					elseif personalmenu.frontLeftDoorOpen then
+						personalmenu.frontLeftDoorOpen = false
 						SetVehicleDoorShut(plyVehicle, 0, false, false)
 					end
 				elseif index == 2 then
-					if personalmenu.avantdroiteDoorOpen == false then
-						personalmenu.avantdroiteDoorOpen = true
+					if not personalmenu.frontRightDoorOpen then
+						personalmenu.frontRightDoorOpen = true
 						SetVehicleDoorOpen(plyVehicle, 1, false, false)
-					elseif personalmenu.avantdroiteDoorOpen == true then
-						personalmenu.avantdroiteDoorOpen = false
+					elseif personalmenu.frontRightDoorOpen then
+						personalmenu.frontRightDoorOpen = false
 						SetVehicleDoorShut(plyVehicle, 1, false, false)
 					end
 				elseif index == 3 then
-					if personalmenu.arrieregaucheDoorOpen == false then
-						personalmenu.arrieregaucheDoorOpen = true
+					if not personalmenu.backLeftDoorOpen then
+						personalmenu.backLeftDoorOpen = true
 						SetVehicleDoorOpen(plyVehicle, 2, false, false)
-					elseif personalmenu.arrieregaucheDoorOpen == true then
-						personalmenu.arrieregaucheDoorOpen = false
+					elseif personalmenu.backLeftDoorOpen then
+						personalmenu.backLeftDoorOpen = false
 						SetVehicleDoorShut(plyVehicle, 2, false, false)
 					end
 				elseif index == 4 then
-					if personalmenu.arrieredroiteDoorOpen == false then
-						personalmenu.arrieredroiteDoorOpen = true
+					if not personalmenu.backRightDoorOpen then
+						personalmenu.backRightDoorOpen = true
 						SetVehicleDoorOpen(plyVehicle, 3, false, false)
-					elseif personalmenu.arrieredroiteDoorOpen == true then
-						personalmenu.arrieredroiteDoorOpen = false
+					elseif personalmenu.backRightDoorOpen then
+						personalmenu.backRightDoorOpen = false
 						SetVehicleDoorShut(plyVehicle, 3, false, false)
 					end
 				end
@@ -1544,21 +1552,21 @@ function AddMenuVehicleMenu(menu)
 end
 
 function AddMenuBossMenu(menu)
-	bossMenu = _menuPool:AddSubMenu(menu, "Gestion Entreprise: " .. ESX.PlayerData.job.label)
+	bossMenu = _menuPool:AddSubMenu(menu, _U('bossmanagement_title', ESX.PlayerData.job.label))
 
 	if societymoney ~= nil then
-		coffreItem = NativeUI.CreateItem("Coffre Entreprise:", "")
-		coffreItem:RightLabel("$"..societymoney)
+		coffreItem = NativeUI.CreateItem(_U('bossmanagement_chest_button'), "")
+		coffreItem:RightLabel("$" .. societymoney)
 		bossMenu.SubMenu:AddItem(coffreItem)
 	end
 
-	local recruterItem = NativeUI.CreateItem("Recruter", "")
+	local recruterItem = NativeUI.CreateItem(_U('bossmanagement_hire_button'), "")
 	bossMenu.SubMenu:AddItem(recruterItem)
-	local virerItem = NativeUI.CreateItem("Virer", "")
+	local virerItem = NativeUI.CreateItem(_U('bossmanagement_fire_button'), "")
 	bossMenu.SubMenu:AddItem(virerItem)
-	local promouvoirItem = NativeUI.CreateItem("Promouvoir", "")
+	local promouvoirItem = NativeUI.CreateItem(_U('bossmanagement_promote_button'), "")
 	bossMenu.SubMenu:AddItem(promouvoirItem)
-	local destituerItem = NativeUI.CreateItem("Destituer", "")
+	local destituerItem = NativeUI.CreateItem(_U('bossmanagement_demote_button'), "")
 	bossMenu.SubMenu:AddItem(destituerItem)
 
 	bossMenu.SubMenu.OnItemSelect = function(sender, item, index)
@@ -1567,69 +1575,69 @@ function AddMenuBossMenu(menu)
 				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
 
 				if personalmenu.closestPlayer == -1 or personalmenu.closestDistance > 3.0 then
-					ESX.ShowNotification("Aucun joueur à proximité")
+					ESX.ShowNotification(_U('players_nearby'))
 				else
 					TriggerServerEvent('KorioZ-PersonalMenu:Boss_recruterplayer', GetPlayerServerId(personalmenu.closestPlayer), ESX.PlayerData.job.name, 0)
 				end
 			else
-				ESX.ShowNotification("Vous n'avez pas les ~r~droits~w~.")
+				ESX.ShowNotification(_U('missing_rights'))
 			end
 		elseif item == virerItem then
 			if ESX.PlayerData.job.grade_name == 'boss' then
 				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
 
 				if personalmenu.closestPlayer == -1 or personalmenu.closestDistance > 3.0 then
-					ESX.ShowNotification("Aucun joueur à proximité")
+					ESX.ShowNotification(_U('players_nearby'))
 				else
 					TriggerServerEvent('KorioZ-PersonalMenu:Boss_virerplayer', GetPlayerServerId(personalmenu.closestPlayer))
 				end
 			else
-				ESX.ShowNotification("Vous n'avez pas les ~r~droits~w~.")
+				ESX.ShowNotification(_U('missing_rights'))
 			end
 		elseif item == promouvoirItem then
 			if ESX.PlayerData.job.grade_name == 'boss' then
 				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
 
 				if personalmenu.closestPlayer == -1 or personalmenu.closestDistance > 3.0 then
-					ESX.ShowNotification("Aucun joueur à proximité")
+					ESX.ShowNotification(_U('players_nearby'))
 				else
 					TriggerServerEvent('KorioZ-PersonalMenu:Boss_promouvoirplayer', GetPlayerServerId(personalmenu.closestPlayer))
 				end
 			else
-				ESX.ShowNotification("Vous n'avez pas les ~r~droits~w~.")
+				ESX.ShowNotification(_U('missing_rights'))
 			end
 		elseif item == destituerItem then
 			if ESX.PlayerData.job.grade_name == 'boss' then
 				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
 
 				if personalmenu.closestPlayer == -1 or personalmenu.closestDistance > 3.0 then
-					ESX.ShowNotification("Aucun joueur à proximité")
+					ESX.ShowNotification(_U('players_nearby'))
 				else
 					TriggerServerEvent('KorioZ-PersonalMenu:Boss_destituerplayer', GetPlayerServerId(personalmenu.closestPlayer))
 				end
 			else
-				ESX.ShowNotification("Vous n'avez pas les ~r~droits~w~.")
+				ESX.ShowNotification(_U('missing_rights'))
 			end
 		end
 	end
 end
 
 function AddMenuBossMenu2(menu)
-	bossMenu2 = _menuPool:AddSubMenu(menu, "Gestion Organisation: " .. ESX.PlayerData.job2.label)
+	bossMenu2 = _menuPool:AddSubMenu(menu, _U('bossmanagement2_title', ESX.PlayerData.job2.label))
 
 	if societymoney2 ~= nil then
-		coffre2Item = NativeUI.CreateItem("Coffre Organisation:", "")
-		coffre2Item:RightLabel("$"..societymoney2)
+		coffre2Item = NativeUI.CreateItem(_U('bossmanagement2_chest_button'), "")
+		coffre2Item:RightLabel("$" .. societymoney2)
 		bossMenu2.SubMenu:AddItem(coffre2Item)
 	end
 
-	local recruter2Item = NativeUI.CreateItem("Recruter", "")
+	local recruter2Item = NativeUI.CreateItem(_U('bossmanagement2_hire_button'), "")
 	bossMenu2.SubMenu:AddItem(recruter2Item)
-	local virer2Item = NativeUI.CreateItem("Virer", "")
+	local virer2Item = NativeUI.CreateItem(_U('bossmanagement2_fire_button'), "")
 	bossMenu2.SubMenu:AddItem(virer2Item)
-	local promouvoir2Item = NativeUI.CreateItem("Promouvoir", "")
+	local promouvoir2Item = NativeUI.CreateItem(_U('bossmanagement2_promote_button'), "")
 	bossMenu2.SubMenu:AddItem(promouvoir2Item)
-	local destituer2Item = NativeUI.CreateItem("Destituer", "")
+	local destituer2Item = NativeUI.CreateItem(_U('bossmanagement2_demote_button'), "")
 	bossMenu2.SubMenu:AddItem(destituer2Item)
 
 	bossMenu2.SubMenu.OnItemSelect = function(sender, item, index)
@@ -1638,48 +1646,48 @@ function AddMenuBossMenu2(menu)
 				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
 
 				if personalmenu.closestPlayer == -1 or personalmenu.closestDistance > 3.0 then
-					ESX.ShowNotification("Aucun joueur à proximité")
+					ESX.ShowNotification(_U('players_nearby'))
 				else
 					TriggerServerEvent('KorioZ-PersonalMenu:Boss_recruterplayer2', GetPlayerServerId(personalmenu.closestPlayer), ESX.PlayerData.job2.name, 0)
 				end
 			else
-				ESX.ShowNotification("Vous n'avez pas les ~r~droits~w~.")
+				ESX.ShowNotification(_U('missing_rights'))
 			end
 		elseif item == virer2Item then
 			if ESX.PlayerData.job2.grade_name == 'boss' then
 				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
 
 				if personalmenu.closestPlayer == -1 or personalmenu.closestDistance > 3.0 then
-					ESX.ShowNotification("Aucun joueur à proximité")
+					ESX.ShowNotification(_U('players_nearby'))
 				else
 					TriggerServerEvent('KorioZ-PersonalMenu:Boss_virerplayer2', GetPlayerServerId(personalmenu.closestPlayer))
 				end
 			else
-				ESX.ShowNotification("Vous n'avez pas les ~r~droits~w~.")
+				ESX.ShowNotification(_U('missing_rights'))
 			end
 		elseif item == promouvoir2Item then
 			if ESX.PlayerData.job2.grade_name == 'boss' then
 				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
 
 				if personalmenu.closestPlayer == -1 or personalmenu.closestDistance > 3.0 then
-					ESX.ShowNotification("Aucun joueur à proximité")
+					ESX.ShowNotification(_U('players_nearby'))
 				else
 					TriggerServerEvent('KorioZ-PersonalMenu:Boss_promouvoirplayer2', GetPlayerServerId(personalmenu.closestPlayer))
 				end
 			else
-				ESX.ShowNotification("Vous n'avez pas les ~r~droits~w~.")
+				ESX.ShowNotification(_U('missing_rights'))
 			end
 		elseif item == destituer2Item then
 			if ESX.PlayerData.job2.grade_name == 'boss' then
 				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
 
 				if personalmenu.closestPlayer == -1 or personalmenu.closestDistance > 3.0 then
-					ESX.ShowNotification("Aucun joueur à proximité")
+					ESX.ShowNotification(_U('players_nearby'))
 				else
 					TriggerServerEvent('KorioZ-PersonalMenu:Boss_destituerplayer2', GetPlayerServerId(personalmenu.closestPlayer))
 				end
 			else
-				ESX.ShowNotification("Vous n'avez pas les ~r~droits~w~.")
+				ESX.ShowNotification(_U('missing_rights'))
 			end
 		end
 	end
@@ -1735,16 +1743,16 @@ function AddMenuDemarcheVoixGPS(menu)
 	}
 
 	personalmenu.nivVoix = {
-		"Chuchoter",
-		"Normal",
-		"Crier"
+		_U('voice_whisper'),
+		_U('voice_normal'),
+		_U('voice_cry')
 	}
 
-	local gpsItem = NativeUI.CreateListItem("GPS", personalmenu.gps, actualGPSIndex)
+	local gpsItem = NativeUI.CreateListItem(_U('mainmenu_gps_button'), personalmenu.gps, actualGPSIndex)
 	menu:AddItem(gpsItem)
-	local demarcheItem = NativeUI.CreateListItem("Démarche", personalmenu.demarche, actualDemarcheIndex)
+	local demarcheItem = NativeUI.CreateListItem(_U('mainmenu_approach_button'), personalmenu.demarche, actualDemarcheIndex)
 	menu:AddItem(demarcheItem)
-	local voixItem = NativeUI.CreateListItem("Voix", personalmenu.nivVoix, actualVoixIndex)
+	local voixItem = NativeUI.CreateListItem(_U('mainmenu_voice_button'), personalmenu.nivVoix, actualVoiceIndex)
 	menu:AddItem(voixItem)
 
 	menu.OnListSelect = function(sender, item, index)
@@ -1752,7 +1760,7 @@ function AddMenuDemarcheVoixGPS(menu)
 			actualGPS = item:IndexToItem(index)
 			actualGPSIndex = index
 
-			ESX.ShowNotification("GPS: ~b~" .. actualGPS)
+			ESX.ShowNotification(_U('gps', actualGPS))
 
 			if actualGPS == "Aucun" then
 				local plyCoords = GetEntityCoords(plyPed)
@@ -1781,7 +1789,7 @@ function AddMenuDemarcheVoixGPS(menu)
 				actualDemarche = item:IndexToItem(index)
 				actualDemarcheIndex = index
 
-				ESX.ShowNotification("Démarche: ~b~" .. actualDemarche)
+				ESX.ShowNotification(_U('approach', actualDemarche))
 
 				if actualDemarche == "Normal" then
 					if skin.sex == 0 then
@@ -1856,10 +1864,10 @@ function AddMenuDemarcheVoixGPS(menu)
 				end
 			end)
 		elseif item == voixItem then
-			actualVoix = item:IndexToItem(index)
-			actualVoixIndex = index
+			actualVoice = item:IndexToItem(index)
+			actualVoiceIndex = index
 
-			ESX.ShowNotification("Voix: ~b~" .. actualVoix)
+			ESX.ShowNotification(_U('voice', actualVoice))
 
 			if index == 1 then
 				NetworkSetTalkerProximity(1.0)
@@ -1873,163 +1881,163 @@ function AddMenuDemarcheVoixGPS(menu)
 end
 
 function AddMenuAdminMenu(menu)
-	adminMenu = _menuPool:AddSubMenu(menu, "Administration")
+	adminMenu = _menuPool:AddSubMenu(menu, _U('admin_title'))
 
-		if playerGroup == 'mod' then
-			local tptoPlrItem = NativeUI.CreateItem("TP sur joueur", "")
-			adminMenu.SubMenu:AddItem(tptoPlrItem)
-			local tptoMeItem = NativeUI.CreateItem("TP joueur sur moi", "")
-			adminMenu.SubMenu:AddItem(tptoMeItem)
-			local showXYZItem = NativeUI.CreateItem("Afficher/Cacher coordonnées", "")
-			adminMenu.SubMenu:AddItem(showXYZItem)
-			local showPlrNameItem = NativeUI.CreateItem("Afficher/Cacher noms des joueurs", "")
-			adminMenu.SubMenu:AddItem(showPlrNameItem)
+	if playerGroup == 'mod' then
+		local tptoPlrItem = NativeUI.CreateItem(_U('admin_goto_button'), "")
+		adminMenu.SubMenu:AddItem(tptoPlrItem)
+		local tptoMeItem = NativeUI.CreateItem(_U('admin_bring_button'), "")
+		adminMenu.SubMenu:AddItem(tptoMeItem)
+		local showXYZItem = NativeUI.CreateItem(_U('admin_showxyz_button'), "")
+		adminMenu.SubMenu:AddItem(showXYZItem)
+		local showPlrNameItem = NativeUI.CreateItem(_U('admin_showname_button'), "")
+		adminMenu.SubMenu:AddItem(showPlrNameItem)
 
-			adminMenu.SubMenu.OnItemSelect = function(sender, item, index)
-				if item == tptoPlrItem then
-					admin_tp_toplayer()
-					_menuPool:CloseAllMenus()
-				elseif item == tptoMeItem then
-					admin_tp_playertome()
-					_menuPool:CloseAllMenus()
-				elseif item == showXYZItem then
-					modo_showcoord()
-				elseif item == showPlrNameItem then
-					modo_showname()
-				end
-			end
-		elseif playerGroup == 'admin' then
-			local tptoPlrItem = NativeUI.CreateItem("TP sur joueur", "")
-			adminMenu.SubMenu:AddItem(tptoPlrItem)
-			local tptoMeItem = NativeUI.CreateItem("TP joueur sur moi", "")
-			adminMenu.SubMenu:AddItem(tptoMeItem)
-			local noclipItem = NativeUI.CreateItem("NoClip", "")
-			adminMenu.SubMenu:AddItem(noclipItem)
-			local repairVehItem = NativeUI.CreateItem("Réparer véhicule", "")
-			adminMenu.SubMenu:AddItem(repairVehItem)
-			local returnVehItem = NativeUI.CreateItem("Retourner le véhicule", "")
-			adminMenu.SubMenu:AddItem(returnVehItem)
-			local showXYZItem = NativeUI.CreateItem("Afficher/Cacher coordonnées", "")
-			adminMenu.SubMenu:AddItem(showXYZItem)
-			local showPlrNameItem = NativeUI.CreateItem("Afficher/Cacher noms des joueurs", "")
-			adminMenu.SubMenu:AddItem(showPlrNameItem)
-			local tptoWaypointItem = NativeUI.CreateItem("TP sur le marqueur", "")
-			adminMenu.SubMenu:AddItem(tptoWaypointItem)
-			local healPlrItem = NativeUI.CreateItem("Soigner la personne", "")
-			adminMenu.SubMenu:AddItem(healPlrItem)
-
-			adminMenu.SubMenu.OnItemSelect = function(sender, item, index)
-				if item == tptoPlrItem then
-					admin_tp_toplayer()
-					_menuPool:CloseAllMenus()
-				elseif item == tptoMeItem then
-					admin_tp_playertome()
-					_menuPool:CloseAllMenus()
-				elseif item == noclipItem then
-					admin_no_clip()
-					_menuPool:CloseAllMenus()
-				elseif item == repairVehItem then
-					admin_vehicle_repair()
-				elseif item == returnVehItem then
-					admin_vehicle_flip()
-				elseif item == showXYZItem then
-					modo_showcoord()
-				elseif item == showPlrNameItem then
-					modo_showname()
-				elseif item == tptoWaypointItem then
-					admin_tp_marker()
-				elseif item == healPlrItem then
-					admin_heal_player()
-					_menuPool:CloseAllMenus()
-				end
-			end
-		elseif playerGroup == 'superadmin' or playerGroup == 'owner' then
-			local tptoPlrItem = NativeUI.CreateItem("TP sur joueur", "")
-			adminMenu.SubMenu:AddItem(tptoPlrItem)
-			local tptoMeItem = NativeUI.CreateItem("TP joueur sur moi", "")
-			adminMenu.SubMenu:AddItem(tptoMeItem)
-			local tptoXYZItem = NativeUI.CreateItem("TP sur coordonées", "")
-			adminMenu.SubMenu:AddItem(tptoXYZItem)
-			local noclipItem = NativeUI.CreateItem("NoClip", "")
-			adminMenu.SubMenu:AddItem(noclipItem)
-			local godmodeItem = NativeUI.CreateItem("Mode invincible", "")
-			adminMenu.SubMenu:AddItem(godmodeItem)
-			local ghostmodeItem = NativeUI.CreateItem("Mode fantôme", "")
-			adminMenu.SubMenu:AddItem(ghostmodeItem)
-			local repairVehItem = NativeUI.CreateItem("Réparer véhicule", "")
-			adminMenu.SubMenu:AddItem(repairVehItem)
-			local spawnVehItem = NativeUI.CreateItem("Faire apparaître un véhicule", "")
-			adminMenu.SubMenu:AddItem(spawnVehItem)
-			local returnVehItem = NativeUI.CreateItem("Retourner le véhicule", "")
-			adminMenu.SubMenu:AddItem(returnVehItem)
-			local givecashItem = NativeUI.CreateItem("S'octroyer de l'argent", "")
-			adminMenu.SubMenu:AddItem(givecashItem)
-			local givebankItem = NativeUI.CreateItem("S'octroyer de l'argent (banque)", "")
-			adminMenu.SubMenu:AddItem(givebankItem)
-			local givedirtyItem = NativeUI.CreateItem("S'octroyer de l'argent sale", "")
-			adminMenu.SubMenu:AddItem(givedirtyItem)
-			local showXYZItem = NativeUI.CreateItem("Afficher/Cacher coordonnées", "")
-			adminMenu.SubMenu:AddItem(showXYZItem)
-			local showPlrNameItem = NativeUI.CreateItem("Afficher/Cacher noms des joueurs", "")
-			adminMenu.SubMenu:AddItem(showPlrNameItem)
-			local tptoWaypointItem = NativeUI.CreateItem("TP sur le marqueur", "")
-			adminMenu.SubMenu:AddItem(tptoWaypointItem)
-			local healPlrItem = NativeUI.CreateItem("Soigner la personne", "")
-			adminMenu.SubMenu:AddItem(healPlrItem)
-			local skinPlrItem = NativeUI.CreateItem("Changer l'apparence", "")
-			adminMenu.SubMenu:AddItem(skinPlrItem)
-			local saveSkinPlrItem = NativeUI.CreateItem("Sauvegarder l'apparence", "")
-			adminMenu.SubMenu:AddItem(saveSkinPlrItem)
-
-			adminMenu.SubMenu.OnItemSelect = function(sender, item, index)
-				if item == tptoPlrItem then
-					admin_tp_toplayer()
-					_menuPool:CloseAllMenus()
-				elseif item == tptoMeItem then
-					admin_tp_playertome()
-					_menuPool:CloseAllMenus()
-				elseif item == tptoXYZItem then
-					admin_tp_pos()
-					_menuPool:CloseAllMenus()
-				elseif item == noclipItem then
-					admin_no_clip()
-					_menuPool:CloseAllMenus()
-				elseif item == godmodeItem then
-					admin_godmode()
-				elseif item == ghostmodeItem then
-					admin_mode_fantome()
-				elseif item == repairVehItem then
-					admin_vehicle_repair()
-				elseif item == spawnVehItem then
-					admin_vehicle_spawn()
-					_menuPool:CloseAllMenus()
-				elseif item == returnVehItem then
-					admin_vehicle_flip()
-				elseif item == givecashItem then
-					admin_give_money()
-					_menuPool:CloseAllMenus()
-				elseif item == givebankItem then
-					admin_give_bank()
-					_menuPool:CloseAllMenus()
-				elseif item == givedirtyItem then
-					admin_give_dirty()
-					_menuPool:CloseAllMenus()
-				elseif item == showXYZItem then
-					modo_showcoord()
-				elseif item == showPlrNameItem then
-					modo_showname()
-				elseif item == tptoWaypointItem then
-					admin_tp_marker()
-				elseif item == healPlrItem then
-					admin_heal_player()
-					_menuPool:CloseAllMenus()
-				elseif item == skinPlrItem then
-					changer_skin()
-				elseif item == saveSkinPlrItem then
-					save_skin()
-				end
+		adminMenu.SubMenu.OnItemSelect = function(sender, item, index)
+			if item == tptoPlrItem then
+				admin_tp_toplayer()
+				_menuPool:CloseAllMenus()
+			elseif item == tptoMeItem then
+				admin_tp_playertome()
+				_menuPool:CloseAllMenus()
+			elseif item == showXYZItem then
+				modo_showcoord()
+			elseif item == showPlrNameItem then
+				modo_showname()
 			end
 		end
+	elseif playerGroup == 'admin' then
+		local tptoPlrItem = NativeUI.CreateItem(_U('admin_goto_button'), "")
+		adminMenu.SubMenu:AddItem(tptoPlrItem)
+		local tptoMeItem = NativeUI.CreateItem(_U('admin_bring_button'), "")
+		adminMenu.SubMenu:AddItem(tptoMeItem)
+		local noclipItem = NativeUI.CreateItem(_U('admin_noclip_button'), "")
+		adminMenu.SubMenu:AddItem(noclipItem)
+		local repairVehItem = NativeUI.CreateItem(_U('admin_repairveh_button'), "")
+		adminMenu.SubMenu:AddItem(repairVehItem)
+		local returnVehItem = NativeUI.CreateItem(_U('admin_flipveh_button'), "")
+		adminMenu.SubMenu:AddItem(returnVehItem)
+		local showXYZItem = NativeUI.CreateItem(_U('admin_showxyz_button'), "")
+		adminMenu.SubMenu:AddItem(showXYZItem)
+		local showPlrNameItem = NativeUI.CreateItem(_U('admin_showname_button'), "")
+		adminMenu.SubMenu:AddItem(showPlrNameItem)
+		local tptoWaypointItem = NativeUI.CreateItem(_U('admin_tpmarker_button'), "")
+		adminMenu.SubMenu:AddItem(tptoWaypointItem)
+		local revivePlrItem = NativeUI.CreateItem(_U('admin_revive_button'), "")
+		adminMenu.SubMenu:AddItem(revivePlrItem)
+
+		adminMenu.SubMenu.OnItemSelect = function(sender, item, index)
+			if item == tptoPlrItem then
+				admin_tp_toplayer()
+				_menuPool:CloseAllMenus()
+			elseif item == tptoMeItem then
+				admin_tp_playertome()
+				_menuPool:CloseAllMenus()
+			elseif item == noclipItem then
+				admin_no_clip()
+				_menuPool:CloseAllMenus()
+			elseif item == repairVehItem then
+				admin_vehicle_repair()
+			elseif item == returnVehItem then
+				admin_vehicle_flip()
+			elseif item == showXYZItem then
+				modo_showcoord()
+			elseif item == showPlrNameItem then
+				modo_showname()
+			elseif item == tptoWaypointItem then
+				admin_tp_marker()
+			elseif item == revivePlrItem then
+				admin_heal_player()
+				_menuPool:CloseAllMenus()
+			end
+		end
+	elseif playerGroup == 'superadmin' or playerGroup == 'owner' then
+		local tptoPlrItem = NativeUI.CreateItem(_U('admin_goto_button'), "")
+		adminMenu.SubMenu:AddItem(tptoPlrItem)
+		local tptoMeItem = NativeUI.CreateItem(_U('admin_bring_button'), "")
+		adminMenu.SubMenu:AddItem(tptoMeItem)
+		local tptoXYZItem = NativeUI.CreateItem(_U('admin_tpxyz_button'), "")
+		adminMenu.SubMenu:AddItem(tptoXYZItem)
+		local noclipItem = NativeUI.CreateItem(_U('admin_noclip_button'), "")
+		adminMenu.SubMenu:AddItem(noclipItem)
+		local godmodeItem = NativeUI.CreateItem(_U('admin_godmode_button'), "")
+		adminMenu.SubMenu:AddItem(godmodeItem)
+		local ghostmodeItem = NativeUI.CreateItem(_U('admin_ghostmode_button'), "")
+		adminMenu.SubMenu:AddItem(ghostmodeItem)
+		local spawnVehItem = NativeUI.CreateItem(_U('admin_spawnveh_button'), "")
+		adminMenu.SubMenu:AddItem(spawnVehItem)
+		local repairVehItem = NativeUI.CreateItem(_U('admin_repairveh_button'), "")
+		adminMenu.SubMenu:AddItem(repairVehItem)
+		local returnVehItem = NativeUI.CreateItem(_U('admin_flipveh_button'), "")
+		adminMenu.SubMenu:AddItem(returnVehItem)
+		local givecashItem = NativeUI.CreateItem(_U('admin_givemoney_button'), "")
+		adminMenu.SubMenu:AddItem(givecashItem)
+		local givebankItem = NativeUI.CreateItem(_U('admin_givebank_button'), "")
+		adminMenu.SubMenu:AddItem(givebankItem)
+		local givedirtyItem = NativeUI.CreateItem(_U('admin_givedirtymoney_button'), "")
+		adminMenu.SubMenu:AddItem(givedirtyItem)
+		local showXYZItem = NativeUI.CreateItem(_U('admin_showxyz_button'), "")
+		adminMenu.SubMenu:AddItem(showXYZItem)
+		local showPlrNameItem = NativeUI.CreateItem(_U('admin_showname_button'), "")
+		adminMenu.SubMenu:AddItem(showPlrNameItem)
+		local tptoWaypointItem = NativeUI.CreateItem(_U('admin_tpmarker_button'), "")
+		adminMenu.SubMenu:AddItem(tptoWaypointItem)
+		local revivePlrItem = NativeUI.CreateItem(_U('admin_revive_button'), "")
+		adminMenu.SubMenu:AddItem(revivePlrItem)
+		local skinPlrItem = NativeUI.CreateItem(_U('admin_changeskin_button'), "")
+		adminMenu.SubMenu:AddItem(skinPlrItem)
+		local saveSkinPlrItem = NativeUI.CreateItem(_U('admin_saveskin_button'), "")
+		adminMenu.SubMenu:AddItem(saveSkinPlrItem)
+
+		adminMenu.SubMenu.OnItemSelect = function(sender, item, index)
+			if item == tptoPlrItem then
+				admin_tp_toplayer()
+				_menuPool:CloseAllMenus()
+			elseif item == tptoMeItem then
+				admin_tp_playertome()
+				_menuPool:CloseAllMenus()
+			elseif item == tptoXYZItem then
+				admin_tp_pos()
+				_menuPool:CloseAllMenus()
+			elseif item == noclipItem then
+				admin_no_clip()
+				_menuPool:CloseAllMenus()
+			elseif item == godmodeItem then
+				admin_godmode()
+			elseif item == ghostmodeItem then
+				admin_mode_fantome()
+			elseif item == spawnVehItem then
+				admin_vehicle_spawn()
+				_menuPool:CloseAllMenus()
+			elseif item == repairVehItem then
+				admin_vehicle_repair()
+			elseif item == returnVehItem then
+				admin_vehicle_flip()
+			elseif item == givecashItem then
+				admin_give_money()
+				_menuPool:CloseAllMenus()
+			elseif item == givebankItem then
+				admin_give_bank()
+				_menuPool:CloseAllMenus()
+			elseif item == givedirtyItem then
+				admin_give_dirty()
+				_menuPool:CloseAllMenus()
+			elseif item == showXYZItem then
+				modo_showcoord()
+			elseif item == showPlrNameItem then
+				modo_showname()
+			elseif item == tptoWaypointItem then
+				admin_tp_marker()
+			elseif item == revivePlrItem then
+				admin_heal_player()
+				_menuPool:CloseAllMenus()
+			elseif item == skinPlrItem then
+				changer_skin()
+			elseif item == saveSkinPlrItem then
+				save_skin()
+			end
+		end
+	end
 end
 
 Citizen.CreateThread(function()
@@ -2060,9 +2068,9 @@ Citizen.CreateThread(function()
 end)
 
 Citizen.CreateThread(function()
-	mainMenu = NativeUI.CreateMenu(Config.servername, "Menu d'interaction")
-	itemMenu = NativeUI.CreateMenu(Config.servername, "Inventaire: action")
-	weaponItemMenu = NativeUI.CreateMenu(Config.servername, "Armes: action")
+	mainMenu = NativeUI.CreateMenu(Config.servername, _U('mainmenu_subtitle'))
+	itemMenu = NativeUI.CreateMenu(Config.servername, _U('inventory_actions_subtitle'))
+	weaponItemMenu = NativeUI.CreateMenu(Config.servername, _U('loadout_actions_subtitle'))
 	_menuPool:Add(mainMenu)
 	_menuPool:Add(itemMenu)
 	_menuPool:Add(weaponItemMenu)
@@ -2073,7 +2081,6 @@ Citizen.CreateThread(function()
 		end
 
 		plyPed = PlayerPedId()
-		plyVehicle = GetVehiclePedIsIn(plyPed, false)
 
 		if IsControlJustReleased(0, Config.Menu.clavier) and GetLastInputMethod(2) and not isDead then
 			if mainMenu:Visible() then
@@ -2136,9 +2143,9 @@ end)
 function GeneratePersonalMenu()
 	_menuPool = NativeUI.CreatePool()
 
-	mainMenu = NativeUI.CreateMenu(Config.servername, "Menu d'interaction")
-	itemMenu = NativeUI.CreateMenu(Config.servername, "Inventaire: action")
-	weaponItemMenu = NativeUI.CreateMenu(Config.servername, "Armes: action")
+	mainMenu = NativeUI.CreateMenu(Config.servername, _U('mainmenu_subtitle'))
+	itemMenu = NativeUI.CreateMenu(Config.servername, _U('inventory_actions_subtitle'))
+	weaponItemMenu = NativeUI.CreateMenu(Config.servername, _U('loadout_actions_subtitle'))
 	_menuPool:Add(mainMenu)
 	_menuPool:Add(itemMenu)
 	_menuPool:Add(weaponItemMenu)
@@ -2151,7 +2158,7 @@ function GeneratePersonalMenu()
 	AddMenuAnimationMenu(mainMenu)
 
 	if IsPedSittingInAnyVehicle(plyPed) then
-		if (GetPedInVehicleSeat(plyVehicle, -1) == plyPed) then
+		if (GetPedInVehicleSeat(GetVehiclePedIsIn(plyPed, false), -1) == plyPed) then
 			AddMenuVehicleMenu(mainMenu)
 		end
 	end
@@ -2169,7 +2176,7 @@ function GeneratePersonalMenu()
 	AddMenuFacturesMenu(mainMenu)
 	AddMenuDemarcheVoixGPS(mainMenu)
 
-	if playerGroup == 'mod' or playerGroup == 'admin' or playerGroup == 'superadmin' or playerGroup == 'owner' then
+	if playerGroup ~= nil and (playerGroup == 'mod' or playerGroup == 'admin' or playerGroup == 'superadmin' or playerGroup == 'owner') then
 		AddMenuAdminMenu(mainMenu)
 	end
 
