@@ -16,26 +16,21 @@ Citizen.Trace("\n")
 
 ESX = nil
 
+_menuPool = nil
 local personalmenu = {}
-local invItem = {}
-local wepItem = {}
-local billItem = {}
-local mainMenu = nil
-local itemMenu = nil
-local weaponItemMenu = nil
 
-local plyPed, plyVehicle = nil, nil
+local invItem, wepItem, billItem = {}, {}, {}
+local mainMenu, itemMenu, weaponItemMenu = nil, nil, nil
+
+local playerGroup = nil
+
+local isDead, inAnim = false, false
+
+local noclip, godmode, visible = false, false, false
 
 local actualGPS, actualGPSIndex = _U('default_gps'), 1
 local actualDemarche, actualDemarcheIndex = _U('default_demarche'), 1
 local actualVoice, actualVoiceIndex = _U('default_voice'), 2
-
-local isDead = false
-local inAnim = false
-
-local noclip, godmode, visible = false, false, false
-
-local playerGroup = nil
 
 local societymoney, societymoney2 = nil, nil
 
@@ -2052,16 +2047,7 @@ function AddMenuAdminMenu(menu)
 	end
 end
 
-function GeneratePersonalMenu()
-	_menuPool = NativeUI.CreatePool()
-
-	mainMenu = NativeUI.CreateMenu(Config.servername, _U('mainmenu_subtitle'))
-	itemMenu = NativeUI.CreateMenu(Config.servername, _U('inventory_actions_subtitle'))
-	weaponItemMenu = NativeUI.CreateMenu(Config.servername, _U('loadout_actions_subtitle'))
-	_menuPool:Add(mainMenu)
-	_menuPool:Add(itemMenu)
-	_menuPool:Add(weaponItemMenu)
-	
+function GeneratePersonalMenu()	
 	AddMenuInventoryMenu(mainMenu)
 	AddMenuWeaponMenu(mainMenu)
 	AddMenuWalletMenu(mainMenu)
@@ -2097,28 +2083,13 @@ end
 
 Citizen.CreateThread(function()
 	while true do
-		if _menuPool then
-			_menuPool:ProcessMenus()
-		end
-
-		plyPed = PlayerPedId()
-
 		if IsControlJustReleased(0, Config.Menu.clavier) and not isDead then
 			if mainMenu ~= nil and not mainMenu:Visible() then
 				ESX.PlayerData = ESX.GetPlayerData()
 				GeneratePersonalMenu()
 				mainMenu:Visible(true)
-			elseif mainMenu ~= nil and mainMenu:Visible() then
-				mainMenu:Visible(false)
-			elseif mainMenu == nil then
-				ESX.PlayerData = ESX.GetPlayerData()
-				GeneratePersonalMenu()
-				mainMenu:Visible(true)
+				Citizen.Wait(50)
 			end
-		end
-
-		if IsControlJustReleased(0, Config.stopAnim.clavier) and GetLastInputMethod(2) and not isDead then
-			ClearPedTasks(plyPed)
 		end
 		
 		Citizen.Wait(0)
@@ -2127,26 +2098,43 @@ end)
 
 Citizen.CreateThread(function()
 	while true do
-		if _menuPool then
-			while _menuPool:IsAnyMenuOpen() do
-				Citizen.Wait(0)
+		if _menuPool ~= nil then
+			_menuPool:ProcessMenus()
+		end
+		
+		Citizen.Wait(0)
+	end
+end)
 
-				if not _menuPool:IsAnyMenuOpen() then
-					mainMenu:Clear()
-					itemMenu:Clear()
-					weaponItemMenu:Clear()
+Citizen.CreateThread(function()
+	while true do
+		while _menuPool ~= nil and _menuPool:IsAnyMenuOpen() do
+			Citizen.Wait(0)
 
-					_menuPool:Clear()
-					_menuPool:Remove()
+			if not _menuPool:IsAnyMenuOpen() then
+				mainMenu:Clear()
+				itemMenu:Clear()
+				weaponItemMenu:Clear()
 
-					personalmenu = {}
+				_menuPool:Clear()
+				_menuPool:Remove()
 
-					invItem = {}
-					wepItem = {}
-					billItem = {}
+				personalmenu = {}
 
-					collectgarbage()
-				end
+				invItem = {}
+				wepItem = {}
+				billItem = {}
+
+				collectgarbage()
+
+				_menuPool = NativeUI.CreatePool()
+
+				mainMenu = NativeUI.CreateMenu(Config.servername, _U('mainmenu_subtitle'))
+				itemMenu = NativeUI.CreateMenu(Config.servername, _U('inventory_actions_subtitle'))
+				weaponItemMenu = NativeUI.CreateMenu(Config.servername, _U('loadout_actions_subtitle'))
+				_menuPool:Add(mainMenu)
+				_menuPool:Add(itemMenu)
+				_menuPool:Add(weaponItemMenu)
 			end
 		end
 
@@ -2168,6 +2156,12 @@ end)
 
 Citizen.CreateThread(function()
 	while true do
+		plyPed = PlayerPedId()
+		
+		if IsControlJustReleased(0, Config.stopAnim.clavier) and GetLastInputMethod(2) and not isDead then
+			ClearPedTasks(plyPed)
+		end
+
 		if IsControlPressed(1, Config.TPMarker.clavier1) and IsControlJustReleased(1, Config.TPMarker.clavier2) and GetLastInputMethod(2) and not isDead then
 			admin_tp_marker()
 		end
