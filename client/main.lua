@@ -643,7 +643,7 @@ function AddMenuWalletMenu(menu)
 		end
 	end
 
-	if Config.EnableESXIdentity then
+	if Config.EnableJsfourIDCard then
 		showID = NativeUI.CreateItem(_U('wallet_show_idcard_button'), "")
 		walletmenu.SubMenu:AddItem(showID)
 
@@ -652,7 +652,7 @@ function AddMenuWalletMenu(menu)
 	end
 
 	walletmenu.SubMenu.OnItemSelect = function(sender, item, index)
-		if Config.EnableESXIdentity then
+		if Config.EnableJsfourIDCard then
 			if item == showID then
 				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
 											
