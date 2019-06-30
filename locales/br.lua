@@ -78,6 +78,10 @@ Locales['fr'] = {
   ['wallet_point_button'] = 'Point de Loyauté: %s',
   ['wallet_show_idcard_button'] = 'Montrer sa carte d\'identité',
   ['wallet_check_idcard_button'] = 'Regarder sa carte d\'identité',
+  ['wallet_show_driver_button'] = 'Montrer son permis de conduire',
+  ['wallet_check_driver_button'] = 'Regarder son permis de conduire',
+  ['wallet_show_firearms_button'] = 'Montrer son permis port d\'armes',
+  ['wallet_check_firearms_button'] = 'Regarder son permis port d\'armes',
 
   -- Bills Menu
   ['bills_title'] = 'Factures',

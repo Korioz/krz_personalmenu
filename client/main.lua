@@ -634,7 +634,11 @@ function AddMenuWalletMenu(menu)
 
 	local walletdirtyMoney = nil
 	local showID = nil
+	local showDriver = nil
+	local showFirearms = nil
 	local checkID = nil
+	local checkDriver = nil
+	local checkFirearms = nil
 
 	for i = 1, #ESX.PlayerData.accounts, 1 do
 		if ESX.PlayerData.accounts[i].name == 'black_money' then
@@ -649,6 +653,18 @@ function AddMenuWalletMenu(menu)
 
 		checkID = NativeUI.CreateItem(_U('wallet_check_idcard_button'), "")
 		walletmenu.SubMenu:AddItem(checkID)
+       
+        showDriver = NativeUI.CreateItem(_U('wallet_show_driver_button'), "")
+        walletmenu.SubMenu:AddItem(showDriver)
+       
+        checkDriver = NativeUI.CreateItem(_U('wallet_check_driver_button'), "")
+        walletmenu.SubMenu:AddItem(checkDriver)
+           
+        showFirearms = NativeUI.CreateItem(_U('wallet_show_firearms_button'), "")
+        walletmenu.SubMenu:AddItem(showFirearms)
+       
+        checkFirearms = NativeUI.CreateItem(_U('wallet_check_firearms_button'), "")
+        walletmenu.SubMenu:AddItem(checkFirearms)
 	end
 
 	walletmenu.SubMenu.OnItemSelect = function(sender, item, index)
@@ -663,6 +679,26 @@ function AddMenuWalletMenu(menu)
 				end
 			elseif item == checkID then
 				TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(PlayerId()))
+			elseif item == showDriver then
+				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
+											
+				if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3.0 then
+					TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(personalmenu.closestPlayer), 'driver')
+				else
+					ESX.ShowNotification(_U('players_nearby'))
+				end
+			elseif item == checkDriver then
+				TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(PlayerId()), 'driver')
+			elseif item == showFirearms then
+				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
+											
+				if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3.0 then
+					TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(personalmenu.closestPlayer), 'weapon')
+				else
+					ESX.ShowNotification(_U('players_nearby'))
+				end
+			elseif item == checkFirearms then
+				TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(PlayerId()), 'weapon')
 			end
 		end
 	end
@@ -1289,27 +1325,27 @@ function AddSubMenuPEGI21Menu(menu)
 	animPegiMenu.SubMenu:AddItem(stripfloorItem)
 
 	animPegiMenu.SubMenu.OnItemSelect = function(sender, item, index)
-		if item == hSuceItem then
+		if item == hSuckItem then
 			startAnim("oddjobs@towing", "m_blow_job_loop")
-		elseif item == fSuceItem then
+		elseif item == fSuckItem then
 			startAnim("oddjobs@towing", "f_blow_job_loop")
-		elseif item == hBaiserItem then
+		elseif item == hFuckItem then
 			startAnim("mini@prostitutes@sexlow_veh", "low_car_sex_loop_player")
-		elseif item == fBaiserItem then
+		elseif item == fFuckItem then
 			startAnim("mini@prostitutes@sexlow_veh", "low_car_sex_loop_female")
-		elseif item == gratterItem then
+		elseif item == scratchItem then
 			startAnim("mp_player_int_uppergrab_crotch", "mp_player_int_grab_crotch")
-		elseif item == charmeItem then
+		elseif item == charmItem then
 			startAnim("mini@strip_club@idles@stripper", "stripper_idle_02")
-		elseif item == michtoItem then
+		elseif item == golddiggerItem then
 			startScenario("WORLD_HUMAN_PROSTITUTE_HIGH_CLASS")
-		elseif item == poitrineItem then
+		elseif item == breastItem then
 			startAnim("mini@strip_club@backroom@", "stripper_b_backroom_idle_b")
 		elseif item == strip1Item then
 			startAnim("mini@strip_club@lap_dance@ld_girl_a_song_a_p1", "ld_girl_a_song_a_p1_f")
 		elseif item == strip2Item then
 			startAnim("mini@strip_club@private_dance@part2", "priv_dance_p2")
-		elseif item == stripsolItem then
+		elseif item == stripfloorItem then
 			startAnim("mini@strip_club@private_dance@part3", "priv_dance_p3")
 		end
 	end
@@ -1631,6 +1667,8 @@ end
 
 function AddMenuBossMenu2(menu)
 	bossMenu2 = _menuPool:AddSubMenu(menu, _U('bossmanagement2_title', ESX.PlayerData.job2.label))
+
+	local coffre2Item = nil
 
 	if societymoney2 ~= nil then
 		coffre2Item = NativeUI.CreateItem(_U('bossmanagement2_chest_button'), "")
