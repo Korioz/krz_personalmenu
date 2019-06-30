@@ -788,7 +788,7 @@ end
 function AddMenuFacturesMenu(menu)
 	billMenu = _menuPool:AddSubMenu(menu, _U('bills_title'))
 	billItem = {}
-	
+
 	ESX.TriggerServerCallback('KorioZ-PersonalMenu:Bill_getBills', function(bills)
 		for i = 1, #bills, 1 do
 			local label = bills[i].label
@@ -1811,23 +1811,23 @@ function AddMenuDemarcheVoixGPS(menu)
 				local plyCoords = GetEntityCoords(plyPed)
 				SetNewWaypoint(plyCoords.x, plyCoords.y)
 			elseif actualGPS == "Poste de Police" then
-				SetNewWaypoint(425.130, -979.558)
+				SetNewWaypoint(425.13, -979.55)
 			elseif actualGPS == "Hôpital" then
 				SetNewWaypoint(-449.67, -340.83)
 			elseif actualGPS == "Concessionnaire" then
-				SetNewWaypoint(-33.88771, -1102.373)
+				SetNewWaypoint(-33.88, -1102.37)
 			elseif actualGPS == "Garage Central" then
-				SetNewWaypoint(215.066, -791.56)
+				SetNewWaypoint(215.06, -791.56)
 			elseif actualGPS == "Benny's Custom" then
-				SetNewWaypoint(-212.1378, -1325.277)
+				SetNewWaypoint(-212.13, -1325.27)
 			elseif actualGPS == "Pôle Emploie" then
-				SetNewWaypoint(-264.8365, -964.5458)
+				SetNewWaypoint(-264.83, -964.54)
 			elseif actualGPS == "Auto école" then
-				SetNewWaypoint(-829.2257, -696.9993)
+				SetNewWaypoint(-829.22, -696.99)
 			elseif actualGPS == "Téquila-la" then
-				SetNewWaypoint(-565.0996, 273.455139)
+				SetNewWaypoint(-565.09, 273.45)
 			elseif actualGPS == "Bahama Mamas" then
-				SetNewWaypoint(-1391.06311, -590.34497)
+				SetNewWaypoint(-1391.06, -590.34)
 			end
 		elseif item == demarcheItem then
 			TriggerEvent('skinchanger:getSkin', function(skin)
