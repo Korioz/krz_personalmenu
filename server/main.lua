@@ -16,7 +16,6 @@ end
 
 ESX.RegisterServerCallback('KorioZ-PersonalMenu:Bill_getBills', function(source, cb)
 	local xPlayer = ESX.GetPlayerFromId(source)
-
 	local bills = {}
 
 	MySQL.Async.fetchAll('SELECT * FROM billing WHERE identifier = @identifier', {
@@ -25,10 +24,6 @@ ESX.RegisterServerCallback('KorioZ-PersonalMenu:Bill_getBills', function(source,
 		for i = 1, #result, 1 do
 			table.insert(bills, {
 				id         = result[i].id,
-				identifier = result[i].identifier,
-				sender     = result[i].sender,
-				targetType = result[i].target_type,
-				target     = result[i].target,
 				label      = result[i].label,
 				amount     = result[i].amount
 			})
@@ -58,8 +53,7 @@ end)
 
 RegisterServerEvent("KorioZ-PersonalMenu:Weapon_addAmmoToPedS")
 AddEventHandler("KorioZ-PersonalMenu:Weapon_addAmmoToPedS", function(plyId, value, quantity)
-	print(plyId .. value .. quantity)
-	TriggerClientEvent('KorioZ-PersonalMenu:Weapon_addAmmoToPedC', plyId, value, quantity + 10)
+	TriggerClientEvent('KorioZ-PersonalMenu:Weapon_addAmmoToPedC', plyId, value, quantity)
 end)
 
 -- Admin Menu --
@@ -116,7 +110,7 @@ AddEventHandler('KorioZ-PersonalMenu:Boss_promouvoirplayer', function(target)
 
 	local sourceXPlayer = ESX.GetPlayerFromId(_source)
 	local targetXPlayer = ESX.GetPlayerFromId(target)
-	local maximumgrade = tonumber(getMaximumGrade(sourceXPlayer.job.name)) -1
+	local maximumgrade = tonumber(getMaximumGrade(sourceXPlayer.job.name)) - 1
 
 	if (targetXPlayer.job.grade == maximumgrade) then
 		TriggerClientEvent('esx:showNotification', _source, "Vous devez demander une autorisation du ~r~Gouvernement~w~.")

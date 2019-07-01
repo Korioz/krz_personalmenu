@@ -196,7 +196,11 @@ end
 
 RegisterNetEvent("KorioZ-PersonalMenu:Weapon_addAmmoToPedC")
 AddEventHandler("KorioZ-PersonalMenu:Weapon_addAmmoToPedC", function(value, quantity)
-	AddAmmoToPed(plyPed, value, quantity)
+	local weaponHash = GetHashKey(value)
+
+	if HasPedGotWeapon(plyPed, weaponHash, false) and value ~= 'WEAPON_UNARMED' then
+		AddAmmoToPed(plyPed, value, quantity)
+	end
 end)
 
 -- Admin Menu --
