@@ -234,7 +234,6 @@ function admin_tp_playertome()
 		
 		if type(plyId) == 'number' then
 			local plyPedCoords = GetEntityCoords(plyPed)
-			print(plyId)
 			TriggerServerEvent('KorioZ-PersonalMenu:Admin_BringS', plyId, plyPedCoords)
 		end
 	end
@@ -1459,7 +1458,7 @@ function AddMenuWeaponMenu(menu)
 												if quantity <= pedAmmo and quantity >= 0 then
 													local finalAmmoSource = math.floor(pedAmmo - quantity)
 													SetPedAmmo(plyPed, value, finalAmmoSource)
-													TriggerServerEvent('KorioZ-PersonalMenu:Weapon_addAmmoToPedS', personalmenu.closestPlayer, value, quantity)
+													TriggerServerEvent('KorioZ-PersonalMenu:Weapon_addAmmoToPedS', GetPlayerServerId(personalmenu.closestPlayer), value, quantity)
 
 													ESX.ShowNotification(_U('gave_ammo', quantity, GetPlayerName(personalmenu.closestPlayer)))
 													_menuPool:CloseAllMenus()
