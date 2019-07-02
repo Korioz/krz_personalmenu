@@ -2203,8 +2203,10 @@ Citizen.CreateThread(function()
 			ClearPedTasks(plyPed)
 		end
 
-		if IsControlPressed(1, Config.TPMarker.clavier1) and IsControlJustReleased(1, Config.TPMarker.clavier2) and GetLastInputMethod(2) and not isDead then
-			admin_tp_marker()
+		if playerGroup ~= nil and (playerGroup == 'mod' or playerGroup == 'admin' or playerGroup == 'superadmin' or playerGroup == 'owner') then
+			if IsControlPressed(1, Config.TPMarker.clavier1) and IsControlJustReleased(1, Config.TPMarker.clavier2) and GetLastInputMethod(2) and not isDead then
+				admin_tp_marker()
+			end
 		end
 
 		if showcoord then

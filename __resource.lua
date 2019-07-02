@@ -4,6 +4,8 @@ author 'Korioz'
 description 'KORIOZ-PersonalMenu'
 version '1.1'
 
+dependency 'es_extended'
+
 server_scripts {
 	'@mysql-async/lib/MySQL.lua',
 	'@es_extended/locale.lua',
