@@ -12,7 +12,6 @@ server_scripts {
 	'locales/br.lua',
 	'locales/fr.lua',
 	'config.lua',
-	'config.weapons.lua',
 	'server/main.lua',
 }
 
@@ -41,7 +40,6 @@ client_scripts {
 	'locales/br.lua',
 	'locales/fr.lua',
 	'config.lua',
-	'config.weapons.lua',
 	'client/main.lua',
 	'other/handsup.lua',
 	'other/pointing.lua',

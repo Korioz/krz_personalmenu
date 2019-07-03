@@ -19,20 +19,19 @@ ESX = nil
 _menuPool = nil
 local personalmenu = {}
 
-local invItem, wepItem, billItem = {}, {}, {}
-local mainMenu, itemMenu, weaponItemMenu = nil, nil, nil
-
-local playerGroup = nil
+local invItem, wepItem, billItem, mainMenu, itemMenu, weaponItemMenu = {}, {}, {}, nil, nil, nil
 
 local isDead, inAnim = false, false
 
-local noclip, godmode, visible = false, false, false
+local playerGroup, noclip, godmode, visible = nil, false, false, false
 
 local actualGPS, actualGPSIndex = _U('default_gps'), 1
 local actualDemarche, actualDemarcheIndex = _U('default_demarche'), 1
 local actualVoice, actualVoiceIndex = _U('default_voice'), 2
 
 local societymoney, societymoney2 = nil, nil
+
+local wepList = nil
 
 Citizen.CreateThread(function()
 	while ESX == nil do
@@ -67,6 +66,8 @@ Citizen.CreateThread(function()
 	if Config.doublejob then
 		RefreshMoney2()
 	end
+
+	wepList = ESX.GetWeaponList()
 
 	_menuPool = NativeUI.CreatePool()
 
@@ -514,20 +515,16 @@ function AddMenuInventoryMenu(menu)
 	local invCount = {}
 
 	for i=1, #ESX.PlayerData.inventory, 1 do
-		if ESX.PlayerData.inventory[i].count > 0 then
-			local label	    = ESX.PlayerData.inventory[i].label
-			local count	    = ESX.PlayerData.inventory[i].count
-			local value	    = ESX.PlayerData.inventory[i].name
-			local usable	= ESX.PlayerData.inventory[i].usable
-			local rare	    = ESX.PlayerData.inventory[i].rare
-			local canRemove = ESX.PlayerData.inventory[i].canRemove
+		local count = ESX.PlayerData.inventory[i].count
+
+		if count > 0 then
+			local label = ESX.PlayerData.inventory[i].label
+			local value = ESX.PlayerData.inventory[i].name
 
 			invCount = {}
-			local okCount = 0
 
 			for i = 1, count, 1 do
-				okCount = okCount + 1
-				table.insert(invCount, okCount)
+				table.insert(invCount, i)
 			end
 			
 			table.insert(invItem, value)
@@ -556,7 +553,6 @@ function AddMenuInventoryMenu(menu)
 			local count	    = ESX.PlayerData.inventory[i].count
 			local value	    = ESX.PlayerData.inventory[i].name
 			local usable	= ESX.PlayerData.inventory[i].usable
-			local rare	    = ESX.PlayerData.inventory[i].rare
 			local canRemove = ESX.PlayerData.inventory[i].canRemove
 			local quantity  = index
 
@@ -606,6 +602,131 @@ function AddMenuInventoryMenu(menu)
 							end
 						else
 							ESX.ShowNotification(_U('not_droppable', label))
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+function AddMenuWeaponMenu(menu)
+	weaponMenu = _menuPool:AddSubMenu(menu, _U('loadout_title'))
+
+	for i = 1, #wepList, 1 do
+		local weaponHash = GetHashKey(wepList[i].name)
+
+		if HasPedGotWeapon(plyPed, weaponHash, false) and wepList[i].name ~= 'WEAPON_UNARMED' then
+			local ammo 		= GetAmmoInPedWeapon(plyPed, weaponHash)
+			local label	    = wepList[i].label .. ' [' .. ammo .. ']'
+			local value	    = wepList[i].name
+
+			wepItem[value] = NativeUI.CreateItem(label, "")
+			weaponMenu.SubMenu:AddItem(wepItem[value])
+		end
+	end
+
+	local giveItem = NativeUI.CreateItem(_U('loadout_give_button'), "")
+	weaponItemMenu:AddItem(giveItem)
+
+	local giveMunItem = NativeUI.CreateItem(_U('loadout_givemun_button'), "")
+	weaponItemMenu:AddItem(giveMunItem)
+
+	local dropItem = NativeUI.CreateItem(_U('loadout_drop_button'), "")
+	dropItem:SetRightBadge(4)
+	weaponItemMenu:AddItem(dropItem)
+
+	weaponMenu.SubMenu.OnItemSelect = function(sender, item, index)
+		_menuPool:CloseAllMenus(true)
+		weaponItemMenu:Visible(true)
+
+		for i = 1, #wepList, 1 do
+			local weaponHash = GetHashKey(wepList[i].name)
+
+			if HasPedGotWeapon(plyPed, weaponHash, false) and wepList[i].name ~= 'WEAPON_UNARMED' then
+				local ammo 		= GetAmmoInPedWeapon(plyPed, weaponHash)
+				local value	    = wepList[i].name
+
+				if item == wepItem[value] then
+					weaponItemMenu.OnItemSelect = function(sender, item, index)
+						if item == giveItem then
+							local foundPlayers = false
+							personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
+
+							if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3 then
+				 				foundPlayers = true
+							end
+
+							if foundPlayers == true then
+								local closestPed = GetPlayerPed(personalmenu.closestPlayer)
+
+								if not IsPedSittingInAnyVehicle(closestPed) then
+									TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_weapon', value, ammo)
+									_menuPool:CloseAllMenus()
+								else
+									ESX.ShowNotification(_U('in_vehicle_give'))
+								end
+							else
+								ESX.ShowNotification(_U('players_nearby'))
+							end
+						elseif item == giveMunItem then
+							local quantity = KeyboardInput("KORIOZ_BOX_AMMO_AMOUNT", _U('dialogbox_amount_ammo'), "", 8)
+
+							if quantity ~= nil then
+								local post = true
+								quantity = tonumber(quantity)
+
+								if type(quantity) == 'number' then
+									quantity = ESX.Math.Round(quantity)
+
+									if quantity <= 0 then
+										post = false
+									end
+								end
+
+								local foundPlayers = false
+								personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
+
+								if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3 then
+				 					foundPlayers = true
+								end
+
+								if foundPlayers == true then
+									local closestPed = GetPlayerPed(personalmenu.closestPlayer)
+
+									if not IsPedSittingInAnyVehicle(closestPed) then
+										if ammo > 0 then
+											if post == true then
+												if quantity <= ammo and quantity >= 0 then
+													local finalAmmo = math.floor(ammo - quantity)
+													SetPedAmmo(plyPed, value, finalAmmo)
+													TriggerServerEvent('KorioZ-PersonalMenu:Weapon_addAmmoToPedS', GetPlayerServerId(personalmenu.closestPlayer), value, quantity)
+
+													ESX.ShowNotification(_U('gave_ammo', quantity, GetPlayerName(personalmenu.closestPlayer)))
+													_menuPool:CloseAllMenus()
+												else
+													ESX.ShowNotification(_U('not_enough_ammo'))
+												end
+											else
+												ESX.ShowNotification(_U('amount_invalid'))
+											end
+										else
+											ESX.ShowNotification(_U('no_ammo'))
+										end
+									else
+										ESX.ShowNotification(_U('in_vehicle_give'))
+									end
+								else
+									ESX.ShowNotification(_U('players_nearby'))
+								end
+							end
+						elseif item == dropItem then
+							if not IsPedSittingInAnyVehicle(plyPed) then
+								TriggerServerEvent('esx:removeInventoryItem', 'item_weapon', value)
+								_menuPool:CloseAllMenus()
+							else
+								ESX.ShowNotification(_U('in_vehicle_drop'))
+							end
 						end
 					end
 				end
@@ -1350,145 +1471,6 @@ function AddSubMenuPEGI21Menu(menu)
 			startAnim("mini@strip_club@private_dance@part2", "priv_dance_p2")
 		elseif item == stripfloorItem then
 			startAnim("mini@strip_club@private_dance@part3", "priv_dance_p3")
-		end
-	end
-end
-
-function AddMenuWeaponMenu(menu)
-	weaponMenu = _menuPool:AddSubMenu(menu, _U('loadout_title'))
-
-	for i=1, #Config.Weapons, 1 do
-		local weaponHash = GetHashKey(Config.Weapons[i].name)
-
-		if HasPedGotWeapon(plyPed, weaponHash, false) and Config.Weapons[i].name ~= 'WEAPON_UNARMED' then
-			local ammo 		= GetAmmoInPedWeapon(plyPed, weaponHash)
-			local label	    = Config.Weapons[i].label .. ' [' .. ammo .. ']'
-			local count	    = 1
-			local type	    = 'item_weapon'
-			local value	    = Config.Weapons[i].name
-			local ammo	    = ammo
-			local usable	= false
-			local rare	    = false
-			local canRemove = true
-
-			wepItem[value] = NativeUI.CreateItem(label, "")
-			weaponMenu.SubMenu:AddItem(wepItem[value])
-		end
-	end
-
-	local giveItem = NativeUI.CreateItem(_U('loadout_give_button'), "")
-	weaponItemMenu:AddItem(giveItem)
-
-	local giveMunItem = NativeUI.CreateItem(_U('loadout_givemun_button'), "")
-	weaponItemMenu:AddItem(giveMunItem)
-
-	local dropItem = NativeUI.CreateItem(_U('loadout_drop_button'), "")
-	dropItem:SetRightBadge(4)
-	weaponItemMenu:AddItem(dropItem)
-
-	weaponMenu.SubMenu.OnItemSelect = function(sender, item, index)
-		_menuPool:CloseAllMenus(true)
-		weaponItemMenu:Visible(true)
-
-		for i = 1, #Config.Weapons, 1 do
-			local weaponHash = GetHashKey(Config.Weapons[i].name)
-
-			if HasPedGotWeapon(plyPed, weaponHash, false) and Config.Weapons[i].name ~= 'WEAPON_UNARMED' then
-				local ammo 		= GetAmmoInPedWeapon(plyPed, weaponHash)
-				local label	    = Config.Weapons[i].label .. ' [' .. ammo .. ']'
-				local count	    = 1
-				local value	    = Config.Weapons[i].name
-				local ammo	    = ammo
-				local usable	= false
-				local rare	    = false
-				local canRemove = true
-
-				if item == wepItem[value] then
-					weaponItemMenu.OnItemSelect = function(sender, item, index)
-						if item == giveItem then
-							local foundPlayers = false
-							personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
-							local sourceAmmo = GetAmmoInPedWeapon(plyPed, GetHashKey(value))
-
-							if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3 then
-				 				foundPlayers = true
-							end
-
-							if foundPlayers == true then
-								local closestPed = GetPlayerPed(personalmenu.closestPlayer)
-
-								if not IsPedSittingInAnyVehicle(closestPed) then
-									TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_weapon', value, sourceAmmo)
-									_menuPool:CloseAllMenus()
-								else
-									ESX.ShowNotification(_U('in_vehicle_give'))
-								end
-							else
-								ESX.ShowNotification(_U('players_nearby'))
-							end
-						elseif item == giveMunItem then
-							local quantity = KeyboardInput("KORIOZ_BOX_AMMO_AMOUNT", _U('dialogbox_amount_ammo'), "", 8)
-
-							if quantity ~= nil then
-								local post = true
-								quantity = tonumber(quantity)
-
-								if type(quantity) == 'number' then
-									quantity = ESX.Math.Round(quantity)
-
-									if quantity <= 0 then
-										post = false
-									end
-								end
-
-								local foundPlayers = false
-								personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
-								local pedAmmo = GetAmmoInPedWeapon(plyPed, GetHashKey(value))
-
-								if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3 then
-				 					foundPlayers = true
-								end
-
-								if foundPlayers == true then
-									local closestPed = GetPlayerPed(personalmenu.closestPlayer)
-
-									if not IsPedSittingInAnyVehicle(closestPed) then
-										if pedAmmo > 0 then
-											if post == true then
-												if quantity <= pedAmmo and quantity >= 0 then
-													local finalAmmoSource = math.floor(pedAmmo - quantity)
-													SetPedAmmo(plyPed, value, finalAmmoSource)
-													TriggerServerEvent('KorioZ-PersonalMenu:Weapon_addAmmoToPedS', GetPlayerServerId(personalmenu.closestPlayer), value, quantity)
-
-													ESX.ShowNotification(_U('gave_ammo', quantity, GetPlayerName(personalmenu.closestPlayer)))
-													_menuPool:CloseAllMenus()
-												else
-													ESX.ShowNotification(_U('not_enough_ammo'))
-												end
-											else
-												ESX.ShowNotification(_U('amount_invalid'))
-											end
-										else
-											ESX.ShowNotification(_U('no_ammo'))
-										end
-									else
-										ESX.ShowNotification(_U('in_vehicle_give'))
-									end
-								else
-									ESX.ShowNotification(_U('players_nearby'))
-								end
-							end
-						elseif item == dropItem then
-							if not IsPedSittingInAnyVehicle(plyPed) then
-								TriggerServerEvent('esx:removeInventoryItem', 'item_weapon', value)
-								_menuPool:CloseAllMenus()
-							else
-								ESX.ShowNotification(_U('in_vehicle_drop'))
-							end
-						end
-					end
-				end
-			end
 		end
 	end
 end
