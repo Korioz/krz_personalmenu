@@ -18,6 +18,7 @@ server_scripts {
 
 client_scripts {
 	"dependencies/Wrapper/Utility.lua",
+	
 	"dependencies/UIElements/UIVisual.lua",
 	"dependencies/UIElements/UIResRectangle.lua",
 	"dependencies/UIElements/UIResText.lua",
@@ -29,10 +30,6 @@ client_scripts {
 	"dependencies/UIMenu/items/UIMenuItem.lua",
 	"dependencies/UIMenu/items/UIMenuCheckboxItem.lua",
 	"dependencies/UIMenu/items/UIMenuListItem.lua",
-	"dependencies/UIMenu/items/UIMenuSliderItem.lua",
-	"dependencies/UIMenu/items/UIMenuColouredItem.lua",
-	"dependencies/UIMenu/items/UIMenuProgressItem.lua",
-	"dependencies/UIMenu/items/UIMenuSliderProgressItem.lua",
 	"dependencies/UIMenu/UIMenu.lua",
 	"dependencies/UIMenu/MenuPool.lua",
 
