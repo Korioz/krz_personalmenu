@@ -8,7 +8,7 @@
 
 ### Links & Support
 - [Discord](https://discord.gg/bqcebpj)
-- **Dicord Username**: Korioz#0478
+- **Discord Username**: Korioz#0478
 
 ### Screenshot
 
