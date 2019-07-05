@@ -502,6 +502,12 @@ end
 
 function startAnim(lib, anim)
 	ESX.Streaming.RequestAnimDict(lib, function()
+		TaskPlayAnim(plyPed, lib, anim, 8.0, -8.0, -1, 0, 0, false, false, false)
+	end)
+end
+
+function startAnimAction(lib, anim)
+	ESX.Streaming.RequestAnimDict(lib, function()
 		TaskPlayAnim(plyPed, lib, anim, 8.0, 1.0, -1, 49, 0, false, false, false)
 	end)
 end
@@ -974,7 +980,7 @@ function setUniform(value, plyPed)
 	ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin)
 		TriggerEvent('skinchanger:getSkin', function(skina)
 			if value == 'torso' then
-				startAnim("clothingtie", "try_tie_neutral_a")
+				startAnimAction("clothingtie", "try_tie_neutral_a")
 				Citizen.Wait(1000)
 				ClearPedTasks(plyPed)
 
@@ -987,13 +993,21 @@ function setUniform(value, plyPed)
 				if skin.pants_1 ~= skina.pants_1 then
 					TriggerEvent('skinchanger:loadClothes', skina, {['pants_1'] = skin.pants_1, ['pants_2'] = skin.pants_2})
 				else
-					TriggerEvent('skinchanger:loadClothes', skina, {['pants_1'] = 61, ['pants_2'] = 1})
+					if skin.sex == 0 then
+						TriggerEvent('skinchanger:loadClothes', skina, {['pants_1'] = 61, ['pants_2'] = 1})
+					else
+						TriggerEvent('skinchanger:loadClothes', skina, {['pants_1'] = 15, ['pants_2'] = 0})
+					end
 				end
 			elseif value == 'shoes' then
 				if skin.shoes_1 ~= skina.shoes_1 then
 					TriggerEvent('skinchanger:loadClothes', skina, {['shoes_1'] = skin.shoes_1, ['shoes_2'] = skin.shoes_2})
 				else
-					TriggerEvent('skinchanger:loadClothes', skina, {['shoes_1'] = 34, ['shoes_2'] = 0})
+					if skin.sex == 0 then
+						TriggerEvent('skinchanger:loadClothes', skina, {['shoes_1'] = 34, ['shoes_2'] = 0})
+					else
+						TriggerEvent('skinchanger:loadClothes', skina, {['shoes_1'] = 35, ['shoes_2'] = 0})
+					end
 				end
 			elseif value == 'bag' then
 				if skin.bags_1 ~= skina.bags_1 then
@@ -1002,7 +1016,7 @@ function setUniform(value, plyPed)
 					TriggerEvent('skinchanger:loadClothes', skina, {['bags_1'] = 0, ['bags_2'] = 0})
 				end
 			elseif value == 'bproof' then
-				startAnim("clothingtie", "try_tie_neutral_a")
+				startAnimAction("clothingtie", "try_tie_neutral_a")
 				Citizen.Wait(1000)
 				ClearPedTasks(plyPed)
 
@@ -1053,16 +1067,16 @@ function SetUnsetAccessory(accessory)
 				if _accessory == 'ears' then
 				elseif _accessory == "glasses" then
 					mAccessory = 0
-					startAnim("clothingspecs", "try_glasses_positive_a")
+					startAnimAction("clothingspecs", "try_glasses_positive_a")
 					Citizen.Wait(1000)
 					ClearPedTasks(plyPed)
 				elseif _accessory == 'helmet' then
-					startAnim("missfbi4", "takeoff_mask")
+					startAnimAction("missfbi4", "takeoff_mask")
 					Citizen.Wait(1000)
 					ClearPedTasks(plyPed)
 				elseif _accessory == "mask" then
 					mAccessory = 0
-					startAnim("missfbi4", "takeoff_mask")
+					startAnimAction("missfbi4", "takeoff_mask")
 					Citizen.Wait(850)
 					ClearPedTasks(plyPed)
 				end
