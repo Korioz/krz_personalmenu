@@ -596,7 +596,7 @@ function AddMenuInventoryMenu(menu)
 									ESX.ShowNotification(_U('amount_invalid'))
 								end
 							else
-								ESX.ShowNotification(_U('in_vehicle_drop'))
+								ESX.ShowNotification(_U('in_vehicle_drop', label))
 							end
 						else
 							ESX.ShowNotification(_U('not_droppable', label))
@@ -644,6 +644,7 @@ function AddMenuWeaponMenu(menu)
 			if HasPedGotWeapon(plyPed, weaponHash, false) and wepList[i].name ~= 'WEAPON_UNARMED' then
 				local ammo 		= GetAmmoInPedWeapon(plyPed, weaponHash)
 				local value	    = wepList[i].name
+				local label	    = wepList[i].label
 
 				if item == wepItem[value] then
 					weaponItemMenu.OnItemSelect = function(sender, item, index)
@@ -723,7 +724,7 @@ function AddMenuWeaponMenu(menu)
 								TriggerServerEvent('esx:removeInventoryItem', 'item_weapon', value)
 								_menuPool:CloseAllMenus()
 							else
-								ESX.ShowNotification(_U('in_vehicle_drop'))
+								ESX.ShowNotification(_U('in_vehicle_drop', label))
 							end
 						end
 					end
@@ -899,7 +900,11 @@ function AddMenuWalletMenu(menu)
 							ESX.ShowNotification(_U('amount_invalid'))
 						end
 					else
-						ESX.ShowNotification(_U('in_vehicle_drop'))
+						if item == walletMoney then
+							ESX.ShowNotification(_U('in_vehicle_drop', 'de l\'argent'))
+						elseif item == walletdirtyMoney then
+							ESX.ShowNotification(_U('in_vehicle_drop', 'de l\'argent sale'))
+						end
 					end
 				end
 			end
