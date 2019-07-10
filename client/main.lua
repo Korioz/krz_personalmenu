@@ -94,13 +94,13 @@ AddEventHandler('esx:playerLoaded', function(xPlayer)
 	ESX.PlayerData = xPlayer
 end)
 
-AddEventHandler('esx:onPlayerDeath', function(data)
+AddEventHandler('esx:onPlayerDeath', function()
 	isDead = true
 	_menuPool:CloseAllMenus()
 	ESX.UI.Menu.CloseAll()
 end)
 
-AddEventHandler('playerSpawned', function(spawn)
+AddEventHandler('playerSpawned', function()
 	isDead = false
 end)
 
