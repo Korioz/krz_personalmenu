@@ -581,7 +581,7 @@ function AddMenuInventoryMenu(menu)
 									ESX.ShowNotification(_U('amount_invalid'))
 								end
 							else
-								ESX.ShowNotification(_U('in_vehicle_give'))
+								ESX.ShowNotification(_U('in_vehicle_give', label))
 							end
 						else
 							ESX.ShowNotification(_U('players_nearby'))
@@ -663,7 +663,7 @@ function AddMenuWeaponMenu(menu)
 									TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_weapon', value, ammo)
 									_menuPool:CloseAllMenus()
 								else
-									ESX.ShowNotification(_U('in_vehicle_give'))
+									ESX.ShowNotification(_U('in_vehicle_give', label))
 								end
 							else
 								ESX.ShowNotification(_U('players_nearby'))
@@ -713,7 +713,7 @@ function AddMenuWeaponMenu(menu)
 											ESX.ShowNotification(_U('no_ammo'))
 										end
 									else
-										ESX.ShowNotification(_U('in_vehicle_give'))
+										ESX.ShowNotification(_U('in_vehicle_give', label))
 									end
 								else
 									ESX.ShowNotification(_U('players_nearby'))
@@ -747,8 +747,10 @@ function AddMenuWalletMenu(menu)
 	local walletJob = NativeUI.CreateItem(_U('wallet_job_button', ESX.PlayerData.job.label, ESX.PlayerData.job.grade_label), "")
 	walletmenu.SubMenu:AddItem(walletJob)
 
+	local walletJob2 = nil
+
 	if Config.doublejob then
-		local walletJob2 = NativeUI.CreateItem(_U('wallet_job2_button', ESX.PlayerData.job2.label, ESX.PlayerData.job2.grade_label), "")
+		walletJob2 = NativeUI.CreateItem(_U('wallet_job2_button', ESX.PlayerData.job2.label, ESX.PlayerData.job2.grade_label), "")
 		walletmenu.SubMenu:AddItem(walletJob2)
 	end
 
@@ -756,12 +758,6 @@ function AddMenuWalletMenu(menu)
 	walletmenu.SubMenu:AddItem(walletMoney)
 
 	local walletdirtyMoney = nil
-	local showID = nil
-	local showDriver = nil
-	local showFirearms = nil
-	local checkID = nil
-	local checkDriver = nil
-	local checkFirearms = nil
 
 	for i = 1, #ESX.PlayerData.accounts, 1 do
 		if ESX.PlayerData.accounts[i].name == 'black_money' then
@@ -769,6 +765,13 @@ function AddMenuWalletMenu(menu)
 			walletmenu.SubMenu:AddItem(walletdirtyMoney)
 		end
 	end
+	
+	local showID = nil
+	local showDriver = nil
+	local showFirearms = nil
+	local checkID = nil
+	local checkDriver = nil
+	local checkFirearms = nil
 
 	if Config.EnableJsfourIDCard then
 		showID = NativeUI.CreateItem(_U('wallet_show_idcard_button'), "")
@@ -866,7 +869,11 @@ function AddMenuWalletMenu(menu)
 								ESX.ShowNotification(_U('amount_invalid'))
 							end
 						else
-							ESX.ShowNotification(_U('in_vehicle_give'))
+							if item == walletMoney then
+								ESX.ShowNotification(_U('in_vehicle_give', 'de l\'argent'))
+							elseif item == walletdirtyMoney then
+								ESX.ShowNotification(_U('in_vehicle_give', 'de l\'argent sale'))
+							end
 						end
 					else
 						ESX.ShowNotification(_U('players_nearby'))
