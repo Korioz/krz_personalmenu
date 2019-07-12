@@ -735,9 +735,7 @@ function AddMenuWeaponMenu(menu)
 end
 
 function AddMenuWalletMenu(menu)
-	local moneyOption = {}
-	
-	moneyOption = {
+	personalmenu.moneyOption = {
 		_U('wallet_option_give'),
 		_U('wallet_option_drop')
 	}
@@ -754,14 +752,14 @@ function AddMenuWalletMenu(menu)
 		walletmenu.SubMenu:AddItem(walletJob2)
 	end
 
-	local walletMoney = NativeUI.CreateListItem(_U('wallet_money_button', ESX.Math.GroupDigits(ESX.PlayerData.money)), moneyOption, 1)
+	local walletMoney = NativeUI.CreateListItem(_U('wallet_money_button', ESX.Math.GroupDigits(ESX.PlayerData.money)), personalmenu.moneyOption, 1)
 	walletmenu.SubMenu:AddItem(walletMoney)
 
 	local walletdirtyMoney = nil
 
 	for i = 1, #ESX.PlayerData.accounts, 1 do
 		if ESX.PlayerData.accounts[i].name == 'black_money' then
-			walletdirtyMoney = NativeUI.CreateListItem(_U('wallet_blackmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), moneyOption, 1)
+			walletdirtyMoney = NativeUI.CreateListItem(_U('wallet_blackmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), personalmenu.moneyOption, 1)
 			walletmenu.SubMenu:AddItem(walletdirtyMoney)
 		end
 	end
