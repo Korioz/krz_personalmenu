@@ -755,9 +755,15 @@ function AddMenuWalletMenu(menu)
 	local walletMoney = NativeUI.CreateListItem(_U('wallet_money_button', ESX.Math.GroupDigits(ESX.PlayerData.money)), personalmenu.moneyOption, 1)
 	walletmenu.SubMenu:AddItem(walletMoney)
 
+	local walletbankMoney = nil
 	local walletdirtyMoney = nil
 
 	for i = 1, #ESX.PlayerData.accounts, 1 do
+		if ESX.PlayerData.accounts[i].name == 'bank' then
+			walletbankMoney = NativeUI.CreateItem(_U('wallet_bankmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)))
+			walletmenu.SubMenu:AddItem(walletbankMoney)
+		end
+
 		if ESX.PlayerData.accounts[i].name == 'black_money' then
 			walletdirtyMoney = NativeUI.CreateListItem(_U('wallet_blackmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), personalmenu.moneyOption, 1)
 			walletmenu.SubMenu:AddItem(walletdirtyMoney)
@@ -828,77 +834,38 @@ function AddMenuWalletMenu(menu)
 	end
 
 	walletmenu.SubMenu.OnListSelect = function(sender, item, index)
-		if item == walletMoney or item == walletdirtyMoney then
-			if index == 1 then
-				local quantity = KeyboardInput("KORIOZ_BOX_AMOUNT", _U('dialogbox_amount'), "", 8)
+		if index == 1 then
+			local quantity = KeyboardInput("KORIOZ_BOX_AMOUNT", _U('dialogbox_amount'), "", 8)
 
-				if quantity ~= nil then
-					local post = true
-					quantity = tonumber(quantity)
+			if quantity ~= nil then
+				local post = true
+				quantity = tonumber(quantity)
 
-					if type(quantity) == 'number' then
-						quantity = ESX.Math.Round(quantity)
+				if type(quantity) == 'number' then
+					quantity = ESX.Math.Round(quantity)
 
-						if quantity <= 0 then
-							post = false
-						end
-					end
-
-					local foundPlayers = false
-					personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
-
-					if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3 then
-						foundPlayers = true
-					end
-
-					if foundPlayers == true then
-						local closestPed = GetPlayerPed(personalmenu.closestPlayer)
-
-						if not IsPedSittingInAnyVehicle(closestPed) then
-							if post == true then
-								if item == walletMoney then
-									TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_money', 'money', quantity)
-									_menuPool:CloseAllMenus()
-								elseif item == walletdirtyMoney then
-									TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_account', 'black_money', quantity)
-									_menuPool:CloseAllMenus()
-								end
-							else
-								ESX.ShowNotification(_U('amount_invalid'))
-							end
-						else
-							if item == walletMoney then
-								ESX.ShowNotification(_U('in_vehicle_give', 'de l\'argent'))
-							elseif item == walletdirtyMoney then
-								ESX.ShowNotification(_U('in_vehicle_give', 'de l\'argent sale'))
-							end
-						end
-					else
-						ESX.ShowNotification(_U('players_nearby'))
+					if quantity <= 0 then
+						post = false
 					end
 				end
-			elseif index == 2 then
-				local quantity = KeyboardInput("KORIOZ_BOX_AMOUNT", _U('dialogbox_amount'), "", 8)
 
-				if quantity ~= nil then
-					local post = true
-					quantity = tonumber(quantity)
+				local foundPlayers = false
+				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
 
-					if type(quantity) == 'number' then
-						quantity = ESX.Math.Round(quantity)
+				if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3 then
+					foundPlayers = true
+				end
 
-						if quantity <= 0 then
-							post = false
-						end
-					end
+				if foundPlayers == true then
+					local closestPed = GetPlayerPed(personalmenu.closestPlayer)
 
-					if not IsPedSittingInAnyVehicle(plyPed) then
+					if not IsPedSittingInAnyVehicle(closestPed) then
 						if post == true then
 							if item == walletMoney then
-								TriggerServerEvent('esx:removeInventoryItem', 'item_money', 'money', quantity)
+								TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_money', 'money', quantity)
 								_menuPool:CloseAllMenus()
 							elseif item == walletdirtyMoney then
-								TriggerServerEvent('esx:removeInventoryItem', 'item_account', 'black_money', quantity)
+								TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_account', 'black_money', quantity)
 								_menuPool:CloseAllMenus()
 							end
 						else
@@ -906,10 +873,47 @@ function AddMenuWalletMenu(menu)
 						end
 					else
 						if item == walletMoney then
-							ESX.ShowNotification(_U('in_vehicle_drop', 'de l\'argent'))
+							ESX.ShowNotification(_U('in_vehicle_give', 'de l\'argent'))
 						elseif item == walletdirtyMoney then
-							ESX.ShowNotification(_U('in_vehicle_drop', 'de l\'argent sale'))
+							ESX.ShowNotification(_U('in_vehicle_give', 'de l\'argent sale'))
 						end
+					end
+				else
+					ESX.ShowNotification(_U('players_nearby'))
+				end
+			end
+		elseif index == 2 then
+			local quantity = KeyboardInput("KORIOZ_BOX_AMOUNT", _U('dialogbox_amount'), "", 8)
+
+			if quantity ~= nil then
+				local post = true
+				quantity = tonumber(quantity)
+
+				if type(quantity) == 'number' then
+					quantity = ESX.Math.Round(quantity)
+
+					if quantity <= 0 then
+						post = false
+					end
+				end
+
+				if not IsPedSittingInAnyVehicle(plyPed) then
+					if post == true then
+						if item == walletMoney then
+							TriggerServerEvent('esx:removeInventoryItem', 'item_money', 'money', quantity)
+							_menuPool:CloseAllMenus()
+						elseif item == walletdirtyMoney then
+							TriggerServerEvent('esx:removeInventoryItem', 'item_account', 'black_money', quantity)
+							_menuPool:CloseAllMenus()
+						end
+					else
+						ESX.ShowNotification(_U('amount_invalid'))
+					end
+				else
+					if item == walletMoney then
+						ESX.ShowNotification(_U('in_vehicle_drop', 'de l\'argent'))
+					elseif item == walletdirtyMoney then
+						ESX.ShowNotification(_U('in_vehicle_drop', 'de l\'argent sale'))
 					end
 				end
 			end
