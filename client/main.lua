@@ -2,7 +2,7 @@ Citizen.Trace("\n")
 Citizen.Trace("\n")
 Citizen.Trace("PERSONAL MENU v1.0 by Korioz")
 Citizen.Trace("Created for ESX FrameWork")
-Citizen.Trace("Korioz#0478 for any Support")
+Citizen.Trace("Korioz#9253 for any Support")
 Citizen.Trace("\n")
 Citizen.Trace("\n")
 
@@ -760,7 +760,7 @@ function AddMenuWalletMenu(menu)
 
 	for i = 1, #ESX.PlayerData.accounts, 1 do
 		if ESX.PlayerData.accounts[i].name == 'bank' then
-			walletbankMoney = NativeUI.CreateItem(_U('wallet_bankmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)))
+			walletbankMoney = NativeUI.CreateItem(_U('wallet_bankmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), "")
 			walletmenu.SubMenu:AddItem(walletbankMoney)
 		end
 
