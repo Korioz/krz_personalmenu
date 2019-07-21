@@ -237,10 +237,12 @@ end
 function admin_tp_pos()
 	local pos = KeyboardInput("KORIOZ_BOX_XYZ", _U('dialogbox_xyz'), "", 50)
 
-	local _, _, x, y, z = string.find(pos, "([%d%.]+) ([%d%.]+) ([%d%.]+)")
-			
-	if x ~= nil and y ~= nil and z ~= nil then
-		SetEntityCoords(plyPed, x + .0, y + .0, z + .0)
+	if pos ~= nil and pos ~= '' then
+		local _, _, x, y, z = string.find(pos, "([%d%.]+) ([%d%.]+) ([%d%.]+)")
+				
+		if x ~= nil and y ~= nil and z ~= nil then
+			SetEntityCoords(plyPed, x + .0, y + .0, z + .0)
+		end
 	end
 end
 -- FIN TP A POSITION
