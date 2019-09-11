@@ -2242,7 +2242,7 @@ Citizen.CreateThread(function()
 		end
 
 		if showname then
-			for id = 0, 255 do
+			for _, id in ipairs(GetActivePlayers()) do
 				if NetworkIsPlayerActive(id) and GetPlayerPed(id) ~= plyPed then
 					local headId = Citizen.InvokeNative(0xBFEFE3321A3F5015, GetPlayerPed(id), (GetPlayerServerId(id) .. ' - ' .. GetPlayerName(id)), false, false, "", false)
 				end
