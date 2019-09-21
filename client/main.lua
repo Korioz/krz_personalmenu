@@ -1,7 +1,7 @@
 Citizen.Trace("\n")
 Citizen.Trace("PERSONAL MENU v1.0 by Korioz\n")
 Citizen.Trace("Created for ESX FrameWork\n")
-Citizen.Trace("Korioz#3310 for any Support\n")
+Citizen.Trace("Korioz#3310 on Discord for any Support\n")
 Citizen.Trace("\n")
 
 ESX = nil
