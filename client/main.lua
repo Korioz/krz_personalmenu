@@ -354,7 +354,7 @@ end
 -- flipVehicle
 function admin_vehicle_flip()
 	local plyCoords = GetEntityCoords(plyPed)
-	local closestCar = GetClosestVehicle(plyCoords['x'], plyCoords['y'], plyCoords['z'], 10.0, 0, 70)
+	local closestCar = GetClosestVehicle(plyCoords, 10.0, 0, 70)
 	local plyCoords = plyCoords + vector3(0, 2, 0)
 
 	SetEntityCoords(closestCar, plyCoords)
