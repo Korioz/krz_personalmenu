@@ -727,7 +727,7 @@ function UIMenu:ProcessControl()
         end
     end
     if not self.LeftPressed then
-        if self.Controls.Left.Enabled and (IsDisabledControlPressed(0, 174) or IsDisabledControlPressed(1, 174) or IsDisabledControlPressed(2, 174)) then
+        if self.Controls.Left.Enabled and (IsDisabledControlJustPressed(0, 174) or IsDisabledControlJustPressed(1, 174) or IsDisabledControlJustPressed(2, 174)) then
             local type, subtype = self.Items[self:CurrentSelection()]()
             Citizen.CreateThread(function()
                 if (subtype == "UIMenuSliderHeritageItem") then
@@ -753,7 +753,7 @@ function UIMenu:ProcessControl()
         end
     end
     if not self.RightPressed then
-        if self.Controls.Right.Enabled and (IsDisabledControlPressed(0, 175) or IsDisabledControlPressed(1, 175) or IsDisabledControlPressed(2, 175)) then
+        if self.Controls.Right.Enabled and (IsDisabledControlJustPressed(0, 175) or IsDisabledControlJustPressed(1, 175) or IsDisabledControlJustPressed(2, 175)) then
             Citizen.CreateThread(function()
                 local type, subtype = self.Items[self:CurrentSelection()]()
                 if (subtype == "UIMenuSliderHeritageItem") then

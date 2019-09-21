@@ -7,11 +7,11 @@
 - **If you want to contribute (like translation) you can make a pull request or open a new issue**
 
 ### Links & Support
-- **Discord Username**: Korioz#2837
+- **Discord Username**: Korioz#3310
 
 ### Screenshot
 
-![screenshot](https://i.gyazo.com/5bb6b85869261592e069943d4eaad68b.png)
+![screenshot](https://i.gyazo.com/54528fac5600f0b33194d0ad3aafa08b.png)
 
 ### Features
 - Inventory UI
