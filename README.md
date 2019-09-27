@@ -1,5 +1,5 @@
 # krz_personalmenu
-**krz_personalmenu** is a **PersonalMenu** for FiveM developed on top of [ESX](https://github.com/ESX-Org/es_extended) and [NativeUILua-Reloaded](https://github.com/iTexZoz/NativeUILua_Reloaded)
+**krz_personalmenu** is a **PersonalMenu** for FiveM developed on top of [ESX](https://github.com/ESX-Org/es_extended)
 
 ### Important
 - **You are not allowed to modify the resource name**
