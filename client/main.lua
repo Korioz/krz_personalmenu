@@ -1920,7 +1920,7 @@ function AddMenuDemarcheVoixGPS(menu)
 	end
 end
 
-function AddMenuAdminMenu(menu)
+function AddMenuAdminMenu(menu, playerGroup)
 	adminMenu = _menuPool:AddSubMenu(menu, _U('admin_title'))
 
 	if playerGroup == 'mod' then
