@@ -317,7 +317,7 @@ function admin_vehicle_spawn()
 		vehicleName = tostring(vehicleName)
 
 		if type(vehicleName) == 'string' then
-			ESX.Game.SpawnVehicle(vehicleName, GetEntityCoords(plyPed, true), GetEntityHeading(plyPed), function(vehicle)
+			ESX.Game.SpawnVehicle(vehicleName, GetEntityCoords(plyPed), GetEntityHeading(plyPed), function(vehicle)
 				TaskWarpPedIntoVehicle(plyPed, vehicle, -1)
 			end)
 		end
@@ -2168,7 +2168,7 @@ Citizen.CreateThread(function()
 		end
 
 		if noclip then
-			local coords = GetEntityCoords(plyPed, true)
+			local coords = GetEntityCoords(plyPed)
 			local camCoords = getCamDirection()
 
 			SetEntityVelocity(plyPed, 0.01, 0.01, 0.01)
@@ -2188,16 +2188,12 @@ Citizen.CreateThread(function()
 			for k, v in ipairs(GetActivePlayers()) do
 				local otherPed = GetPlayerPed(v)
 				if otherPed ~= plyPed then
-					local closeEnough = Vdist2(GetEntityCoords(plyPed, true), GetEntityCoords(otherPed, true)) < 100.0
-					if gamerTags[v] ~= nil then
-						if closeEnough then
-							gamerTags[v] = CreateFakeMpGamerTag(otherPed, ('%s [%s]'):format(GetPlayerName(v), GetPlayerServerId(v)), false, false, '', 0)
-						else
-							RemoveMpGamerTag(gamerTags[p])
-							gamerTags[v] = nil
-						end
-					elseif closeEnough then
+					local closeEnough = Vdist2(GetEntityCoords(plyPed), GetEntityCoords(otherPed)) < 10000.0
+					if closeEnough and gamerTags[v] == nil then
 						gamerTags[v] = CreateFakeMpGamerTag(otherPed, ('%s [%s]'):format(GetPlayerName(v), GetPlayerServerId(v)), false, false, '', 0)
+					elseif not closeEnough then
+						RemoveMpGamerTag(gamerTags[v])
+						gamerTags[v] = nil
 					end
 				end
 			end
