@@ -1,5 +1,5 @@
 # krz_personalmenu
-**krz_personalmenu** is a **PersonalMenu** for FiveM developed on top of [ESX](https://github.com/ESX-Org/es_extended)
+**krz_personalmenu** is a **PersonalMenu** for FiveM developed on top of [ESX](https://github.com/ESX-Org/es_extended) and built with [NativeUI](https://github.com/FrazzIe/NativeUILua)
 
 ### Important
 - **You are not allowed to modify the resource name**
@@ -22,14 +22,13 @@
 - Loadouts UI
 - Vehicle UI
 - Job Boss UI
-- Job 2 Boss UI
+- Organization Boss UI
 - Billing UI
 - Admin UI
 - Voice System Included (With the OneSync fix)
 - All of the function of nb_menuperso reworked (credits to [nlmarcio](https://github.com/nlmarcio))
-- Changeable Header (Just need to change the commonmenu.ytd file in OpenIV)
-- EMOTE in UI
-- Coloured Title
+- Changeable Header (Change the stream/commonmenu.ytd file in OpenIV)
+- EMOTE in UI (thx to fivem)
 
 ### Requirements
 This order also applies in the startup order.
@@ -63,11 +62,11 @@ git clone https://github.com/Korioz/krz_personalmenu [plugins]/krz_personalmenu
 - Make sure you add this at the bottom of your start order after all esx scripts
 
 ```
-start krz_personalmenu
+ensure krz_personalmenu
 ```
 # Legal
 ### License
-krz_personalmenu - ESX/NativeUI PersonalMenu
+krz_personalmenu - ESX PersonalMenu
 
 Copyright (C) 2019 Korioz
 

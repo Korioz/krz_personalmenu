@@ -2,7 +2,7 @@ resource_manifest_version '44febabe-d386-4d18-afbe-5e627f4af937'
 
 author 'Korioz'
 description 'KORIOZ-PersonalMenu'
-version '1.0'
+version '1.1'
 
 dependency 'es_extended'
 
@@ -13,7 +13,7 @@ server_scripts {
 	'locales/en.lua',
 	'locales/fr.lua',
 	'config.lua',
-	'server/main.lua',
+	'server/main.lua'
 }
 
 client_scripts {
@@ -33,7 +33,7 @@ client_scripts {
 	'dependencies/UIMenu/UIMenu.lua',
 	'dependencies/UIMenu/MenuPool.lua',
 
-	'dependencies/NativeUI.lua',
+	'dependencies/NativeUI.lua'
 }
 
 client_scripts {
@@ -43,7 +43,5 @@ client_scripts {
 	'locales/fr.lua',
 	'config.lua',
 	'client/main.lua',
-	'other/handsup.lua',
-	'other/pointing.lua',
-	'other/crouch.lua',
+	'client/other.lua'
 }

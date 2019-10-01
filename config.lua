@@ -21,26 +21,26 @@ Config.EnableJsfourIDCard = false -- enable if you're using jsfour-idcard
 
 -- GENERAL
 Config.Menu = {
-	clavier = Keys['F5'],
+	clavier = Keys['F5']
 }
 
 Config.handsUP = {
-	clavier = Keys['~'],
+	clavier = Keys['~']
 }
 
 Config.pointing = {
-	clavier = Keys['B'],
+	clavier = Keys['B']
 }
 
 Config.stopAnim = {
-	clavier = Keys['X'],
+	clavier = Keys['X']
 }
 
 Config.crouch = {
-	clavier = Keys['LEFTCTRL'],
+	clavier = Keys['LEFTCTRL']
 }
 
 Config.TPMarker = {
 	clavier1 = Keys['LEFTALT'],
-	clavier2 = Keys['E'],
+	clavier2 = Keys['E']
 }

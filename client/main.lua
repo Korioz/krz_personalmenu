@@ -1,5 +1,5 @@
 Citizen.Trace('\n')
-Citizen.Trace('PERSONAL MENU v1.0 by Korioz\n')
+Citizen.Trace('PERSONAL MENU v1.1 by Korioz\n')
 Citizen.Trace('Created for ESX FrameWork\n')
 Citizen.Trace('Korioz#3310 on Discord for any Support\n')
 Citizen.Trace('\n')
@@ -13,7 +13,7 @@ local invItem, wepItem, billItem, mainMenu, itemMenu, weaponItemMenu = {}, {}, {
 
 local isDead, inAnim = false, false
 
-local playerGroup, noclip, godmode, visible = nil, false, false, false
+local noclip, godmode, visible, gamerTags = false, false, false, {}
 
 local actualGPS, actualGPSIndex = _U('default_gps'), 1
 local actualDemarche, actualDemarcheIndex = _U('default_demarche'), 1
@@ -40,11 +40,6 @@ Citizen.CreateThread(function()
 	end
 
 	ESX.PlayerData = ESX.GetPlayerData()
-
-	while playerGroup == nil do
-		ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(group) playerGroup = group end)
-		Citizen.Wait(10)
-	end
 
 	while actualSkin == nil do
 		TriggerEvent('skinchanger:getSkin', function(skin) actualSkin = skin end)
@@ -184,7 +179,6 @@ function KeyboardInput(entryTitle, textEntry, inputText, maxLength)
 end
 
 -- Weapon Menu --
-
 RegisterNetEvent('KorioZ-PersonalMenu:Weapon_addAmmoToPedC')
 AddEventHandler('KorioZ-PersonalMenu:Weapon_addAmmoToPedC', function(value, quantity)
 	local weaponHash = GetHashKey(value)
@@ -195,7 +189,6 @@ AddEventHandler('KorioZ-PersonalMenu:Weapon_addAmmoToPedC', function(value, quan
 end)
 
 -- Admin Menu --
-
 RegisterNetEvent('KorioZ-PersonalMenu:Admin_BringC')
 AddEventHandler('KorioZ-PersonalMenu:Admin_BringC', function(plyPedCoords)
 	SetEntityCoords(plyPed, plyPedCoords)
@@ -214,7 +207,6 @@ function admin_tp_toplayer()
 		end
 	end
 end
--- FIN GOTO JOUEUR
 
 -- TP UN JOUEUR A MOI
 function admin_tp_playertome()
@@ -229,7 +221,6 @@ function admin_tp_playertome()
 		end
 	end
 end
--- FIN TP UN JOUEUR A MOI
 
 -- TP A POSITION
 function admin_tp_pos()
@@ -243,19 +234,30 @@ function admin_tp_pos()
 		end
 	end
 end
--- FIN TP A POSITION
 
--- FONCTION NOCLIP 
+-- NOCLIP 
 function admin_no_clip()
 	noclip = not noclip
 
 	if noclip then
+		FreezeEntityPosition(plyPed, true)
 		SetEntityInvincible(plyPed, true)
+		SetEntityCollision(plyPed, false, false)
+
 		SetEntityVisible(plyPed, false, false)
+
+		SetEveryoneIgnorePlayer(PlayerId(), true)
+		SetPoliceIgnorePlayer(PlayerId(), true)
 		ESX.ShowNotification(_U('admin_noclipon'))
 	else
+		FreezeEntityPosition(plyPed, false)
 		SetEntityInvincible(plyPed, false)
+		SetEntityCollision(plyPed, true, true)
+
 		SetEntityVisible(plyPed, true, false)
+
+		SetEveryoneIgnorePlayer(PlayerId(), false)
+		SetPoliceIgnorePlayer(PlayerId(), false)
 		ESX.ShowNotification(_U('admin_noclipoff'))
 	end
 end
@@ -264,21 +266,14 @@ function getCamDirection()
 	local heading = GetGameplayCamRelativeHeading() + GetEntityHeading(plyPed)
 	local pitch = GetGameplayCamRelativePitch()
 	local coords = vector3(-math.sin(heading * math.pi / 180.0), math.cos(heading * math.pi / 180.0), math.sin(pitch * math.pi / 180.0))
-	local len = math.sqrt(coords.x * coords.x + coords.y * coords.y + coords.z * coords.z)
+	local len = math.sqrt((coords.x * coords.x) + (coords.y * coords.y) + (coords.z * coords.z))
 
 	if len ~= 0 then
-		coords.x = coords.x / len
-		coords.y = coords.y / len
-		coords.z = coords.z / len
+		coords = coords / len
 	end
 
 	return coords
 end
-
-function isNoclip()
-	return noclip
-end
--- FIN NOCLIP
 
 -- GOD MODE
 function admin_godmode()
@@ -292,7 +287,6 @@ function admin_godmode()
 		ESX.ShowNotification(_U('admin_godmodeoff'))
 	end
 end
--- FIN GOD MODE
 
 -- INVISIBLE
 function admin_mode_fantome()
@@ -306,7 +300,6 @@ function admin_mode_fantome()
 		ESX.ShowNotification(_U('admin_ghostoff'))
 	end
 end
--- FIN INVISIBLE
 
 -- Réparer vehicule
 function admin_vehicle_repair()
@@ -315,7 +308,6 @@ function admin_vehicle_repair()
 	SetVehicleFixed(car)
 	SetVehicleDirtLevel(car, 0.0)
 end
--- FIN Réparer vehicule
 
 -- Spawn vehicule
 function admin_vehicle_spawn()
@@ -325,31 +317,12 @@ function admin_vehicle_spawn()
 		vehicleName = tostring(vehicleName)
 
 		if type(vehicleName) == 'string' then
-			local car = GetHashKey(vehicleName)
-
-			Citizen.CreateThread(function()
-				RequestModel(car)
-
-				while not HasModelLoaded(car) do
-					Citizen.Wait(0)
-				end
-
-				local x, y, z = table.unpack(GetEntityCoords(plyPed, true))
-
-				local veh = CreateVehicle(car, x, y, z, 0.0, true, false)
-				local id = NetworkGetNetworkIdFromEntity(veh)
-
-				SetEntityVelocity(veh, 2000)
-				SetVehicleOnGroundProperly(veh)
-				SetVehicleHasBeenOwnedByPlayer(veh, true)
-				SetNetworkIdCanMigrate(id, true)
-				SetVehRadioStation(veh, 'OFF')
-				SetPedIntoVehicle(plyPed, veh, -1)
+			ESX.Game.SpawnVehicle(vehicleName, GetEntityCoords(plyPed, true), GetEntityHeading(plyPed), function(vehicle)
+				TaskWarpPedIntoVehicle(plyPed, vehicle, -1)
 			end)
 		end
 	end
 end
--- FIN Spawn vehicule
 
 -- flipVehicle
 function admin_vehicle_flip()
@@ -358,10 +331,8 @@ function admin_vehicle_flip()
 	local plyCoords = plyCoords + vector3(0, 2, 0)
 
 	SetEntityCoords(closestCar, plyCoords)
-
 	ESX.ShowNotification(_U('admin_vehicleflip'))
 end
--- FIN flipVehicle
 
 -- GIVE DE L'ARGENT
 function admin_give_money()
@@ -375,7 +346,6 @@ function admin_give_money()
 		end
 	end
 end
--- FIN GIVE DE L'ARGENT
 
 -- GIVE DE L'ARGENT EN BANQUE
 function admin_give_bank()
@@ -389,7 +359,6 @@ function admin_give_bank()
 		end
 	end
 end
--- FIN GIVE DE L'ARGENT EN BANQUE
 
 -- GIVE DE L'ARGENT SALE
 function admin_give_dirty()
@@ -403,19 +372,16 @@ function admin_give_dirty()
 		end
 	end
 end
--- FIN GIVE DE L'ARGENT SALE
 
 -- Afficher Coord
 function modo_showcoord()
 	showcoord = not showcoord
 end
--- FIN Afficher Coord
 
 -- Afficher Nom
 function modo_showname()
 	showname = not showname
 end
--- FIN Afficher Nom
 
 -- TP MARKER
 function admin_tp_marker()
@@ -443,7 +409,6 @@ function admin_tp_marker()
 		ESX.ShowNotification(_U('admin_nomarker'))
 	end
 end
--- FIN TP MARKER
 
 -- HEAL JOUEUR
 function admin_heal_player()
@@ -457,7 +422,6 @@ function admin_heal_player()
 		end
 	end
 end
--- FIN HEAL JOUEUR
 
 function changer_skin()
 	_menuPool:CloseAllMenus()
@@ -2080,7 +2044,7 @@ function AddMenuAdminMenu(menu, playerGroup)
 	end
 end
 
-function GeneratePersonalMenu()	
+function GeneratePersonalMenu(playerGroup)
 	AddMenuInventoryMenu(mainMenu)
 	AddMenuWeaponMenu(mainMenu)
 	AddMenuWalletMenu(mainMenu)
@@ -2108,7 +2072,7 @@ function GeneratePersonalMenu()
 	AddMenuDemarcheVoixGPS(mainMenu)
 
 	if playerGroup ~= nil and (playerGroup == 'mod' or playerGroup == 'admin' or playerGroup == 'superadmin' or playerGroup == 'owner') then
-		AddMenuAdminMenu(mainMenu)
+		AddMenuAdminMenu(mainMenu, playerGroup)
 	end
 
 	_menuPool:RefreshIndex()
@@ -2118,10 +2082,12 @@ Citizen.CreateThread(function()
 	while true do
 		if IsControlJustReleased(0, Config.Menu.clavier) and not isDead then
 			if mainMenu ~= nil and not mainMenu:Visible() then
-				ESX.PlayerData = ESX.GetPlayerData()
-				GeneratePersonalMenu()
-				mainMenu:Visible(true)
-				Citizen.Wait(10)
+				ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(playerGroup)
+					ESX.PlayerData = ESX.GetPlayerData()
+					GeneratePersonalMenu(playerGroup)
+					mainMenu:Visible(true)
+					Citizen.Wait(10)
+				end)
 			end
 		end
 		
@@ -2177,52 +2143,37 @@ end)
 
 Citizen.CreateThread(function()
 	while true do
-		if ESX ~= nil then
-			ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(group) playerGroup = group end)
-
-			Citizen.Wait(30 * 1000)
-		else
-			Citizen.Wait(100)
-		end
-	end
-end)
-
-Citizen.CreateThread(function()
-	while true do
 		plyPed = PlayerPedId()
 		
 		if IsControlJustReleased(0, Config.stopAnim.clavier) and GetLastInputMethod(2) and not isDead then
 			ClearPedTasks(plyPed)
 		end
 
-		if playerGroup ~= nil and (playerGroup == 'mod' or playerGroup == 'admin' or playerGroup == 'superadmin' or playerGroup == 'owner') then
-			if IsControlPressed(1, Config.TPMarker.clavier1) and IsControlJustReleased(1, Config.TPMarker.clavier2) and GetLastInputMethod(2) and not isDead then
-				admin_tp_marker()
-			end
+		if IsControlPressed(1, Config.TPMarker.clavier1) and IsControlJustReleased(1, Config.TPMarker.clavier2) and GetLastInputMethod(2) and not isDead then
+			ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(playerGroup)
+				if playerGroup ~= nil and (playerGroup == 'mod' or playerGroup == 'admin' or playerGroup == 'superadmin' or playerGroup == 'owner') then
+					admin_tp_marker()
+				end
+			end)
 		end
 
 		if showcoord then
 			local playerPos = GetEntityCoords(plyPed)
-			local playerHeading = GetEntityHeading(plyPed)
-			Text('~r~X~s~: ' .. playerPos.x .. ' ~b~Y~s~: ' .. playerPos.y .. ' ~g~Z~s~: ' .. playerPos.z .. ' ~y~Angle~s~: ' .. playerHeading)
+			Text('~r~X~s~: ' .. playerPos.x .. ' ~b~Y~s~: ' .. playerPos.y .. ' ~g~Z~s~: ' .. playerPos.z .. ' ~y~Angle~s~: ' .. GetEntityHeading(plyPed))
 		end
 
 		if noclip then
 			local coords = GetEntityCoords(plyPed, true)
 			local camCoords = getCamDirection()
 
-			SetEntityVelocity(plyPed, 0.0001, 0.0001, 0.0001)
+			SetEntityVelocity(plyPed, 0.01, 0.01, 0.01)
 
 			if IsControlPressed(0, 32) then
-				coords.x = coords.x + Config.noclip_speed * camCoords.x
-				coords.y = coords.y + Config.noclip_speed * camCoords.y
-				coords.z = coords.z + Config.noclip_speed * camCoords.z
+				coords = coords + (Config.noclip_speed * camCoords)
 			end
 
 			if IsControlPressed(0, 269) then
-				coords.x = coords.x - Config.noclip_speed * camCoords.x
-				coords.y = coords.y - Config.noclip_speed * camCoords.y
-				coords.z = coords.z - Config.noclip_speed * camCoords.z
+				coords = coords - (Config.noclip_speed * camCoords)
 			end
 
 			SetEntityCoordsNoOffset(plyPed, coords, true, true, true)
@@ -2232,7 +2183,17 @@ Citizen.CreateThread(function()
 			for k, v in ipairs(GetActivePlayers()) do
 				local otherPed = GetPlayerPed(v)
 				if otherPed ~= plyPed then
-					Citizen.InvokeNative(0xBFEFE3321A3F5015, otherPed, (GetPlayerServerId(v) .. ' - ' .. GetPlayerName(v)), false, false, '', false)
+					local closeEnough = Vdist2(GetEntityCoords(plyPed, true), GetEntityCoords(otherPed, true)) < 100.0
+					if gamerTags[v] ~= nil then
+						if closeEnough then
+							gamerTags[v] = CreateFakeMpGamerTag(otherPed, ('%s [%s]'):format(GetPlayerName(v), GetPlayerServerId(v)), false, false, '', 0)
+						else
+							RemoveMpGamerTag(gamerTags[p])
+							gamerTags[v] = nil
+						end
+					elseif closeEnough then
+						gamerTags[v] = CreateFakeMpGamerTag(otherPed, ('%s [%s]'):format(GetPlayerName(v), GetPlayerServerId(v)), false, false, '', 0)
+					end
 				end
 			end
 		end
