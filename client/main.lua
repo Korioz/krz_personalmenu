@@ -942,6 +942,7 @@ function setUniform(value, plyPed)
 			if value == 'torso' then
 				startAnimAction('clothingtie', 'try_tie_neutral_a')
 				Citizen.Wait(1000)
+				handsup, pointing = false, false
 				ClearPedTasks(plyPed)
 
 				if skin.torso_1 ~= skina.torso_1 then
@@ -978,6 +979,7 @@ function setUniform(value, plyPed)
 			elseif value == 'bproof' then
 				startAnimAction('clothingtie', 'try_tie_neutral_a')
 				Citizen.Wait(1000)
+				handsup, pointing = false, false
 				ClearPedTasks(plyPed)
 
 				if skin.bproof_1 ~= skina.bproof_1 then
@@ -1029,15 +1031,18 @@ function SetUnsetAccessory(accessory)
 					mAccessory = 0
 					startAnimAction('clothingspecs', 'try_glasses_positive_a')
 					Citizen.Wait(1000)
+					handsup, pointing = false, false
 					ClearPedTasks(plyPed)
 				elseif _accessory == 'helmet' then
 					startAnimAction('missfbi4', 'takeoff_mask')
 					Citizen.Wait(1000)
+					handsup, pointing = false, false
 					ClearPedTasks(plyPed)
 				elseif _accessory == 'mask' then
 					mAccessory = 0
 					startAnimAction('missfbi4', 'takeoff_mask')
 					Citizen.Wait(850)
+					handsup, pointing = false, false
 					ClearPedTasks(plyPed)
 				end
 
@@ -1062,7 +1067,6 @@ function SetUnsetAccessory(accessory)
 				ESX.ShowNotification(_U('accessories_no_mask'))
 			end
 		end
-
 	end, accessory)
 end
 
@@ -2146,6 +2150,7 @@ Citizen.CreateThread(function()
 		plyPed = PlayerPedId()
 		
 		if IsControlJustReleased(0, Config.stopAnim.clavier) and GetLastInputMethod(2) and not isDead then
+			handsup, pointing = false, false
 			ClearPedTasks(plyPed)
 		end
 

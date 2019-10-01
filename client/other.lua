@@ -1,4 +1,4 @@
-local crouched, handsup, pointing = false, false, false
+crouched, handsup, pointing = false, false, false
 
 local function startPointing(plyPed)
 	RequestAnimDict('anim@mp_point')
@@ -30,9 +30,8 @@ Citizen.CreateThread(function()
 		if IsDisabledControlJustReleased(1, Config.crouch.clavier) and GetLastInputMethod(2) then
 			local plyPed = PlayerPedId()
 			if (DoesEntityExist(plyPed)) and (not IsEntityDead(plyPed)) and (IsPedOnFoot(plyPed)) then
+				crouched = not crouched
 				if crouched then 
-					ResetPedMovementClipset(plyPed, 0)
-				else
 					RequestAnimSet('move_ped_crouched')
 		
 					while not HasAnimSetLoaded('move_ped_crouched') do
@@ -40,17 +39,21 @@ Citizen.CreateThread(function()
 					end
 		
 					SetPedMovementClipset(plyPed, 'move_ped_crouched', 0.25)
+				else
+					ResetPedMovementClipset(plyPed, 0)
 				end
-				crouched = not crouched
 			end
 		end
 
 		if IsControlJustReleased(1, Config.handsUP.clavier) and GetLastInputMethod(2) then
 			local plyPed = PlayerPedId()
 			if (DoesEntityExist(plyPed)) and not (IsEntityDead(plyPed)) and (IsPedOnFoot(plyPed)) then
+				if pointing then
+					pointing = false
+				end
+
+				handsup = not handsup
 				if handsup then
-					ClearPedSecondaryTask(plyPed)
-				else
 					RequestAnimDict('random@mugging3')
 
 					while not HasAnimDictLoaded('random@mugging3') do
@@ -58,28 +61,34 @@ Citizen.CreateThread(function()
 					end
 
 					TaskPlayAnim(plyPed, 'random@mugging3', 'handsup_standing_base', 8.0, -8, -1, 49, 0, 0, 0, 0)
+				else
+					ClearPedSecondaryTask(plyPed)
 				end
-				handsup = not handsup
 			end
 		end
 
 		if IsControlJustReleased(1, Config.pointing.clavier) and GetLastInputMethod(2) then
 			local plyPed = PlayerPedId()
 			if (DoesEntityExist(plyPed)) and (not IsEntityDead(plyPed)) and (IsPedOnFoot(plyPed)) then
-				if pointing then
-					stopPointing(plyPed)
-				else
-					startPointing(plyPed)
+				if handsup then
+					handsup = false
 				end
+
 				pointing = not pointing
+				if pointing then
+					startPointing(plyPed)
+				else
+					stopPointing(plyPed)
+				end
 			end
 		end
 
-		if pointing then
+		if crouched or handsup or pointing then
 			if not IsPedOnFoot(PlayerPedId()) then
+				ResetPedMovementClipset(plyPed, 0)
 				stopPointing()
-				pointing = false
-			else
+				crouched, handsup, pointing = false, false, false
+			elseif pointing then
 				local ped = PlayerPedId()
 				local camPitch = GetGameplayCamRelativePitch()
 
