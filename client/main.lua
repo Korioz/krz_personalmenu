@@ -2188,10 +2188,9 @@ Citizen.CreateThread(function()
 			for k, v in ipairs(GetActivePlayers()) do
 				local otherPed = GetPlayerPed(v)
 				if otherPed ~= plyPed then
-					local closeEnough = Vdist2(GetEntityCoords(plyPed), GetEntityCoords(otherPed)) < 10000.0
-					if closeEnough and gamerTags[v] == nil then
+					if GetDistanceBetweenCoords(GetEntityCoords(plyPed), GetEntityCoords(otherPed)) < 5000.0 then
 						gamerTags[v] = CreateFakeMpGamerTag(otherPed, ('%s [%s]'):format(GetPlayerName(v), GetPlayerServerId(v)), false, false, '', 0)
-					elseif not closeEnough then
+					else
 						RemoveMpGamerTag(gamerTags[v])
 						gamerTags[v] = nil
 					end
