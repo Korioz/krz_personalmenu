@@ -1,15 +1,18 @@
-Citizen.Trace('\n')
-Citizen.Trace('PERSONAL MENU v1.1 by Korioz\n')
-Citizen.Trace('Created for ESX FrameWork\n')
-Citizen.Trace('Korioz#3310 on Discord for any Support\n')
-Citizen.Trace('\n')
+print("")
+print("^1Author : Korioz^0")
+print("^Version : 1.1^0")
+print("")
+print("^2[Download] : https://github.com/korioz/krz_personalmenu/releases^0")
+print("^2[Feature Suggestions] : https://github.com/korioz/krz_personalmenu/issues/2^0")
+print("")
+print("^6Korioz#3310 on Discord for any Support.^0")
+print("")
 
 ESX = nil
 
-_menuPool = nil
 local personalmenu = {}
 
-local invItem, wepItem, billItem, mainMenu, itemMenu, weaponItemMenu = {}, {}, {}, nil, nil, nil
+local invItem, wepItem, billItem, mainMenu, inventoryMenu, loadoutMenu = {}, {}, {}, nil, nil, nil
 
 local isDead, inAnim = false, false
 
@@ -54,26 +57,22 @@ Citizen.CreateThread(function()
 
 	wepList = ESX.GetWeaponList()
 
-	_menuPool = NativeUI.CreatePool()
-
-	mainMenu = NativeUI.CreateMenu(Config.servername, _U('mainmenu_subtitle'))
-	itemMenu = NativeUI.CreateMenu(Config.servername, _U('inventory_actions_subtitle'))
-	weaponItemMenu = NativeUI.CreateMenu(Config.servername, _U('loadout_actions_subtitle'))
-	_menuPool:Add(mainMenu)
-	_menuPool:Add(itemMenu)
-	_menuPool:Add(weaponItemMenu)
+	mainMenu = RageUI.CreateMenu(Config.servername, _U('mainmenu_subtitle'), 0, 0, 'commonmenu', 'interaction_bgd', 255, 255, 255, 255)
+	inventoryMenu = RageUI.CreateMenu(Config.servername, _U('inventory_actions_subtitle'), 0, 0, 'commonmenu', 'interaction_bgd', 255, 255, 255, 255)
+	loadoutMenu = RageUI.CreateMenu(Config.servername, _U('loadout_actions_subtitle'), 0, 0, 'commonmenu', 'interaction_bgd', 255, 255, 255, 255)
 end)
 
 Citizen.CreateThread(function()
 	local fixingVoice = true
-
 	NetworkSetTalkerProximity(0.1)
 
 	while true do
 		NetworkSetTalkerProximity(8.0)
+
 		if not fixingVoice then
 			break
 		end
+
 		Citizen.Wait(10)
 	end
 
@@ -89,7 +88,7 @@ end)
 
 AddEventHandler('esx:onPlayerDeath', function()
 	isDead = true
-	_menuPool:CloseAllMenus()
+	RageUI.CloseAll()
 	ESX.UI.Menu.CloseAll()
 end)
 
@@ -431,7 +430,7 @@ function admin_heal_player()
 end
 
 function changer_skin()
-	_menuPool:CloseAllMenus()
+	RageUI.CloseAll()
 	Citizen.Wait(100)
 	TriggerEvent('esx_skin:openSaveableMenu', source)
 end
@@ -469,8 +468,8 @@ function startScenario(anim)
 	TaskStartScenarioInPlace(plyPed, anim, 0, false)
 end
 
-function AddMenuInventoryMenu(menu)
-	inventorymenu = _menuPool:AddSubMenu(menu, _U('inventory_title'))
+function RenderInventoryMenu(menu)
+	inventorymenu = RageUI.CreateSubMenu(menu, _U('inventory_title'))
 	local invCount = {}
 
 	for i = 1, #ESX.PlayerData.inventory, 1 do
@@ -494,18 +493,18 @@ function AddMenuInventoryMenu(menu)
 	end
 
 	local useItem = NativeUI.CreateItem(_U('inventory_use_button'), '')
-	itemMenu:AddItem(useItem)
+	inventoryMenu:AddItem(useItem)
 
 	local giveItem = NativeUI.CreateItem(_U('inventory_give_button'), '')
-	itemMenu:AddItem(giveItem)
+	inventoryMenu:AddItem(giveItem)
 
 	local dropItem = NativeUI.CreateItem(_U('inventory_drop_button'), '')
 	dropItem:SetRightBadge(4)
-	itemMenu:AddItem(dropItem)
+	inventoryMenu:AddItem(dropItem)
 
 	inventorymenu.SubMenu.OnListSelect = function(sender, item, index)
 		_menuPool:CloseAllMenus(true)
-		itemMenu:Visible(true)
+		RageUI.Visible(inventoryMenu, true)
 
 		for i = 1, #ESX.PlayerData.inventory, 1 do
 			local label = ESX.PlayerData.inventory[i].label
@@ -516,7 +515,7 @@ function AddMenuInventoryMenu(menu)
 			local quantity = index
 
 			if item == invItem[value] then
-				itemMenu.OnItemSelect = function(sender, item, index)
+				inventoryMenu.OnItemSelect = function(sender, item, index)
 					if item == useItem then
 						if usable then
 							TriggerServerEvent('esx:useItem', value)
@@ -537,7 +536,7 @@ function AddMenuInventoryMenu(menu)
 							if not IsPedSittingInAnyVehicle(closestPed) then
 								if quantity ~= nil and count > 0 then
 									TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_standard', value, quantity)
-									_menuPool:CloseAllMenus()
+									RageUI.CloseAll()
 								else
 									ESX.ShowNotification(_U('amount_invalid'))
 								end
@@ -552,7 +551,7 @@ function AddMenuInventoryMenu(menu)
 							if not IsPedSittingInAnyVehicle(plyPed) then
 								if quantity ~= nil then
 									TriggerServerEvent('esx:removeInventoryItem', 'item_standard', value, quantity)
-									_menuPool:CloseAllMenus()
+									RageUI.CloseAll()
 								else
 									ESX.ShowNotification(_U('amount_invalid'))
 								end
@@ -569,8 +568,8 @@ function AddMenuInventoryMenu(menu)
 	end
 end
 
-function AddMenuWeaponMenu(menu)
-	weaponMenu = _menuPool:AddSubMenu(menu, _U('loadout_title'))
+function RenderWeaponMenu(menu)
+	weaponMenu = RageUI.CreateSubMenu(menu, _U('loadout_title'))
 
 	for i = 1, #wepList, 1 do
 		local weaponHash = GetHashKey(wepList[i].name)
@@ -586,18 +585,18 @@ function AddMenuWeaponMenu(menu)
 	end
 
 	local giveItem = NativeUI.CreateItem(_U('loadout_give_button'), '')
-	weaponItemMenu:AddItem(giveItem)
+	loadoutMenu:AddItem(giveItem)
 
 	local giveMunItem = NativeUI.CreateItem(_U('loadout_givemun_button'), '')
-	weaponItemMenu:AddItem(giveMunItem)
+	loadoutMenu:AddItem(giveMunItem)
 
 	local dropItem = NativeUI.CreateItem(_U('loadout_drop_button'), '')
 	dropItem:SetRightBadge(4)
-	weaponItemMenu:AddItem(dropItem)
+	loadoutMenu:AddItem(dropItem)
 
 	weaponMenu.SubMenu.OnItemSelect = function(sender, item, index)
 		_menuPool:CloseAllMenus(true)
-		weaponItemMenu:Visible(true)
+		RageUI.Visible(loadoutMenu, true)
 
 		for i = 1, #wepList, 1 do
 			local weaponHash = GetHashKey(wepList[i].name)
@@ -608,7 +607,7 @@ function AddMenuWeaponMenu(menu)
 				local label = wepList[i].label
 
 				if item == wepItem[value] then
-					weaponItemMenu.OnItemSelect = function(sender, item, index)
+					loadoutMenu.OnItemSelect = function(sender, item, index)
 						if item == giveItem then
 							local foundPlayers = false
 							personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
@@ -622,7 +621,7 @@ function AddMenuWeaponMenu(menu)
 
 								if not IsPedSittingInAnyVehicle(closestPed) then
 									TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_weapon', value, ammo)
-									_menuPool:CloseAllMenus()
+									RageUI.CloseAll()
 								else
 									ESX.ShowNotification(_U('in_vehicle_give', label))
 								end
@@ -663,7 +662,7 @@ function AddMenuWeaponMenu(menu)
 													TriggerServerEvent('KorioZ-PersonalMenu:Weapon_addAmmoToPedS', GetPlayerServerId(personalmenu.closestPlayer), value, quantity)
 
 													ESX.ShowNotification(_U('gave_ammo', quantity, GetPlayerName(personalmenu.closestPlayer)))
-													_menuPool:CloseAllMenus()
+													RageUI.CloseAll()
 												else
 													ESX.ShowNotification(_U('not_enough_ammo'))
 												end
@@ -683,7 +682,7 @@ function AddMenuWeaponMenu(menu)
 						elseif item == dropItem then
 							if not IsPedSittingInAnyVehicle(plyPed) then
 								TriggerServerEvent('esx:removeInventoryItem', 'item_weapon', value)
-								_menuPool:CloseAllMenus()
+								RageUI.CloseAll()
 							else
 								ESX.ShowNotification(_U('in_vehicle_drop', label))
 							end
@@ -695,13 +694,13 @@ function AddMenuWeaponMenu(menu)
 	end
 end
 
-function AddMenuWalletMenu(menu)
+function RenderWalletMenu(menu)
 	personalmenu.moneyOption = {
 		_U('wallet_option_give'),
 		_U('wallet_option_drop')
 	}
 
-	walletmenu = _menuPool:AddSubMenu(menu, _U('wallet_title'))
+	walletmenu = RageUI.CreateSubMenu(menu, _U('wallet_title'))
 
 	local walletJob = NativeUI.CreateItem(_U('wallet_job_button', ESX.PlayerData.job.label, ESX.PlayerData.job.grade_label), '')
 	walletmenu.SubMenu:AddItem(walletJob)
@@ -824,10 +823,10 @@ function AddMenuWalletMenu(menu)
 						if post == true then
 							if item == walletMoney then
 								TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_money', 'money', quantity)
-								_menuPool:CloseAllMenus()
+								RageUI.CloseAll()
 							elseif item == walletdirtyMoney then
 								TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_account', 'black_money', quantity)
-								_menuPool:CloseAllMenus()
+								RageUI.CloseAll()
 							end
 						else
 							ESX.ShowNotification(_U('amount_invalid'))
@@ -862,10 +861,10 @@ function AddMenuWalletMenu(menu)
 					if post == true then
 						if item == walletMoney then
 							TriggerServerEvent('esx:removeInventoryItem', 'item_money', 'money', quantity)
-							_menuPool:CloseAllMenus()
+							RageUI.CloseAll()
 						elseif item == walletdirtyMoney then
 							TriggerServerEvent('esx:removeInventoryItem', 'item_account', 'black_money', quantity)
-							_menuPool:CloseAllMenus()
+							RageUI.CloseAll()
 						end
 					else
 						ESX.ShowNotification(_U('amount_invalid'))
@@ -882,8 +881,8 @@ function AddMenuWalletMenu(menu)
 	end
 end
 
-function AddMenuFacturesMenu(menu)
-	billMenu = _menuPool:AddSubMenu(menu, _U('bills_title'))
+function RenderBillingMenu(menu)
+	billMenu = RageUI.CreateSubMenu(menu, _U('bills_title'))
 	billItem = {}
 
 	ESX.TriggerServerCallback('KorioZ-PersonalMenu:Bill_getBills', function(bills)
@@ -906,7 +905,7 @@ function AddMenuFacturesMenu(menu)
 
 				if item == billItem[value] then
 					ESX.TriggerServerCallback('esx_billing:payBill', function()
-						_menuPool:CloseAllMenus()
+						RageUI.CloseAll()
 					end, value)
 				end
 			end
@@ -914,8 +913,8 @@ function AddMenuFacturesMenu(menu)
 	end)
 end
 
-function AddMenuClothesMenu(menu)
-	clothesMenu = _menuPool:AddSubMenu(menu, _U('clothes_title'))
+function RenderClothesMenu(menu)
+	clothesMenu = RageUI.CreateSubMenu(menu, _U('clothes_title'))
 
 	local torsoItem = NativeUI.CreateItem(_U('clothes_top'), '')
 	clothesMenu.SubMenu:AddItem(torsoItem)
@@ -999,8 +998,8 @@ function setUniform(value, plyPed)
 	end)
 end
 
-function AddMenuAccessoryMenu(menu)
-	accessoryMenu = _menuPool:AddSubMenu(menu, _U('accessories_title'))
+function RenderAccessoryMenu(menu)
+	accessoryMenu = RageUI.CreateSubMenu(menu, _U('accessories_title'))
 
 	local earsItem = NativeUI.CreateItem(_U('accessories_ears'), '')
 	accessoryMenu.SubMenu:AddItem(earsItem)
@@ -1077,8 +1076,8 @@ function SetUnsetAccessory(accessory)
 	end, accessory)
 end
 
-function AddMenuAnimationMenu(menu)
-	animMenu = _menuPool:AddSubMenu(menu, _U('animation_title'))
+function RenderAnimationMenu(menu)
+	animMenu = RageUI.CreateSubMenu(menu, _U('animation_title'))
 
 	AddSubMenuPartyMenu(animMenu)
 	AddSubMenuSaluteMenu(animMenu)
@@ -1090,7 +1089,7 @@ function AddMenuAnimationMenu(menu)
 end
 
 function AddSubMenuPartyMenu(menu)
-	animPartyMenu = _menuPool:AddSubMenu(menu.SubMenu, _U('animation_party_title'))
+	animPartyMenu = RageUI.CreateSubMenu(menu.SubMenu, _U('animation_party_title'))
 
 	local cigaretteItem = NativeUI.CreateItem(_U('animation_party_smoke'), '')
 	animPartyMenu.SubMenu:AddItem(cigaretteItem)
@@ -1135,7 +1134,7 @@ function AddSubMenuPartyMenu(menu)
 end
 
 function AddSubMenuSaluteMenu(menu)
-	animSaluteMenu = _menuPool:AddSubMenu(menu.SubMenu, _U('animation_salute_title'))
+	animSaluteMenu = RageUI.CreateSubMenu(menu.SubMenu, _U('animation_salute_title'))
 
 	local saluerItem = NativeUI.CreateItem(_U('animation_salute_saluate'), '')
 	animSaluteMenu.SubMenu:AddItem(saluerItem)
@@ -1164,7 +1163,7 @@ function AddSubMenuSaluteMenu(menu)
 end
 
 function AddSubMenuWorkMenu(menu)
-	animWorkMenu = _menuPool:AddSubMenu(menu.SubMenu, _U('animation_work_title'))
+	animWorkMenu = RageUI.CreateSubMenu(menu.SubMenu, _U('animation_work_title'))
 
 	local suspectItem = NativeUI.CreateItem(_U('animation_work_suspect'), '')
 	animWorkMenu.SubMenu:AddItem(suspectItem)
@@ -1245,7 +1244,7 @@ function AddSubMenuWorkMenu(menu)
 end
 
 function AddSubMenuMoodMenu(menu)
-	animMoodMenu = _menuPool:AddSubMenu(menu.SubMenu, _U('animation_mood_title'))
+	animMoodMenu = RageUI.CreateSubMenu(menu.SubMenu, _U('animation_mood_title'))
 
 	local felicitateItem = NativeUI.CreateItem(_U('animation_mood_felicitate'), '')
 	animMoodMenu.SubMenu:AddItem(felicitateItem)
@@ -1330,7 +1329,7 @@ function AddSubMenuMoodMenu(menu)
 end
 
 function AddSubMenuSportsMenu(menu)
-	animSportMenu = _menuPool:AddSubMenu(menu.SubMenu, _U('animation_sports_title'))
+	animSportMenu = RageUI.CreateSubMenu(menu.SubMenu, _U('animation_sports_title'))
 
 	local muscleItem = NativeUI.CreateItem(_U('animation_sports_muscle'), '')
 	animSportMenu.SubMenu:AddItem(muscleItem)
@@ -1359,7 +1358,7 @@ function AddSubMenuSportsMenu(menu)
 end
 
 function AddSubMenuOtherMenu(menu)
-	animOtherMenu = _menuPool:AddSubMenu(menu.SubMenu, _U('animation_other_title'))
+	animOtherMenu = RageUI.CreateSubMenu(menu.SubMenu, _U('animation_other_title'))
 
 	local beerItem = NativeUI.CreateItem(_U('animation_other_beer'), '')
 	animOtherMenu.SubMenu:AddItem(beerItem)
@@ -1408,7 +1407,7 @@ function AddSubMenuOtherMenu(menu)
 end
 
 function AddSubMenuPEGI21Menu(menu)
-	animPegiMenu = _menuPool:AddSubMenu(menu.SubMenu, _U('animation_pegi_title'))
+	animPegiMenu = RageUI.CreateSubMenu(menu.SubMenu, _U('animation_pegi_title'))
 
 	local hSuckItem = NativeUI.CreateItem(_U('animation_pegi_hsuck'), '')
 	animPegiMenu.SubMenu:AddItem(hSuckItem)
@@ -1460,7 +1459,7 @@ function AddSubMenuPEGI21Menu(menu)
 	end
 end
 
-function AddMenuVehicleMenu(menu)
+function RenderVehicleMenu(menu)
 	personalmenu.frontLeftDoorOpen = false
 	personalmenu.frontRightDoorOpen = false
 	personalmenu.backLeftDoorOpen = false
@@ -1474,7 +1473,7 @@ function AddMenuVehicleMenu(menu)
 		_U('vehicle_door_backright')
 	}
 
-	vehicleMenu = _menuPool:AddSubMenu(menu, _U('vehicle_title'))
+	vehicleMenu = RageUI.CreateSubMenu(menu, _U('vehicle_title'))
 
 	local vehEngineItem = NativeUI.CreateItem(_U('vehicle_engine_button'), '')
 	vehicleMenu.SubMenu:AddItem(vehEngineItem)
@@ -1562,8 +1561,8 @@ function AddMenuVehicleMenu(menu)
 	end
 end
 
-function AddMenuBossMenu(menu)
-	bossMenu = _menuPool:AddSubMenu(menu, _U('bossmanagement_title', ESX.PlayerData.job.label))
+function RenderBossMenu(menu)
+	bossMenu = RageUI.CreateSubMenu(menu, _U('bossmanagement_title', ESX.PlayerData.job.label))
 
 	local coffreItem = nil
 
@@ -1635,8 +1634,8 @@ function AddMenuBossMenu(menu)
 	end
 end
 
-function AddMenuBossMenu2(menu)
-	bossMenu2 = _menuPool:AddSubMenu(menu, _U('bossmanagement2_title', ESX.PlayerData.job2.label))
+function RenderBoss2Menu(menu)
+	bossMenu2 = RageUI.CreateSubMenu(menu, _U('bossmanagement2_title', ESX.PlayerData.job2.label))
 
 	local coffre2Item = nil
 
@@ -1708,7 +1707,7 @@ function AddMenuBossMenu2(menu)
 	end
 end
 
-function AddMenuDemarcheVoixGPS(menu)
+function RenderDemarcheVoixGPS(menu)
 	personalmenu.gps = {
 		'Aucun',
 		'Poste de Police',
@@ -1895,8 +1894,8 @@ function AddMenuDemarcheVoixGPS(menu)
 	end
 end
 
-function AddMenuAdminMenu(menu, playerGroup)
-	adminMenu = _menuPool:AddSubMenu(menu, _U('admin_title'))
+function RenderAdminMenu(menu, playerGroup)
+	adminMenu = RageUI.CreateSubMenu(menu, _U('admin_title'))
 
 	if playerGroup == 'mod' then
 		local tptoPlrItem = NativeUI.CreateItem(_U('admin_goto_button'), '')
@@ -1911,10 +1910,10 @@ function AddMenuAdminMenu(menu, playerGroup)
 		adminMenu.SubMenu.OnItemSelect = function(sender, item, index)
 			if item == tptoPlrItem then
 				admin_tp_toplayer()
-				_menuPool:CloseAllMenus()
+				RageUI.CloseAll()
 			elseif item == tptoMeItem then
 				admin_tp_playertome()
-				_menuPool:CloseAllMenus()
+				RageUI.CloseAll()
 			elseif item == showXYZItem then
 				modo_showcoord()
 			elseif item == showPlrNameItem then
@@ -1944,13 +1943,13 @@ function AddMenuAdminMenu(menu, playerGroup)
 		adminMenu.SubMenu.OnItemSelect = function(sender, item, index)
 			if item == tptoPlrItem then
 				admin_tp_toplayer()
-				_menuPool:CloseAllMenus()
+				RageUI.CloseAll()
 			elseif item == tptoMeItem then
 				admin_tp_playertome()
-				_menuPool:CloseAllMenus()
+				RageUI.CloseAll()
 			elseif item == noclipItem then
 				admin_no_clip()
-				_menuPool:CloseAllMenus()
+				RageUI.CloseAll()
 			elseif item == repairVehItem then
 				admin_vehicle_repair()
 			elseif item == returnVehItem then
@@ -1963,7 +1962,7 @@ function AddMenuAdminMenu(menu, playerGroup)
 				admin_tp_marker()
 			elseif item == revivePlrItem then
 				admin_heal_player()
-				_menuPool:CloseAllMenus()
+				RageUI.CloseAll()
 			end
 		end
 	elseif playerGroup == 'superadmin' or playerGroup == 'owner' then
@@ -2007,36 +2006,36 @@ function AddMenuAdminMenu(menu, playerGroup)
 		adminMenu.SubMenu.OnItemSelect = function(sender, item, index)
 			if item == tptoPlrItem then
 				admin_tp_toplayer()
-				_menuPool:CloseAllMenus()
+				RageUI.CloseAll()
 			elseif item == tptoMeItem then
 				admin_tp_playertome()
-				_menuPool:CloseAllMenus()
+				RageUI.CloseAll()
 			elseif item == tptoXYZItem then
 				admin_tp_pos()
-				_menuPool:CloseAllMenus()
+				RageUI.CloseAll()
 			elseif item == noclipItem then
 				admin_no_clip()
-				_menuPool:CloseAllMenus()
+				RageUI.CloseAll()
 			elseif item == godmodeItem then
 				admin_godmode()
 			elseif item == ghostmodeItem then
 				admin_mode_fantome()
 			elseif item == spawnVehItem then
 				admin_vehicle_spawn()
-				_menuPool:CloseAllMenus()
+				RageUI.CloseAll()
 			elseif item == repairVehItem then
 				admin_vehicle_repair()
 			elseif item == returnVehItem then
 				admin_vehicle_flip()
 			elseif item == givecashItem then
 				admin_give_money()
-				_menuPool:CloseAllMenus()
+				RageUI.CloseAll()
 			elseif item == givebankItem then
 				admin_give_bank()
-				_menuPool:CloseAllMenus()
+				RageUI.CloseAll()
 			elseif item == givedirtyItem then
 				admin_give_dirty()
-				_menuPool:CloseAllMenus()
+				RageUI.CloseAll()
 			elseif item == showXYZItem then
 				modo_showcoord()
 			elseif item == showPlrNameItem then
@@ -2045,7 +2044,7 @@ function AddMenuAdminMenu(menu, playerGroup)
 				admin_tp_marker()
 			elseif item == revivePlrItem then
 				admin_heal_player()
-				_menuPool:CloseAllMenus()
+				RageUI.CloseAll()
 			elseif item == skinPlrItem then
 				changer_skin()
 			elseif item == saveSkinPlrItem then
@@ -2055,102 +2054,52 @@ function AddMenuAdminMenu(menu, playerGroup)
 	end
 end
 
-function GeneratePersonalMenu(playerGroup)
-	AddMenuInventoryMenu(mainMenu)
-	AddMenuWeaponMenu(mainMenu)
-	AddMenuWalletMenu(mainMenu)
-	AddMenuClothesMenu(mainMenu)
-	AddMenuAccessoryMenu(mainMenu)
-	AddMenuAnimationMenu(mainMenu)
+RageUI.CreateWhile(1.0, function()
+	if IsControlJustReleased(0, Config.Menu.clavier) and not isDead then
+		ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(playerGroup)
+			RageUI.Visible(mainMenu, not RageUI.Visible(mainMenu))
+		end)
+	end
+
+	RenderInventoryMenu(mainMenu)
+	RenderWeaponMenu(mainMenu)
+	RenderWalletMenu(mainMenu)
+	RenderClothesMenu(mainMenu)
+	RenderAccessoryMenu(mainMenu)
+	RenderAnimationMenu(mainMenu)
 
 	if IsPedSittingInAnyVehicle(plyPed) then
 		if (GetPedInVehicleSeat(GetVehiclePedIsIn(plyPed, false), -1) == plyPed) then
-			AddMenuVehicleMenu(mainMenu)
+			RenderVehicleMenu(mainMenu)
 		end
 	end
 
 	if ESX.PlayerData.job ~= nil and ESX.PlayerData.job.grade_name == 'boss' then
-		AddMenuBossMenu(mainMenu)
+		RenderBossMenu(mainMenu)
 	end
 
 	if Config.doublejob then
 		if ESX.PlayerData.job2 ~= nil and ESX.PlayerData.job2.grade_name == 'boss' then
-			AddMenuBossMenu2(mainMenu)
+			RenderBoss2Menu(mainMenu)
 		end
 	end
 
-	AddMenuFacturesMenu(mainMenu)
-	AddMenuDemarcheVoixGPS(mainMenu)
+	RenderBillingMenu(mainMenu)
+	RenderDemarcheVoixGPS(mainMenu)
 
 	if playerGroup ~= nil and (playerGroup == 'mod' or playerGroup == 'admin' or playerGroup == 'superadmin' or playerGroup == 'owner') then
-		AddMenuAdminMenu(mainMenu, playerGroup)
+		RenderAdminMenu(mainMenu, playerGroup)
 	end
+end, 1)
 
-	_menuPool:RefreshIndex()
-end
+--[[
+mainMenu:Clear()
+inventoryMenu:Clear()
+loadoutMenu:Clear()
 
-Citizen.CreateThread(function()
-	while true do
-		if IsControlJustReleased(0, Config.Menu.clavier) and not isDead then
-			if mainMenu ~= nil and not mainMenu:Visible() then
-				ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(playerGroup)
-					ESX.PlayerData = ESX.GetPlayerData()
-					GeneratePersonalMenu(playerGroup)
-					mainMenu:Visible(true)
-					Citizen.Wait(10)
-				end)
-			end
-		end
-		
-		Citizen.Wait(0)
-	end
-end)
-
-Citizen.CreateThread(function()
-	while true do
-		if _menuPool ~= nil then
-			_menuPool:ProcessMenus()
-		end
-		
-		Citizen.Wait(0)
-	end
-end)
-
-Citizen.CreateThread(function()
-	while true do
-		while _menuPool ~= nil and _menuPool:IsAnyMenuOpen() do
-			Citizen.Wait(0)
-
-			if not _menuPool:IsAnyMenuOpen() then
-				mainMenu:Clear()
-				itemMenu:Clear()
-				weaponItemMenu:Clear()
-
-				_menuPool:Clear()
-				_menuPool:Remove()
-
-				personalmenu = {}
-
-				invItem = {}
-				wepItem = {}
-				billItem = {}
-
-				collectgarbage()
-
-				_menuPool = NativeUI.CreatePool()
-
-				mainMenu = NativeUI.CreateMenu(Config.servername, _U('mainmenu_subtitle'))
-				itemMenu = NativeUI.CreateMenu(Config.servername, _U('inventory_actions_subtitle'))
-				weaponItemMenu = NativeUI.CreateMenu(Config.servername, _U('loadout_actions_subtitle'))
-				_menuPool:Add(mainMenu)
-				_menuPool:Add(itemMenu)
-				_menuPool:Add(weaponItemMenu)
-			end
-		end
-
-		Citizen.Wait(0)
-	end
-end)
+personalmenu = {}
+invItem, wepItem, billItem = {}, {}, {}
+]]--
 
 Citizen.CreateThread(function()
 	while true do
@@ -2162,8 +2111,10 @@ Citizen.CreateThread(function()
 		end
 
 		if IsControlPressed(1, Config.TPMarker.clavier1) and IsControlJustReleased(1, Config.TPMarker.clavier2) and GetLastInputMethod(2) and not isDead then
-			if ESX.PlayerData.group ~= nil and (ESX.PlayerData.group == 'mod' or ESX.PlayerData.group == 'admin' or ESX.PlayerData.group == 'superadmin' or ESX.PlayerData.group == '_dev') then
-				admin_tp_marker()
+			ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(playerGroup)
+				if playerGroup ~= nil and (playerGroup == 'mod' or playerGroup == 'admin' or playerGroup == 'superadmin' or playerGroup == '_dev') then
+					admin_tp_marker()
+				end
 			end
 		end
 
@@ -2201,7 +2152,7 @@ Citizen.CreateThread(function()
 
 				if otherPed ~= plyPed then
 					if GetDistanceBetweenCoords(GetEntityCoords(plyPed, false), GetEntityCoords(otherPed, false)) < 5000.0 then
-						gamerTags[v] = CreateFakeMpGamerTag(otherPed, ('%s [%s]'):format(GetPlayerName(v), GetPlayerServerId(v)), false, false, '', 0)
+						gamerTags[v] = CreateFakeMpGamerTag(otherPed, ('[%s] %s'):format(GetPlayerServerId(v), GetPlayerName(v)), false, false, '', 0)
 					else
 						RemoveMpGamerTag(gamerTags[v])
 						gamerTags[v] = nil
@@ -2213,3 +2164,131 @@ Citizen.CreateThread(function()
 		Citizen.Wait(100)
 	end
 end)
+
+RMenu.Add('showcase', 'main', RageUI.CreateMenu("RageUI", "Undefined for using SetSubtitle"))
+RMenu:Get('showcase', 'main'):SetSubtitle("~b~RAGEUI SHOWCASE")
+RMenu:Get('showcase', 'main').EnableMouse = true
+RMenu:Get('showcase', 'main').Closed = function()
+	--- TODO Perform action
+end
+
+RMenu.Add('showcase', 'submenu', RageUI.CreateSubMenu(RMenu:Get('showcase', 'main'), "RageUI", "~b~RAGEUI SHOWCASE", nil, nil, "casinoui_roulette_high", "casinoui_roulette_high"))
+
+---@type table
+local foods = {
+	"Banana",
+	"Apple",
+	"Pizza",
+	"Quartilicious",
+	"Steak",
+	0xF00D
+}
+
+local index = {
+	ketchup = false,
+	dish = 1,
+	quantity = 0
+}
+
+---@type string
+local description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+
+RageUI.CreateWhile(1.0, function()
+	if IsControlJustPressed(1, 51) then
+		RageUI.Visible(RMenu:Get('showcase', 'main'), not RageUI.Visible(RMenu:Get('showcase', 'main')))
+	end
+
+	if RageUI.Visible(RMenu:Get('showcase', 'main')) then
+		RageUI.DrawContent({ header = true, glare = true, instructionalButton = true }, function()
+			---Items
+			RageUI.Checkbox("Add ketchup ?", "Do you wish to add ketchup ?", index.ketchup, { Style = RageUI.CheckboxStyle.Tick }, function(Hovered, Selected, Active, Checked)
+				if (Hovered) then
+				end
+
+				if (Active) then
+				end
+
+				if (Selected) then
+					RageUI.Text({
+						message = string.format("~r~Ketchup status: ~b~%s", tostring(index.ketchup))
+					})
+				end
+
+				index.ketchup = Checked
+			end)
+
+			RageUI.List("Food", foods, index.dish, "Select the type of food you want to eat.", {}, true, function(Hovered, Active, Selected, Index)
+				if (Hovered) then
+				end
+
+				if (Active) then
+					RageUI.Text({
+						message = string.format("Preparing ~b~%s~w~...", foods[index.dish])
+					})
+				end
+
+				if (Selected) then
+				end
+
+				index.dish = Index
+			end)
+
+			RageUI.Slider("Quantity", index.quantity, 10, "Select the amount of food you want to eat.", false, { }, true, function(Hovered, Selected, Active, Index)
+				if (Hovered) then
+				end
+
+				if (Selected) then
+					RageUI.Text({
+						message = string.format("Preparing ~r~%s ~b~%s(s)~w~...", index.quantity, foods[index.dish])
+					})
+				end
+
+				if (Active) then
+				end
+
+				index.quantity = Index
+			end)
+
+			RageUI.Button("Cook !", "Cook the dish with the appropriate ingredients and ketchup.", { RightBadge = RageUI.BadgeStyle.Tick }, true, function(Hovered, Active, Selected)
+				if (Hovered) then
+				end
+
+				if (Active) then
+				end
+
+				if (Selected) then
+					local string = string.format("You have ordered ~r~%s ~b~%s(s)~w~ ~r~with~w~ ketchup.", index.quantity, foods[index.dish])
+
+					if not (index.ketchup) then
+						string = string.format("You have ordered ~r~%s ~b~%s(s)~w~ ~r~without~w~ ketchup.", index.quantity, foods[index.dish])
+					end
+
+					RageUI.Text({
+						message = string
+					})
+				end
+			end)
+
+			RageUI.Button("Another Menu", "Sample description that takes more than one line. Moreso, it takes way more than two lines since it's so long. Wow, check out this length !", { RightLabel = "→→→" }, true, function(Hovered, Active, Selected)
+				if (Hovered) then
+				end
+
+				if (Active) then
+				end
+
+				if (Selected) then
+				end
+			end, RMenu:Get('showcase', 'submenu'))
+		end, function()
+			---Panels
+		end)
+	end
+
+	if RageUI.Visible(RMenu:Get('showcase', 'submenu')) then
+		RageUI.DrawContent({ header = true, glare = true, instructionalButton = true }, function()
+			---Items
+		end, function()
+			---Panels
+		end)
+	end
+end, 1)
