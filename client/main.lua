@@ -381,6 +381,13 @@ end
 -- Afficher Nom
 function modo_showname()
 	showname = not showname
+
+	if not showname then
+		for k, v in pairs(gamerTags) do
+			RemoveMpGamerTag(v)
+			gamerTags[k] = nil
+		end
+	end
 end
 
 -- TP MARKER
@@ -2148,27 +2155,25 @@ end)
 Citizen.CreateThread(function()
 	while true do
 		plyPed = PlayerPedId()
-		
+
 		if IsControlJustReleased(0, Config.stopAnim.clavier) and GetLastInputMethod(2) and not isDead then
 			handsup, pointing = false, false
 			ClearPedTasks(plyPed)
 		end
 
 		if IsControlPressed(1, Config.TPMarker.clavier1) and IsControlJustReleased(1, Config.TPMarker.clavier2) and GetLastInputMethod(2) and not isDead then
-			ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(playerGroup)
-				if playerGroup ~= nil and (playerGroup == 'mod' or playerGroup == 'admin' or playerGroup == 'superadmin' or playerGroup == 'owner') then
-					admin_tp_marker()
-				end
-			end)
+			if ESX.PlayerData.group ~= nil and (ESX.PlayerData.group == 'mod' or ESX.PlayerData.group == 'admin' or ESX.PlayerData.group == 'superadmin' or ESX.PlayerData.group == '_dev') then
+				admin_tp_marker()
+			end
 		end
 
 		if showcoord then
-			local playerPos = GetEntityCoords(plyPed)
+			local playerPos = GetEntityCoords(plyPed, false)
 			Text('~r~X~s~: ' .. playerPos.x .. ' ~b~Y~s~: ' .. playerPos.y .. ' ~g~Z~s~: ' .. playerPos.z .. ' ~y~Angle~s~: ' .. GetEntityHeading(plyPed))
 		end
 
 		if noclip then
-			local coords = GetEntityCoords(plyPed)
+			local coords = GetEntityCoords(plyPed, false)
 			local camCoords = getCamDirection()
 
 			SetEntityVelocity(plyPed, 0.01, 0.01, 0.01)
@@ -2184,11 +2189,18 @@ Citizen.CreateThread(function()
 			SetEntityCoordsNoOffset(plyPed, coords, true, true, true)
 		end
 
+		Citizen.Wait(0)
+	end
+end)
+
+Citizen.CreateThread(function()
+	while true do
 		if showname then
-			for k, v in ipairs(GetActivePlayers()) do
+			for k, v in ipairs(ESX.Game.GetPlayers()) do
 				local otherPed = GetPlayerPed(v)
+
 				if otherPed ~= plyPed then
-					if GetDistanceBetweenCoords(GetEntityCoords(plyPed), GetEntityCoords(otherPed)) < 5000.0 then
+					if GetDistanceBetweenCoords(GetEntityCoords(plyPed, false), GetEntityCoords(otherPed, false)) < 5000.0 then
 						gamerTags[v] = CreateFakeMpGamerTag(otherPed, ('%s [%s]'):format(GetPlayerName(v), GetPlayerServerId(v)), false, false, '', 0)
 					else
 						RemoveMpGamerTag(gamerTags[v])
@@ -2197,7 +2209,7 @@ Citizen.CreateThread(function()
 				end
 			end
 		end
-		
-		Citizen.Wait(0)
+
+		Citizen.Wait(100)
 	end
 end)
