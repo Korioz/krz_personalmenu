@@ -13,34 +13,36 @@ local Keys = {
 Config = {}
 Config.Locale = 'fr'
 
-Config.servername = 'ServerName' -- change it to you're server name
-Config.doublejob = false -- enable if you're using esx double job
-Config.noclip_speed = 1.0 -- change it to change the speed in noclip
+Config.MenuTitle = 'ServerName' -- change it to you're server name
+Config.DoubleJob = false -- enable if you're using esx double job
+Config.NoclipSpeed = 1.0 -- change it to change the speed in noclip
 
-Config.EnableJsfourIDCard = false -- enable if you're using jsfour-idcard
+Config.JSFourIDCard = false -- enable if you're using jsfour-idcard
 
--- GENERAL
-Config.Menu = {
-	clavier = Keys['F5']
+-- CONTROLS
+Config.Controls = {}
+
+Config.Controls.OpenMenu = {
+	keyboard = Keys['F5']
 }
 
-Config.handsUP = {
-	clavier = Keys['~']
+Config.Controls.HandsUP = {
+	keyboard = Keys['~']
 }
 
-Config.pointing = {
-	clavier = Keys['B']
+Config.Controls.Pointing = {
+	keyboard = Keys['B']
 }
 
-Config.stopAnim = {
-	clavier = Keys['X']
+Config.Controls.Crouch = {
+	keyboard = Keys['LEFTCTRL']
 }
 
-Config.crouch = {
-	clavier = Keys['LEFTCTRL']
+Config.Controls.StopTasks = {
+	keyboard = Keys['X']
 }
 
-Config.TPMarker = {
-	clavier1 = Keys['LEFTALT'],
-	clavier2 = Keys['E']
+Config.Controls.TPMarker = {
+	keyboard1 = Keys['LEFTALT'],
+	keyboard2 = Keys['E']
 }

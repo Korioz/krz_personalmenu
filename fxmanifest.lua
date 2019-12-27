@@ -2,8 +2,8 @@ fx_version 'adamant'
 games {'gta5'}
 
 author 'Korioz'
-description 'KORIOZ-PersonalMenu'
-version '1.1'
+description 'PersonalMenu for FiveM developed on top of ESX and built with RageUI'
+version '2.0'
 
 dependency 'es_extended'
 

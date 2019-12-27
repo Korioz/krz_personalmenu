@@ -8,7 +8,7 @@ Locales['en'] = {
 
 	-- Menu Default Vars
 	['default_gps'] = 'None',
-	['default_demarche'] = 'Normal',
+	['default_attitude'] = 'Normal',
 	['default_voice'] = 'Normal',
 
 	-- Menu Notification
@@ -55,14 +55,14 @@ Locales['en'] = {
 
 	-- Inventory Menu
 	['inventory_title'] = 'Inventory',
-	['inventory_actions_subtitle'] = 'Inventory: Action',
+	['inventory_actions_title'] = 'Inventory: Action',
 	['inventory_use_button'] = 'Use',
 	['inventory_give_button'] = 'Giving',
 	['inventory_drop_button'] = 'Discard',
 
 	-- Loadout Menu
 	['loadout_title'] = 'Weapon Management',
-	['loadout_actions_subtitle'] = 'Weapons: Action',
+	['loadout_actions_title'] = 'Weapons: Action',
 	['loadout_give_button'] = 'Give',
 	['loadout_givemun_button'] = 'Give Ammo',
 	['loadout_drop_button'] = 'Throw',

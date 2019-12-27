@@ -305,10 +305,8 @@ function RageUI.Visible(Menu, Value)
 					RageUI.Options = 0
 					RageUI.ItemOffset = 0
 					Menu.Open = Value
-					menuOpen = true
 				else
 					Menu.Open = Value
-					menuOpen = false
 					RageUI.CurrentMenu = nil
 					RageUI.Options = 0
 					RageUI.ItemOffset = 0
@@ -320,9 +318,14 @@ function RageUI.Visible(Menu, Value)
 	end
 end
 
+---CloseAll
+---@return void
+---@public
 function RageUI.CloseAll()
-	menuOpen = false
+	PlaySound(RageUI.Settings.Audio.Library, RageUI.Settings.Audio.Back)
+	RageUI.Visible(RageUI.CurrentMenu, false)
 	RageUI.CurrentMenu = nil
+	RageUI.NextMenu = nil
 	RageUI.Options = 0
 	RageUI.ItemOffset = 0
 end
@@ -335,6 +338,7 @@ end
 ---@public
 function RageUI.PlaySound(Library, Sound, IsLooped)
 	local audioId
+
 	if not IsLooped then
 		PlaySoundFrontend(-1, Sound, Library, true)
 	else
@@ -343,6 +347,7 @@ function RageUI.PlaySound(Library, Sound, IsLooped)
 				audioId = GetSoundId()
 				PlaySoundFrontend(audioId, Sound, Library, true)
 				Citizen.Wait(0)
+
 				StopSound(audioId)
 				ReleaseSoundId(audioId)
 				audioId = nil
@@ -387,9 +392,9 @@ function RageUI.Banner(Enabled, Glare)
 						---@type number
 						local GlareX = RageUI.CurrentMenu.X / 1860 + RageUI.CurrentMenu.SafeZoneSize.X / 53.211
 						---@type number
-						local GalreY = RageUI.CurrentMenu.Y / 1080 + RageUI.CurrentMenu.SafeZoneSize.Y / 33.195020746888
+						local GlareY = RageUI.CurrentMenu.Y / 1080 + RageUI.CurrentMenu.SafeZoneSize.Y / 33.195020746888
 
-						DrawScaleformMovie(ScaleformMovie, GlareX, GalreY, Glarewidth / 430, Glareheight / 100, 255, 255, 255, 255, 0)
+						DrawScaleformMovie(ScaleformMovie, GlareX, GlareY, Glarewidth / 430, Glareheight / 100, 255, 255, 255, 255, 0)
 					end
 
 					RenderText(RageUI.CurrentMenu.Title, RageUI.CurrentMenu.X + RageUI.Settings.Items.Title.Text.X + (RageUI.CurrentMenu.WidthOffset / 2), RageUI.CurrentMenu.Y + RageUI.Settings.Items.Title.Text.Y, 1, RageUI.Settings.Items.Title.Text.Scale, 255, 255, 255, 255, 1)
@@ -402,15 +407,6 @@ function RageUI.Banner(Enabled, Glare)
 	end
 end
 
----CloseAll -- TODO 
----@return void
----@public
--- function RageUI:CloseAll()
---     RageUI.PlaySound(RageUI.Settings.Audio.Library, RageUI.Settings.Audio.Back)
---     RageUI.NextMenu = nil
---     RageUI.Visible(RageUI.CurrentMenu, false)
--- end
-
 ---Subtitle
 ---@return void
 ---@public
@@ -418,14 +414,17 @@ function RageUI.Subtitle()
 	if RageUI.CurrentMenu ~= nil then
 		if RageUI.CurrentMenu() then
 			RageUI.ItemsSafeZone(RageUI.CurrentMenu)
+
 			if RageUI.CurrentMenu.Subtitle ~= "" then
 				RenderRectangle(RageUI.CurrentMenu.X, RageUI.CurrentMenu.Y + RageUI.ItemOffset, RageUI.Settings.Items.Subtitle.Background.Width + RageUI.CurrentMenu.WidthOffset, RageUI.Settings.Items.Subtitle.Background.Height + RageUI.CurrentMenu.SubtitleHeight, 0, 0, 0, 255)
 				RenderText(RageUI.CurrentMenu.Subtitle, RageUI.CurrentMenu.X + RageUI.Settings.Items.Subtitle.Text.X, RageUI.CurrentMenu.Y + RageUI.Settings.Items.Subtitle.Text.Y + RageUI.ItemOffset, 0, RageUI.Settings.Items.Subtitle.Text.Scale, 245, 245, 245, 255, nil, false, false, RageUI.Settings.Items.Subtitle.Background.Width + RageUI.CurrentMenu.WidthOffset)
+
 				if RageUI.CurrentMenu.PageCounter == nil then
 					RenderText(RageUI.CurrentMenu.PageCounterColour .. RageUI.CurrentMenu.Index .. " / " .. RageUI.CurrentMenu.Options, RageUI.CurrentMenu.X + RageUI.Settings.Items.Subtitle.PreText.X + RageUI.CurrentMenu.WidthOffset, RageUI.CurrentMenu.Y + RageUI.Settings.Items.Subtitle.PreText.Y + RageUI.ItemOffset, 0, RageUI.Settings.Items.Subtitle.PreText.Scale, 245, 245, 245, 255, 2)
 				else
 					RenderText(RageUI.CurrentMenu.PageCounter, RageUI.CurrentMenu.X + RageUI.Settings.Items.Subtitle.PreText.X + RageUI.CurrentMenu.WidthOffset, RageUI.CurrentMenu.Y + RageUI.Settings.Items.Subtitle.PreText.Y + RageUI.ItemOffset, 0, RageUI.Settings.Items.Subtitle.PreText.Scale, 245, 245, 245, 255, 2)
 				end
+
 				RageUI.ItemOffset = RageUI.ItemOffset + RageUI.Settings.Items.Subtitle.Background.Height
 			end
 		end
@@ -450,7 +449,7 @@ end
 ---@return void
 ---@public
 function RageUI.Description()
-	if RageUI.CurrentMenu ~= nil and RageUI.CurrentMenu.Description ~= nil then
+	if RageUI.CurrentMenu ~= nil and RageUI.CurrentMenu.Description ~= nil and RageUI.CurrentMenu.Description ~= "" then
 		if RageUI.CurrentMenu() then
 			RageUI.ItemsSafeZone(RageUI.CurrentMenu)
 			RenderRectangle(RageUI.CurrentMenu.X, RageUI.CurrentMenu.Y + RageUI.Settings.Items.Description.Bar.Y + RageUI.CurrentMenu.SubtitleHeight + RageUI.ItemOffset, RageUI.Settings.Items.Description.Bar.Width + RageUI.CurrentMenu.WidthOffset, RageUI.Settings.Items.Description.Bar.Height, 0, 0, 0, 255)
@@ -532,24 +531,7 @@ function RageUI.Render(instructionalButton)
 			if RageUI.CurrentMenu.Controls.Back.Enabled and RageUI.CurrentMenu.Closable then
 				if RageUI.CurrentMenu.Controls.Back.Pressed then
 					RageUI.CurrentMenu.Controls.Back.Pressed = false
-					local Audio = RageUI.Settings.Audio
-					RageUI.PlaySound(Audio[Audio.Use].Back.audioName, Audio[Audio.Use].Back.audioRef)
-
-					if RageUI.CurrentMenu.Closed ~= nil then
-						RageUI.CurrentMenu.Closed()
-					end
-
-					if RageUI.CurrentMenu.Parent ~= nil then
-						if RageUI.CurrentMenu.Parent() then
-							RageUI.NextMenu = RageUI.CurrentMenu.Parent
-						else
-							RageUI.NextMenu = nil
-							RageUI.Visible(RageUI.CurrentMenu, false)
-						end
-					else
-						RageUI.NextMenu = nil
-						RageUI.Visible(RageUI.CurrentMenu, false)
-					end
+					RageUI.GoBack()
 				end
 			end
 
@@ -661,21 +643,17 @@ end
 ---CreateWhile
 ---@param wait number
 ---@param closure function
----@param type number
+---@param beforeWait boolean
 ---@return void
 ---@public
-function RageUI.CreateWhile(wait, closure, type)
-	type = 1
-
+function RageUI.CreateWhile(wait, closure, beforeWait)
 	Citizen.CreateThread(function()
 		while true do
-			if (type == 1) then
+			if (beforeWait == true or beforeWait == nil) then
 				Citizen.Wait(wait or 0.1)
-			end
-
-			closure()
-
-			if (type == 2) then
+				closure()
+			else
+				closure()
 				Citizen.Wait(wait or 0.1)
 			end
 		end

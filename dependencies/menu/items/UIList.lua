@@ -24,7 +24,7 @@ local SettingsList = {
 ---@param Callback function
 ---@return nil
 ---@public
-function RageUI.List(Label, Items, Index, Description, Style, Enabled, Callback)
+function RageUI.List(Label, Items, Index, Description, Style, Enabled, Callback, Submenu)
 	---@type table
 	local CurrentMenu = RageUI.CurrentMenu
 
@@ -75,11 +75,11 @@ function RageUI.List(Label, Items, Index, Description, Style, Enabled, Callback)
 					if Selected then
 						if Style.RightLabel ~= nil and Style.RightLabel ~= "" then
 							RenderText(Style.RightLabel, CurrentMenu.X + SettingsButton.RightText.X - RightBadgeOffset + CurrentMenu.WidthOffset, CurrentMenu.Y + SettingsButton.RightText.Y + CurrentMenu.SubtitleHeight + RageUI.ItemOffset, 0, SettingsButton.RightText.Scale, 0, 0, 0, 255, 2)
-							RightOffset =MeasureStringWidth(Style.RightLabel,0,0.35)
+							RightOffset = MeasureStringWidth(Style.RightLabel,0,0.35)
 						end
 					else
 						if Style.RightLabel ~= nil and Style.RightLabel ~= "" then
-							RightOffset =MeasureStringWidth(Style.RightLabel,0,0.35)
+							RightOffset = MeasureStringWidth(Style.RightLabel,0,0.35)
 							RenderText(Style.RightLabel, CurrentMenu.X + SettingsButton.RightText.X - RightBadgeOffset + CurrentMenu.WidthOffset, CurrentMenu.Y + SettingsButton.RightText.Y + CurrentMenu.SubtitleHeight + RageUI.ItemOffset, 0, SettingsButton.RightText.Scale, 245, 245, 245, 255, 2)
 						end
 					end
@@ -165,13 +165,19 @@ function RageUI.List(Label, Items, Index, Description, Style, Enabled, Callback)
 					RageUI.PlaySound(Audio[Audio.Use].LeftRight.audioName, Audio[Audio.Use].LeftRight.audioRef)
 				end
 
+				if (Enabled) then
+					Callback(Hovered, Selected, ((CurrentMenu.Controls.Select.Active or ((Hovered and CurrentMenu.Controls.Click.Active) and (not LeftArrowHovered and not RightArrowHovered))) and Selected), Index)
+				end
+
 				if Selected and (CurrentMenu.Controls.Select.Active or ((Hovered and CurrentMenu.Controls.Click.Active) and (not LeftArrowHovered and not RightArrowHovered))) then
 					local Audio = RageUI.Settings.Audio
 					RageUI.PlaySound(Audio[Audio.Use].Select.audioName, Audio[Audio.Use].Select.audioRef)
-				end
 
-				if (Enabled) then
-					Callback(Hovered, Selected, ((CurrentMenu.Controls.Select.Active or ((Hovered and CurrentMenu.Controls.Click.Active) and (not LeftArrowHovered and not RightArrowHovered))) and Selected), Index)
+					if Submenu ~= nil then
+						if Submenu() then
+							RageUI.NextMenu = Submenu
+						end
+					end
 				end
 			end
 

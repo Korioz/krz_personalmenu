@@ -8,7 +8,7 @@ Locales['br'] = {
 
 	-- Menu Default Vars
 	['default_gps'] = 'Desmacar',
-	['default_demarche'] = 'Normal',
+	['default_attitude'] = 'Normal',
 	['default_voice'] = 'Normal',
 
 	-- Menu Notification
@@ -55,14 +55,14 @@ Locales['br'] = {
 
 	-- Inventory Menu
 	['inventory_title'] = 'Invetário',
-	['inventory_actions_subtitle'] = 'Invetário: Ação',
+	['inventory_actions_title'] = 'Invetário: Ação',
 	['inventory_use_button'] = 'Usar',
 	['inventory_give_button'] = 'Dar',
 	['inventory_drop_button'] = 'Remover',
 
 	-- Loadout Menu
 	['loadout_title'] = 'Gestão de armas',
-	['loadout_actions_subtitle'] = 'Armas: Ação',
+	['loadout_actions_title'] = 'Armas: Ação',
 	['loadout_give_button'] = 'Dar',
 	['loadout_givemun_button'] = 'Dar Munições',
 	['loadout_drop_button'] = 'Remover',

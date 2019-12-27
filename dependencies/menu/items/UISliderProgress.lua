@@ -178,5 +178,3 @@ function RageUI.SliderProgress(Label, ProgressStart, ProgressMax, Description, S
 		end
 	end
 end
-
-

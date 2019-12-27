@@ -111,6 +111,3 @@ function RageUI.SliderHeritage(Label, ItemIndex, Description, Callback)
 		end
 	end
 end
-
-
-

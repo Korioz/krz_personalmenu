@@ -1,34 +1,103 @@
-print("")
-print("^1Author : Korioz^0")
-print("^Version : 1.1^0")
-print("")
-print("^2[Download] : https://github.com/korioz/krz_personalmenu/releases^0")
-print("^2[Feature Suggestions] : https://github.com/korioz/krz_personalmenu/issues/2^0")
-print("")
-print("^6Korioz#3310 on Discord for any Support.^0")
-print("")
+print("^0======================================================================^7")
+print("^0[^4Author^0] ^7:^0 ^0Korioz^7")
+print("^0[^3Version^0] ^7:^0 ^02.0^7")
+print("^0[^2Download^0] ^7:^0 ^5https://github.com/korioz/krz_personalmenu/releases^7")
+print("^0[^1Issues^0] ^7:^0 ^5https://github.com/korioz/krz_personalmenu/issues^7")
+print("^0======================================================================^7")
 
 ESX = nil
 
-local personalmenu = {}
-
-local invItem, wepItem, billItem, mainMenu, inventoryMenu, loadoutMenu = {}, {}, {}, nil, nil, nil
+local PersonalMenu = {
+	WalletList = {
+		_U('wallet_option_give'),
+		_U('wallet_option_drop')
+	},
+	DoorState = {
+		FrontLeft = false,
+		FrontRight = false,
+		BackLeft = false,
+		BackRight = false,
+		Hood = false,
+		Trunk = false
+	},
+	DoorList = {
+		_U('vehicle_door_frontleft'),
+		_U('vehicle_door_frontright'),
+		_U('vehicle_door_backleft'),
+		_U('vehicle_door_backright')
+	},
+	GPSSelected = _U('default_gps'),
+	GPSIndex = 1,
+	GPSList = {
+		'Aucun',
+		'Poste de Police',
+		'Garage Central',
+		'Hôpital',
+		'Concessionnaire',
+		'Benny\'s Custom',
+		'Pôle Emploie',
+		'Auto école',
+		'Téquila-la'
+	},
+	AttitudeSelected = _U('default_attitude'),
+	AttitudeIndex = 1,
+	AttitudeList = {
+		'Normal',
+		'Homme effiminer',
+		'Bouffiasse',
+		'Dépressif',
+		'Dépressive',
+		'Muscle',
+		'Hipster',
+		'Business',
+		'Intimide',
+		'Bourrer',
+		'Malheureux',
+		'Triste',
+		'Choc',
+		'Sombre',
+		'Fatiguer',
+		'Presser',
+		'Frimeur',
+		'Fier',
+		'Petite course',
+		'Pupute',
+		'Impertinente',
+		'Arrogante',
+		'Blesser',
+		'Trop manger',
+		'Casual',
+		'Determiner',
+		'Peureux',
+		'Trop Swag',
+		'Travailleur',
+		'Brute',
+		'Rando',
+		'Gangstère',
+		'Gangster'
+	},
+	VoiceSelected = _U('default_voice'),
+	VoiceIndex = 2,
+	VoiceList = {
+		_U('voice_whisper'),
+		_U('voice_normal'),
+		_U('voice_cry')
+	},
+	ItemSelected = {},
+	ItemIndex = {},
+	WeaponData = {}
+}
 
 local isDead, inAnim = false, false
-
 local noclip, godmode, visible, gamerTags = false, false, false, {}
-
-local actualGPS, actualGPSIndex = _U('default_gps'), 1
-local actualDemarche, actualDemarcheIndex = _U('default_demarche'), 1
-local actualVoice, actualVoiceIndex = _U('default_voice'), 2
-
 local societymoney, societymoney2 = nil, nil
-
-local wepList = nil
 
 Citizen.CreateThread(function()
 	while ESX == nil do
-		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+		TriggerEvent('esx:getSharedObject', function(obj)
+			ESX = obj
+		end)
+
 		Citizen.Wait(10)
 	end
 
@@ -36,7 +105,7 @@ Citizen.CreateThread(function()
 		Citizen.Wait(10)
 	end
 
-	if Config.doublejob then
+	if Config.DoubleJob then
 		while ESX.GetPlayerData().job2 == nil do
 			Citizen.Wait(10)
 		end
@@ -45,21 +114,64 @@ Citizen.CreateThread(function()
 	ESX.PlayerData = ESX.GetPlayerData()
 
 	while actualSkin == nil do
-		TriggerEvent('skinchanger:getSkin', function(skin) actualSkin = skin end)
+		TriggerEvent('skinchanger:getSkin', function(skin)
+			actualSkin = skin
+		end)
+
 		Citizen.Wait(10)
 	end
 
 	RefreshMoney()
 
-	if Config.doublejob then
+	if Config.DoubleJob then
 		RefreshMoney2()
 	end
 
-	wepList = ESX.GetWeaponList()
+	PersonalMenu.WeaponData = ESX.GetWeaponList()
 
-	mainMenu = RageUI.CreateMenu(Config.servername, _U('mainmenu_subtitle'), 0, 0, 'commonmenu', 'interaction_bgd', 255, 255, 255, 255)
-	inventoryMenu = RageUI.CreateMenu(Config.servername, _U('inventory_actions_subtitle'), 0, 0, 'commonmenu', 'interaction_bgd', 255, 255, 255, 255)
-	loadoutMenu = RageUI.CreateMenu(Config.servername, _U('loadout_actions_subtitle'), 0, 0, 'commonmenu', 'interaction_bgd', 255, 255, 255, 255)
+	for i = 1, #PersonalMenu.WeaponData, 1 do
+		if PersonalMenu.WeaponData[i].name == 'WEAPON_UNARMED' then
+			PersonalMenu.WeaponData[i] = nil
+		else
+			PersonalMenu.WeaponData[i].hash = GetHashKey(PersonalMenu.WeaponData[i].name)
+		end
+	end
+
+	RMenu.Add('rageui', 'personal', RageUI.CreateMenu(Config.MenuTitle, _U('mainmenu_subtitle'), 0, 0, 'commonmenu', 'interaction_bgd', 255, 255, 255, 255))
+
+	RMenu.Add('personal', 'inventory', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('inventory_title')))
+	RMenu.Add('personal', 'loadout', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('loadout_title')))
+	RMenu.Add('personal', 'wallet', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('wallet_title')))
+	RMenu.Add('personal', 'billing', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('bills_title')))
+	RMenu.Add('personal', 'clothes', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('clothes_title')))
+	RMenu.Add('personal', 'accessories', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('accessories_title')))
+	RMenu.Add('personal', 'animation', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('animation_title')))
+	RMenu.Add('personal', 'vehicle', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('vehicle_title')))
+	RMenu.Add('personal', 'boss', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('bossmanagement_title', ESX.PlayerData.job.label)))
+
+	if Config.DoubleJob then
+		RMenu.Add('personal', 'boss2', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('bossmanagement2_title', ESX.PlayerData.job2.label)))
+	end
+
+	RMenu.Add('personal', 'admin', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('admin_title')))
+
+	RMenu.Add('inventory', 'actions', RageUI.CreateSubMenu(RMenu.Get('personal', 'inventory'), _U('inventory_actions_title')))
+	RMenu.Get('inventory', 'actions').Closed = function()
+		PersonalMenu.ItemSelected = nil
+	end
+
+	RMenu.Add('loadout', 'actions', RageUI.CreateSubMenu(RMenu.Get('personal', 'loadout'), _U('loadout_actions_title')))
+	RMenu.Get('loadout', 'actions').Closed = function()
+		PersonalMenu.ItemSelected = nil
+	end
+
+	RMenu.Add('animation', 'party', RageUI.CreateSubMenu(RMenu.Get('personal', 'animation'), _U('animation_party_title')))
+	RMenu.Add('animation', 'salute', RageUI.CreateSubMenu(RMenu.Get('personal', 'animation'), _U('animation_salute_title')))
+	RMenu.Add('animation', 'work', RageUI.CreateSubMenu(RMenu.Get('personal', 'animation'), _U('animation_work_title')))
+	RMenu.Add('animation', 'mood', RageUI.CreateSubMenu(RMenu.Get('personal', 'animation'), _U('animation_mood_title')))
+	RMenu.Add('animation', 'sports', RageUI.CreateSubMenu(RMenu.Get('personal', 'animation'), _U('animation_sports_title')))
+	RMenu.Add('animation', 'other', RageUI.CreateSubMenu(RMenu.Get('personal', 'animation'), _U('animation_other_title')))
+	RMenu.Add('animation', 'pegi', RageUI.CreateSubMenu(RMenu.Get('personal', 'animation'), _U('animation_pegi_title')))
 end)
 
 Citizen.CreateThread(function()
@@ -151,9 +263,9 @@ function Text(text)
 	SetTextCentre(false)
 	SetTextDropshadow(0, 0, 0, 0, 255)
 	SetTextEdge(1, 0, 0, 0, 205)
-	SetTextEntry('STRING')
-	AddTextComponentString(text)
-	DrawText(0.017, 0.977)
+	BeginTextCommandDisplayText('STRING')
+	AddTextComponentSubstringPlayerName(text)
+	EndTextCommandDisplayText(0.017, 0.977)
 end
 
 function KeyboardInput(entryTitle, textEntry, inputText, maxLength)
@@ -468,480 +580,6 @@ function startScenario(anim)
 	TaskStartScenarioInPlace(plyPed, anim, 0, false)
 end
 
-function RenderInventoryMenu(menu)
-	inventorymenu = RageUI.CreateSubMenu(menu, _U('inventory_title'))
-	local invCount = {}
-
-	for i = 1, #ESX.PlayerData.inventory, 1 do
-		local count = ESX.PlayerData.inventory[i].count
-
-		if count > 0 then
-			local label = ESX.PlayerData.inventory[i].label
-			local value = ESX.PlayerData.inventory[i].name
-
-			invCount = {}
-
-			for i = 1, count, 1 do
-				table.insert(invCount, i)
-			end
-			
-			table.insert(invItem, value)
-
-			invItem[value] = NativeUI.CreateListItem(label .. ' (' .. count .. ')', invCount, 1)
-			inventorymenu.SubMenu:AddItem(invItem[value])
-		end
-	end
-
-	local useItem = NativeUI.CreateItem(_U('inventory_use_button'), '')
-	inventoryMenu:AddItem(useItem)
-
-	local giveItem = NativeUI.CreateItem(_U('inventory_give_button'), '')
-	inventoryMenu:AddItem(giveItem)
-
-	local dropItem = NativeUI.CreateItem(_U('inventory_drop_button'), '')
-	dropItem:SetRightBadge(4)
-	inventoryMenu:AddItem(dropItem)
-
-	inventorymenu.SubMenu.OnListSelect = function(sender, item, index)
-		_menuPool:CloseAllMenus(true)
-		RageUI.Visible(inventoryMenu, true)
-
-		for i = 1, #ESX.PlayerData.inventory, 1 do
-			local label = ESX.PlayerData.inventory[i].label
-			local count = ESX.PlayerData.inventory[i].count
-			local value = ESX.PlayerData.inventory[i].name
-			local usable = ESX.PlayerData.inventory[i].usable
-			local canRemove = ESX.PlayerData.inventory[i].canRemove
-			local quantity = index
-
-			if item == invItem[value] then
-				inventoryMenu.OnItemSelect = function(sender, item, index)
-					if item == useItem then
-						if usable then
-							TriggerServerEvent('esx:useItem', value)
-						else
-							ESX.ShowNotification(_U('not_usable', label))
-						end
-					elseif item == giveItem then
-						local foundPlayers = false
-						personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
-
-						if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3 then
-							foundPlayers = true
-						end
-
-						if foundPlayers == true then
-							local closestPed = GetPlayerPed(personalmenu.closestPlayer)
-
-							if not IsPedSittingInAnyVehicle(closestPed) then
-								if quantity ~= nil and count > 0 then
-									TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_standard', value, quantity)
-									RageUI.CloseAll()
-								else
-									ESX.ShowNotification(_U('amount_invalid'))
-								end
-							else
-								ESX.ShowNotification(_U('in_vehicle_give', label))
-							end
-						else
-							ESX.ShowNotification(_U('players_nearby'))
-						end
-					elseif item == dropItem then
-						if canRemove then
-							if not IsPedSittingInAnyVehicle(plyPed) then
-								if quantity ~= nil then
-									TriggerServerEvent('esx:removeInventoryItem', 'item_standard', value, quantity)
-									RageUI.CloseAll()
-								else
-									ESX.ShowNotification(_U('amount_invalid'))
-								end
-							else
-								ESX.ShowNotification(_U('in_vehicle_drop', label))
-							end
-						else
-							ESX.ShowNotification(_U('not_droppable', label))
-						end
-					end
-				end
-			end
-		end
-	end
-end
-
-function RenderWeaponMenu(menu)
-	weaponMenu = RageUI.CreateSubMenu(menu, _U('loadout_title'))
-
-	for i = 1, #wepList, 1 do
-		local weaponHash = GetHashKey(wepList[i].name)
-
-		if HasPedGotWeapon(plyPed, weaponHash, false) and wepList[i].name ~= 'WEAPON_UNARMED' then
-			local ammo = GetAmmoInPedWeapon(plyPed, weaponHash)
-			local label = wepList[i].label .. ' [' .. ammo .. ']'
-			local value = wepList[i].name
-
-			wepItem[value] = NativeUI.CreateItem(label, '')
-			weaponMenu.SubMenu:AddItem(wepItem[value])
-		end
-	end
-
-	local giveItem = NativeUI.CreateItem(_U('loadout_give_button'), '')
-	loadoutMenu:AddItem(giveItem)
-
-	local giveMunItem = NativeUI.CreateItem(_U('loadout_givemun_button'), '')
-	loadoutMenu:AddItem(giveMunItem)
-
-	local dropItem = NativeUI.CreateItem(_U('loadout_drop_button'), '')
-	dropItem:SetRightBadge(4)
-	loadoutMenu:AddItem(dropItem)
-
-	weaponMenu.SubMenu.OnItemSelect = function(sender, item, index)
-		_menuPool:CloseAllMenus(true)
-		RageUI.Visible(loadoutMenu, true)
-
-		for i = 1, #wepList, 1 do
-			local weaponHash = GetHashKey(wepList[i].name)
-
-			if HasPedGotWeapon(plyPed, weaponHash, false) and wepList[i].name ~= 'WEAPON_UNARMED' then
-				local ammo = GetAmmoInPedWeapon(plyPed, weaponHash)
-				local value = wepList[i].name
-				local label = wepList[i].label
-
-				if item == wepItem[value] then
-					loadoutMenu.OnItemSelect = function(sender, item, index)
-						if item == giveItem then
-							local foundPlayers = false
-							personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
-
-							if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3 then
-								foundPlayers = true
-							end
-
-							if foundPlayers == true then
-								local closestPed = GetPlayerPed(personalmenu.closestPlayer)
-
-								if not IsPedSittingInAnyVehicle(closestPed) then
-									TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_weapon', value, ammo)
-									RageUI.CloseAll()
-								else
-									ESX.ShowNotification(_U('in_vehicle_give', label))
-								end
-							else
-								ESX.ShowNotification(_U('players_nearby'))
-							end
-						elseif item == giveMunItem then
-							local quantity = KeyboardInput('KORIOZ_BOX_AMMO_AMOUNT', _U('dialogbox_amount_ammo'), '', 8)
-
-							if quantity ~= nil then
-								local post = true
-								quantity = tonumber(quantity)
-
-								if type(quantity) == 'number' then
-									quantity = ESX.Math.Round(quantity)
-
-									if quantity <= 0 then
-										post = false
-									end
-								end
-
-								local foundPlayers = false
-								personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
-
-								if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3 then
-									foundPlayers = true
-								end
-
-								if foundPlayers == true then
-									local closestPed = GetPlayerPed(personalmenu.closestPlayer)
-
-									if not IsPedSittingInAnyVehicle(closestPed) then
-										if ammo > 0 then
-											if post == true then
-												if quantity <= ammo and quantity >= 0 then
-													local finalAmmo = math.floor(ammo - quantity)
-													SetPedAmmo(plyPed, value, finalAmmo)
-													TriggerServerEvent('KorioZ-PersonalMenu:Weapon_addAmmoToPedS', GetPlayerServerId(personalmenu.closestPlayer), value, quantity)
-
-													ESX.ShowNotification(_U('gave_ammo', quantity, GetPlayerName(personalmenu.closestPlayer)))
-													RageUI.CloseAll()
-												else
-													ESX.ShowNotification(_U('not_enough_ammo'))
-												end
-											else
-												ESX.ShowNotification(_U('amount_invalid'))
-											end
-										else
-											ESX.ShowNotification(_U('no_ammo'))
-										end
-									else
-										ESX.ShowNotification(_U('in_vehicle_give', label))
-									end
-								else
-									ESX.ShowNotification(_U('players_nearby'))
-								end
-							end
-						elseif item == dropItem then
-							if not IsPedSittingInAnyVehicle(plyPed) then
-								TriggerServerEvent('esx:removeInventoryItem', 'item_weapon', value)
-								RageUI.CloseAll()
-							else
-								ESX.ShowNotification(_U('in_vehicle_drop', label))
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-end
-
-function RenderWalletMenu(menu)
-	personalmenu.moneyOption = {
-		_U('wallet_option_give'),
-		_U('wallet_option_drop')
-	}
-
-	walletmenu = RageUI.CreateSubMenu(menu, _U('wallet_title'))
-
-	local walletJob = NativeUI.CreateItem(_U('wallet_job_button', ESX.PlayerData.job.label, ESX.PlayerData.job.grade_label), '')
-	walletmenu.SubMenu:AddItem(walletJob)
-
-	local walletJob2 = nil
-
-	if Config.doublejob then
-		walletJob2 = NativeUI.CreateItem(_U('wallet_job2_button', ESX.PlayerData.job2.label, ESX.PlayerData.job2.grade_label), '')
-		walletmenu.SubMenu:AddItem(walletJob2)
-	end
-
-	local walletMoney = NativeUI.CreateListItem(_U('wallet_money_button', ESX.Math.GroupDigits(ESX.PlayerData.money)), personalmenu.moneyOption, 1)
-	walletmenu.SubMenu:AddItem(walletMoney)
-
-	local walletbankMoney = nil
-	local walletdirtyMoney = nil
-
-	for i = 1, #ESX.PlayerData.accounts, 1 do
-		if ESX.PlayerData.accounts[i].name == 'bank' then
-			walletbankMoney = NativeUI.CreateItem(_U('wallet_bankmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), '')
-			walletmenu.SubMenu:AddItem(walletbankMoney)
-		end
-
-		if ESX.PlayerData.accounts[i].name == 'black_money' then
-			walletdirtyMoney = NativeUI.CreateListItem(_U('wallet_blackmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), personalmenu.moneyOption, 1)
-			walletmenu.SubMenu:AddItem(walletdirtyMoney)
-		end
-	end
-
-	local showID = nil
-	local showDriver = nil
-	local showFirearms = nil
-	local checkID = nil
-	local checkDriver = nil
-	local checkFirearms = nil
-
-	if Config.EnableJsfourIDCard then
-		showID = NativeUI.CreateItem(_U('wallet_show_idcard_button'), '')
-		walletmenu.SubMenu:AddItem(showID)
-
-		checkID = NativeUI.CreateItem(_U('wallet_check_idcard_button'), '')
-		walletmenu.SubMenu:AddItem(checkID)
-
-		showDriver = NativeUI.CreateItem(_U('wallet_show_driver_button'), '')
-		walletmenu.SubMenu:AddItem(showDriver)
-
-		checkDriver = NativeUI.CreateItem(_U('wallet_check_driver_button'), '')
-		walletmenu.SubMenu:AddItem(checkDriver)
-
-		showFirearms = NativeUI.CreateItem(_U('wallet_show_firearms_button'), '')
-		walletmenu.SubMenu:AddItem(showFirearms)
-
-		checkFirearms = NativeUI.CreateItem(_U('wallet_check_firearms_button'), '')
-		walletmenu.SubMenu:AddItem(checkFirearms)
-	end
-
-	walletmenu.SubMenu.OnItemSelect = function(sender, item, index)
-		if Config.EnableJsfourIDCard then
-			if item == showID then
-				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
-
-				if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3.0 then
-					TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(personalmenu.closestPlayer))
-				else
-					ESX.ShowNotification(_U('players_nearby'))
-				end
-			elseif item == checkID then
-				TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(PlayerId()))
-			elseif item == showDriver then
-				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
-
-				if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3.0 then
-					TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(personalmenu.closestPlayer), 'driver')
-				else
-					ESX.ShowNotification(_U('players_nearby'))
-				end
-			elseif item == checkDriver then
-				TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(PlayerId()), 'driver')
-			elseif item == showFirearms then
-				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
-
-				if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3.0 then
-					TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(personalmenu.closestPlayer), 'weapon')
-				else
-					ESX.ShowNotification(_U('players_nearby'))
-				end
-			elseif item == checkFirearms then
-				TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(PlayerId()), 'weapon')
-			end
-		end
-	end
-
-	walletmenu.SubMenu.OnListSelect = function(sender, item, index)
-		if index == 1 then
-			local quantity = KeyboardInput('KORIOZ_BOX_AMOUNT', _U('dialogbox_amount'), '', 8)
-
-			if quantity ~= nil then
-				local post = true
-				quantity = tonumber(quantity)
-
-				if type(quantity) == 'number' then
-					quantity = ESX.Math.Round(quantity)
-
-					if quantity <= 0 then
-						post = false
-					end
-				end
-
-				local foundPlayers = false
-				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
-
-				if personalmenu.closestDistance ~= -1 and personalmenu.closestDistance <= 3 then
-					foundPlayers = true
-				end
-
-				if foundPlayers == true then
-					local closestPed = GetPlayerPed(personalmenu.closestPlayer)
-
-					if not IsPedSittingInAnyVehicle(closestPed) then
-						if post == true then
-							if item == walletMoney then
-								TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_money', 'money', quantity)
-								RageUI.CloseAll()
-							elseif item == walletdirtyMoney then
-								TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(personalmenu.closestPlayer), 'item_account', 'black_money', quantity)
-								RageUI.CloseAll()
-							end
-						else
-							ESX.ShowNotification(_U('amount_invalid'))
-						end
-					else
-						if item == walletMoney then
-							ESX.ShowNotification(_U('in_vehicle_give', 'de l\'argent'))
-						elseif item == walletdirtyMoney then
-							ESX.ShowNotification(_U('in_vehicle_give', 'de l\'argent sale'))
-						end
-					end
-				else
-					ESX.ShowNotification(_U('players_nearby'))
-				end
-			end
-		elseif index == 2 then
-			local quantity = KeyboardInput('KORIOZ_BOX_AMOUNT', _U('dialogbox_amount'), '', 8)
-
-			if quantity ~= nil then
-				local post = true
-				quantity = tonumber(quantity)
-
-				if type(quantity) == 'number' then
-					quantity = ESX.Math.Round(quantity)
-
-					if quantity <= 0 then
-						post = false
-					end
-				end
-
-				if not IsPedSittingInAnyVehicle(plyPed) then
-					if post == true then
-						if item == walletMoney then
-							TriggerServerEvent('esx:removeInventoryItem', 'item_money', 'money', quantity)
-							RageUI.CloseAll()
-						elseif item == walletdirtyMoney then
-							TriggerServerEvent('esx:removeInventoryItem', 'item_account', 'black_money', quantity)
-							RageUI.CloseAll()
-						end
-					else
-						ESX.ShowNotification(_U('amount_invalid'))
-					end
-				else
-					if item == walletMoney then
-						ESX.ShowNotification(_U('in_vehicle_drop', 'de l\'argent'))
-					elseif item == walletdirtyMoney then
-						ESX.ShowNotification(_U('in_vehicle_drop', 'de l\'argent sale'))
-					end
-				end
-			end
-		end
-	end
-end
-
-function RenderBillingMenu(menu)
-	billMenu = RageUI.CreateSubMenu(menu, _U('bills_title'))
-	billItem = {}
-
-	ESX.TriggerServerCallback('KorioZ-PersonalMenu:Bill_getBills', function(bills)
-		for i = 1, #bills, 1 do
-			local label = bills[i].label
-			local amount = bills[i].amount
-			local value = bills[i].id
-
-			table.insert(billItem, value)
-
-			billItem[value] = NativeUI.CreateItem(label, '')
-			billItem[value]:RightLabel('$' .. ESX.Math.GroupDigits(amount))
-			billMenu.SubMenu:AddItem(billItem[value])
-		end
-
-		billMenu.SubMenu.OnItemSelect = function(sender, item, index)
-			for i = 1, #bills, 1 do
-				local label  = bills[i].label
-				local value = bills[i].id
-
-				if item == billItem[value] then
-					ESX.TriggerServerCallback('esx_billing:payBill', function()
-						RageUI.CloseAll()
-					end, value)
-				end
-			end
-		end
-	end)
-end
-
-function RenderClothesMenu(menu)
-	clothesMenu = RageUI.CreateSubMenu(menu, _U('clothes_title'))
-
-	local torsoItem = NativeUI.CreateItem(_U('clothes_top'), '')
-	clothesMenu.SubMenu:AddItem(torsoItem)
-	local pantsItem = NativeUI.CreateItem(_U('clothes_pants'), '')
-	clothesMenu.SubMenu:AddItem(pantsItem)
-	local shoesItem = NativeUI.CreateItem(_U('clothes_shoes'), '')
-	clothesMenu.SubMenu:AddItem(shoesItem)
-	local bagItem = NativeUI.CreateItem(_U('clothes_bag'), '')
-	clothesMenu.SubMenu:AddItem(bagItem)
-	local bproofItem = NativeUI.CreateItem(_U('clothes_bproof'), '')
-	clothesMenu.SubMenu:AddItem(bproofItem)
-
-	clothesMenu.SubMenu.OnItemSelect = function(sender, item, index)
-		if item == torsoItem then
-			setUniform('torso', plyPed)
-		elseif item == pantsItem then
-			setUniform('pants', plyPed)
-		elseif item == shoesItem then
-			setUniform('shoes', plyPed)
-		elseif item == bagItem then
-			setUniform('bag', plyPed)
-		elseif item == bproofItem then
-			setUniform('bproof', plyPed)
-		end
-	end
-end
-
 function setUniform(value, plyPed)
 	ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin)
 		TriggerEvent('skinchanger:getSkin', function(skina)
@@ -998,31 +636,6 @@ function setUniform(value, plyPed)
 	end)
 end
 
-function RenderAccessoryMenu(menu)
-	accessoryMenu = RageUI.CreateSubMenu(menu, _U('accessories_title'))
-
-	local earsItem = NativeUI.CreateItem(_U('accessories_ears'), '')
-	accessoryMenu.SubMenu:AddItem(earsItem)
-	local glassesItem = NativeUI.CreateItem(_U('accessories_glasses'), '')
-	accessoryMenu.SubMenu:AddItem(glassesItem)
-	local helmetItem = NativeUI.CreateItem(_U('accessories_helmet'), '')
-	accessoryMenu.SubMenu:AddItem(helmetItem)
-	local maskItem = NativeUI.CreateItem(_U('accessories_mask'), '')
-	accessoryMenu.SubMenu:AddItem(maskItem)
-
-	accessoryMenu.SubMenu.OnItemSelect = function(sender, item, index)
-		if item == earsItem then
-			SetUnsetAccessory('Ears')
-		elseif item == glassesItem then
-			SetUnsetAccessory('Glasses')
-		elseif item == helmetItem then
-			SetUnsetAccessory('Helmet')
-		elseif item == maskItem then
-			SetUnsetAccessory('Mask')
-		end
-	end
-end
-
 function SetUnsetAccessory(accessory)
 	ESX.TriggerServerCallback('esx_accessories:get', function(hasAccessory, accessorySkin)
 		local _accessory = string.lower(accessory)
@@ -1076,21 +689,507 @@ function SetUnsetAccessory(accessory)
 	end, accessory)
 end
 
-function RenderAnimationMenu(menu)
-	animMenu = RageUI.CreateSubMenu(menu, _U('animation_title'))
+function RenderPersonalMenu()
+	RageUI.DrawContent({ header = true, glare = true, instructionalButton = true }, function()
+		---Items
+		local Menus = RMenu.GetType('personal')
 
-	AddSubMenuPartyMenu(animMenu)
-	AddSubMenuSaluteMenu(animMenu)
-	AddSubMenuWorkMenu(animMenu)
-	AddSubMenuMoodMenu(animMenu)
-	AddSubMenuSportsMenu(animMenu)
-	AddSubMenuOtherMenu(animMenu)
-	AddSubMenuPEGI21Menu(animMenu)
+		for i = 1, #Menus, 1 do
+			RageUI[Menus[i].ItemType](Menus[i].Menu.Title, nil, { RightLabel = "→→→" }, true, function(Hovered, Active, Selected)
+				if (Hovered) then
+				end
+
+				if (Active) then
+				end
+
+				if (Selected) then
+				end
+			end, RMenu.Get('personal', Menus[i].Name))
+		end
+	end, function()
+		---Panels
+	end)
 end
 
-function AddSubMenuPartyMenu(menu)
-	animPartyMenu = RageUI.CreateSubMenu(menu.SubMenu, _U('animation_party_title'))
+function RenderActionsMenu(type)
+	RageUI.DrawContent({ header = true, glare = true, instructionalButton = true }, function()
+		---Items
+		if type == 'inventory' then
+			RageUI.Button(_U('inventory_use_button'), "", { RightLabel = "←" }, true, function(Hovered, Active, Selected)
+				if (Selected) then
+					if PersonalMenu.ItemSelected.usable then
+						TriggerServerEvent('esx:useItem', PersonalMenu.ItemSelected.name)
+					else
+						ESX.ShowNotification(_U('not_usable', PersonalMenu.ItemSelected.label))
+					end
+				end
+			end)
 
+			RageUI.Button(_U('inventory_give_button'), "", { RightLabel = "→" }, true, function(Hovered, Active, Selected)
+				if (Selected) then
+					local foundPlayers = false
+					local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
+
+					if closestDistance ~= -1 and closestDistance <= 3 then
+						foundPlayers = true
+					end
+
+					if foundPlayers == true then
+						local closestPed = GetPlayerPed(closestPlayer)
+
+						if not IsPedSittingInAnyVehicle(closestPed) then
+							if PersonalMenu.ItemIndex[PersonalMenu.ItemSelected.name] ~= nil and PersonalMenu.ItemSelected.count > 0 then
+								TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(closestPlayer), 'item_standard', PersonalMenu.ItemSelected.name, PersonalMenu.ItemIndex[PersonalMenu.ItemSelected.name])
+								RageUI.CloseAll()
+							else
+								ESX.ShowNotification(_U('amount_invalid'))
+							end
+						else
+							ESX.ShowNotification(_U('in_vehicle_give', PersonalMenu.ItemSelected.label))
+						end
+					else
+						ESX.ShowNotification(_U('players_nearby'))
+					end
+				end
+			end)
+
+			RageUI.Button(_U('inventory_drop_button'), "", { RightBadge = RageUI.BadgeStyle.Alert }, true, function(Hovered, Active, Selected)
+				if (Selected) then
+					if PersonalMenu.ItemSelected.canRemove then
+						if not IsPedSittingInAnyVehicle(plyPed) then
+							if PersonalMenu.ItemIndex[PersonalMenu.ItemSelected.name] ~= nil then
+								TriggerServerEvent('esx:removeInventoryItem', 'item_standard', PersonalMenu.ItemSelected.name, PersonalMenu.ItemIndex[PersonalMenu.ItemSelected.name])
+								RageUI.CloseAll()
+							else
+								ESX.ShowNotification(_U('amount_invalid'))
+							end
+						else
+							ESX.ShowNotification(_U('in_vehicle_drop', PersonalMenu.ItemSelected.label))
+						end
+					else
+						ESX.ShowNotification(_U('not_droppable', PersonalMenu.ItemSelected.label))
+					end
+				end
+			end)
+		elseif type == 'loadout' then
+			if HasPedGotWeapon(plyPed, PersonalMenu.ItemSelected.hash, false) then
+				RageUI.Button(_U('loadout_give_button'), "", { RightLabel = "→" }, true, function(Hovered, Active, Selected)
+					if (Selected) then
+						local foundPlayers = false
+						local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
+
+						if closestDistance ~= -1 and closestDistance <= 3 then
+							foundPlayers = true
+						end
+
+						if foundPlayers == true then
+							local closestPed = GetPlayerPed(closestPlayer)
+
+							if not IsPedSittingInAnyVehicle(closestPed) then
+								local ammo = GetAmmoInPedWeapon(plyPed, PersonalMenu.ItemSelected.hash)
+								TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(closestPlayer), 'item_weapon', PersonalMenu.ItemSelected.name, ammo)
+								RageUI.CloseAll()
+							else
+								ESX.ShowNotification(_U('in_vehicle_give', PersonalMenu.ItemSelected.label))
+							end
+						else
+							ESX.ShowNotification(_U('players_nearby'))
+						end
+					end
+				end)
+
+				RageUI.Button(_U('loadout_givemun_button'), "", { RightBadge = RageUI.BadgeStyle.Ammo }, true, function(Hovered, Active, Selected)
+					if (Selected) then
+						local quantity = KeyboardInput('KORIOZ_BOX_AMMO_AMOUNT', _U('dialogbox_amount_ammo'), '', 8)
+
+						if quantity ~= nil then
+							local post = true
+							quantity = tonumber(quantity)
+
+							if type(quantity) == 'number' then
+								quantity = ESX.Math.Round(quantity)
+
+								if quantity <= 0 then
+									post = false
+								end
+							end
+
+							local foundPlayers = false
+							local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
+
+							if closestDistance ~= -1 and closestDistance <= 3 then
+								foundPlayers = true
+							end
+
+							if foundPlayers == true then
+								local closestPed = GetPlayerPed(closestPlayer)
+
+								if not IsPedSittingInAnyVehicle(closestPed) then
+									local ammo = GetAmmoInPedWeapon(plyPed, PersonalMenu.ItemSelected.hash)
+
+									if ammo > 0 then
+										if post == true then
+											if quantity <= ammo and quantity >= 0 then
+												local finalAmmo = math.floor(ammo - quantity)
+												SetPedAmmo(plyPed, value, finalAmmo)
+
+												TriggerServerEvent('KorioZ-PersonalMenu:Weapon_addAmmoToPedS', GetPlayerServerId(closestPlayer), PersonalMenu.ItemSelected.name, quantity)
+												ESX.ShowNotification(_U('gave_ammo', quantity, GetPlayerName(closestPlayer)))
+												RageUI.CloseAll()
+											else
+												ESX.ShowNotification(_U('not_enough_ammo'))
+											end
+										else
+											ESX.ShowNotification(_U('amount_invalid'))
+										end
+									else
+										ESX.ShowNotification(_U('no_ammo'))
+									end
+								else
+									ESX.ShowNotification(_U('in_vehicle_give', PersonalMenu.ItemSelected.label))
+								end
+							else
+								ESX.ShowNotification(_U('players_nearby'))
+							end
+						end
+					end
+				end)
+
+				RageUI.Button(_U('loadout_drop_button'), "", { RightBadge = RageUI.BadgeStyle.Alert }, true, function(Hovered, Active, Selected)
+					if (Selected) then
+						if not IsPedSittingInAnyVehicle(plyPed) then
+							TriggerServerEvent('esx:removeInventoryItem', 'item_weapon', PersonalMenu.ItemSelected.name)
+							RageUI.CloseAll()
+						else
+							ESX.ShowNotification(_U('in_vehicle_drop', PersonalMenu.ItemSelected.label))
+						end
+					end
+				end)
+			else
+				RageUI.GoBack()
+			end
+		end
+	end, function()
+		---Panels
+	end)
+end
+
+function RenderInventoryMenu()
+	RageUI.DrawContent({ header = true, glare = true, instructionalButton = true }, function()
+		---Items
+		for i = 1, #ESX.PlayerData.inventory, 1 do
+			if ESX.PlayerData.inventory[i].count > 0 then
+				local invCount = {}
+
+				for i = 1, ESX.PlayerData.inventory[i].count, 1 do
+					table.insert(invCount, i)
+				end
+
+				RageUI.List(ESX.PlayerData.inventory[i].label .. ' (' .. ESX.PlayerData.inventory[i].count .. ')', invCount, PersonalMenu.ItemIndex[ESX.PlayerData.inventory[i].name] or 1, nil, {}, true, function(Hovered, Active, Selected, Index)
+					if (Selected) then
+						PersonalMenu.ItemSelected = ESX.PlayerData.inventory[i]
+					end
+
+					PersonalMenu.ItemIndex[ESX.PlayerData.inventory[i].name] = Index
+				end, RMenu.Get('inventory', 'actions'))
+			end
+		end
+	end, function()
+		---Panels
+	end)
+end
+
+function RenderWeaponMenu()
+	RageUI.DrawContent({ header = true, glare = true, instructionalButton = true }, function()
+		---Items
+		for i = 1, #PersonalMenu.WeaponData, 1 do
+			if HasPedGotWeapon(plyPed, PersonalMenu.WeaponData[i].hash, false) then
+				local ammo = GetAmmoInPedWeapon(plyPed, PersonalMenu.WeaponData[i].hash)
+
+				RageUI.Button(PersonalMenu.WeaponData[i].label .. ' [' .. ammo .. ']', nil, { RightLabel = "→→→" }, true, function(Hovered, Active, Selected)
+					if (Selected) then
+						PersonalMenu.ItemSelected = PersonalMenu.WeaponData[i]
+					end
+				end, RMenu.Get('loadout', 'actions'))
+			end
+		end
+	end, function()
+		---Panels
+	end)
+end
+
+function RenderWalletMenu()
+	local walletJob = NativeUI.CreateItem(_U('wallet_job_button', ESX.PlayerData.job.label, ESX.PlayerData.job.grade_label), '')
+	walletmenu.SubMenu:AddItem(walletJob)
+
+	local walletJob2 = nil
+
+	if Config.DoubleJob then
+		walletJob2 = NativeUI.CreateItem(_U('wallet_job2_button', ESX.PlayerData.job2.label, ESX.PlayerData.job2.grade_label), '')
+		walletmenu.SubMenu:AddItem(walletJob2)
+	end
+
+	local walletMoney = NativeUI.CreateListItem(_U('wallet_money_button', ESX.Math.GroupDigits(ESX.PlayerData.money)), PersonalMenu.WalletList, 1)
+	walletmenu.SubMenu:AddItem(walletMoney)
+
+	local walletbankMoney = nil
+	local walletdirtyMoney = nil
+
+	for i = 1, #ESX.PlayerData.accounts, 1 do
+		if ESX.PlayerData.accounts[i].name == 'bank' then
+			walletbankMoney = NativeUI.CreateItem(_U('wallet_bankmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), '')
+			walletmenu.SubMenu:AddItem(walletbankMoney)
+		end
+
+		if ESX.PlayerData.accounts[i].name == 'black_money' then
+			walletdirtyMoney = NativeUI.CreateListItem(_U('wallet_blackmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), PersonalMenu.WalletList, 1)
+			walletmenu.SubMenu:AddItem(walletdirtyMoney)
+		end
+	end
+
+	local showID = nil
+	local showDriver = nil
+	local showFirearms = nil
+	local checkID = nil
+	local checkDriver = nil
+	local checkFirearms = nil
+
+	if Config.JSFourIDCard then
+		showID = NativeUI.CreateItem(_U('wallet_show_idcard_button'), '')
+		walletmenu.SubMenu:AddItem(showID)
+
+		checkID = NativeUI.CreateItem(_U('wallet_check_idcard_button'), '')
+		walletmenu.SubMenu:AddItem(checkID)
+
+		showDriver = NativeUI.CreateItem(_U('wallet_show_driver_button'), '')
+		walletmenu.SubMenu:AddItem(showDriver)
+
+		checkDriver = NativeUI.CreateItem(_U('wallet_check_driver_button'), '')
+		walletmenu.SubMenu:AddItem(checkDriver)
+
+		showFirearms = NativeUI.CreateItem(_U('wallet_show_firearms_button'), '')
+		walletmenu.SubMenu:AddItem(showFirearms)
+
+		checkFirearms = NativeUI.CreateItem(_U('wallet_check_firearms_button'), '')
+		walletmenu.SubMenu:AddItem(checkFirearms)
+	end
+
+	walletmenu.SubMenu.OnItemSelect = function(sender, item, index)
+		if Config.JSFourIDCard then
+			if item == showID then
+				closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
+
+				if closestDistance ~= -1 and closestDistance <= 3.0 then
+					TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(closestPlayer))
+				else
+					ESX.ShowNotification(_U('players_nearby'))
+				end
+			elseif item == checkID then
+				TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(PlayerId()))
+			elseif item == showDriver then
+				closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
+
+				if closestDistance ~= -1 and closestDistance <= 3.0 then
+					TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(closestPlayer), 'driver')
+				else
+					ESX.ShowNotification(_U('players_nearby'))
+				end
+			elseif item == checkDriver then
+				TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(PlayerId()), 'driver')
+			elseif item == showFirearms then
+				local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
+
+				if closestDistance ~= -1 and closestDistance <= 3.0 then
+					TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(closestPlayer), 'weapon')
+				else
+					ESX.ShowNotification(_U('players_nearby'))
+				end
+			elseif item == checkFirearms then
+				TriggerServerEvent('jsfour-idcard:open', GetPlayerServerId(PlayerId()), GetPlayerServerId(PlayerId()), 'weapon')
+			end
+		end
+	end
+
+	walletmenu.SubMenu.OnListSelect = function(sender, item, index)
+		if index == 1 then
+			local quantity = KeyboardInput('KORIOZ_BOX_AMOUNT', _U('dialogbox_amount'), '', 8)
+
+			if quantity ~= nil then
+				local post = true
+				quantity = tonumber(quantity)
+
+				if type(quantity) == 'number' then
+					quantity = ESX.Math.Round(quantity)
+
+					if quantity <= 0 then
+						post = false
+					end
+				end
+
+				local foundPlayers = false
+				local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
+
+				if closestDistance ~= -1 and closestDistance <= 3 then
+					foundPlayers = true
+				end
+
+				if foundPlayers == true then
+					local closestPed = GetPlayerPed(closestPlayer)
+
+					if not IsPedSittingInAnyVehicle(closestPed) then
+						if post == true then
+							if item == walletMoney then
+								TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(closestPlayer), 'item_money', 'money', quantity)
+								RageUI.CloseAll()
+							elseif item == walletdirtyMoney then
+								TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(closestPlayer), 'item_account', 'black_money', quantity)
+								RageUI.CloseAll()
+							end
+						else
+							ESX.ShowNotification(_U('amount_invalid'))
+						end
+					else
+						if item == walletMoney then
+							ESX.ShowNotification(_U('in_vehicle_give', 'de l\'argent'))
+						elseif item == walletdirtyMoney then
+							ESX.ShowNotification(_U('in_vehicle_give', 'de l\'argent sale'))
+						end
+					end
+				else
+					ESX.ShowNotification(_U('players_nearby'))
+				end
+			end
+		elseif index == 2 then
+			local quantity = KeyboardInput('KORIOZ_BOX_AMOUNT', _U('dialogbox_amount'), '', 8)
+
+			if quantity ~= nil then
+				local post = true
+				quantity = tonumber(quantity)
+
+				if type(quantity) == 'number' then
+					quantity = ESX.Math.Round(quantity)
+
+					if quantity <= 0 then
+						post = false
+					end
+				end
+
+				if not IsPedSittingInAnyVehicle(plyPed) then
+					if post == true then
+						if item == walletMoney then
+							TriggerServerEvent('esx:removeInventoryItem', 'item_money', 'money', quantity)
+							RageUI.CloseAll()
+						elseif item == walletdirtyMoney then
+							TriggerServerEvent('esx:removeInventoryItem', 'item_account', 'black_money', quantity)
+							RageUI.CloseAll()
+						end
+					else
+						ESX.ShowNotification(_U('amount_invalid'))
+					end
+				else
+					if item == walletMoney then
+						ESX.ShowNotification(_U('in_vehicle_drop', 'de l\'argent'))
+					elseif item == walletdirtyMoney then
+						ESX.ShowNotification(_U('in_vehicle_drop', 'de l\'argent sale'))
+					end
+				end
+			end
+		end
+	end
+end
+
+function RenderBillingMenu()
+	billItem = {}
+
+	ESX.TriggerServerCallback('KorioZ-PersonalMenu:Bill_getBills', function(bills)
+		for i = 1, #bills, 1 do
+			local label = bills[i].label
+			local amount = bills[i].amount
+			local value = bills[i].id
+
+			table.insert(billItem, value)
+
+			billItem[value] = NativeUI.CreateItem(label, '')
+			billItem[value]:RightLabel('$' .. ESX.Math.GroupDigits(amount))
+			billMenu.SubMenu:AddItem(billItem[value])
+		end
+
+		billMenu.SubMenu.OnItemSelect = function(sender, item, index)
+			for i = 1, #bills, 1 do
+				local label  = bills[i].label
+				local value = bills[i].id
+
+				if item == billItem[value] then
+					ESX.TriggerServerCallback('esx_billing:payBill', function()
+						RageUI.CloseAll()
+					end, value)
+				end
+			end
+		end
+	end)
+end
+
+function RenderClothesMenu()
+	local torsoItem = NativeUI.CreateItem(_U('clothes_top'), '')
+	clothesMenu.SubMenu:AddItem(torsoItem)
+	local pantsItem = NativeUI.CreateItem(_U('clothes_pants'), '')
+	clothesMenu.SubMenu:AddItem(pantsItem)
+	local shoesItem = NativeUI.CreateItem(_U('clothes_shoes'), '')
+	clothesMenu.SubMenu:AddItem(shoesItem)
+	local bagItem = NativeUI.CreateItem(_U('clothes_bag'), '')
+	clothesMenu.SubMenu:AddItem(bagItem)
+	local bproofItem = NativeUI.CreateItem(_U('clothes_bproof'), '')
+	clothesMenu.SubMenu:AddItem(bproofItem)
+
+	clothesMenu.SubMenu.OnItemSelect = function(sender, item, index)
+		if item == torsoItem then
+			setUniform('torso', plyPed)
+		elseif item == pantsItem then
+			setUniform('pants', plyPed)
+		elseif item == shoesItem then
+			setUniform('shoes', plyPed)
+		elseif item == bagItem then
+			setUniform('bag', plyPed)
+		elseif item == bproofItem then
+			setUniform('bproof', plyPed)
+		end
+	end
+end
+
+function RenderAccessoryMenu()
+	local earsItem = NativeUI.CreateItem(_U('accessories_ears'), '')
+	accessoryMenu.SubMenu:AddItem(earsItem)
+	local glassesItem = NativeUI.CreateItem(_U('accessories_glasses'), '')
+	accessoryMenu.SubMenu:AddItem(glassesItem)
+	local helmetItem = NativeUI.CreateItem(_U('accessories_helmet'), '')
+	accessoryMenu.SubMenu:AddItem(helmetItem)
+	local maskItem = NativeUI.CreateItem(_U('accessories_mask'), '')
+	accessoryMenu.SubMenu:AddItem(maskItem)
+
+	accessoryMenu.SubMenu.OnItemSelect = function(sender, item, index)
+		if item == earsItem then
+			SetUnsetAccessory('Ears')
+		elseif item == glassesItem then
+			SetUnsetAccessory('Glasses')
+		elseif item == helmetItem then
+			SetUnsetAccessory('Helmet')
+		elseif item == maskItem then
+			SetUnsetAccessory('Mask')
+		end
+	end
+end
+
+function RenderAnimationMenu()
+	RenderPartySubMenu()
+	RenderSaluteMenu()
+	RenderWorkMenu()
+	RenderMoodMenu()
+	RenderSportsMenu()
+	RenderOtherMenu()
+	RenderPEGIMenu()
+end
+
+function RenderPartyMenu()
 	local cigaretteItem = NativeUI.CreateItem(_U('animation_party_smoke'), '')
 	animPartyMenu.SubMenu:AddItem(cigaretteItem)
 	local musiqueItem = NativeUI.CreateItem(_U('animation_party_playsong'), '')
@@ -1133,9 +1232,7 @@ function AddSubMenuPartyMenu(menu)
 	end
 end
 
-function AddSubMenuSaluteMenu(menu)
-	animSaluteMenu = RageUI.CreateSubMenu(menu.SubMenu, _U('animation_salute_title'))
-
+function RenderSaluteMenu()
 	local saluerItem = NativeUI.CreateItem(_U('animation_salute_saluate'), '')
 	animSaluteMenu.SubMenu:AddItem(saluerItem)
 	local serrerItem = NativeUI.CreateItem(_U('animation_salute_serrer'), '')
@@ -1162,9 +1259,7 @@ function AddSubMenuSaluteMenu(menu)
 	end
 end
 
-function AddSubMenuWorkMenu(menu)
-	animWorkMenu = RageUI.CreateSubMenu(menu.SubMenu, _U('animation_work_title'))
-
+function RenderWorkMenu()
 	local suspectItem = NativeUI.CreateItem(_U('animation_work_suspect'), '')
 	animWorkMenu.SubMenu:AddItem(suspectItem)
 	local fishermanItem = NativeUI.CreateItem(_U('animation_work_fisherman'), '')
@@ -1243,9 +1338,7 @@ function AddSubMenuWorkMenu(menu)
 	end
 end
 
-function AddSubMenuMoodMenu(menu)
-	animMoodMenu = RageUI.CreateSubMenu(menu.SubMenu, _U('animation_mood_title'))
-
+function RenderMoodMenu()
 	local felicitateItem = NativeUI.CreateItem(_U('animation_mood_felicitate'), '')
 	animMoodMenu.SubMenu:AddItem(felicitateItem)
 	local niceItem = NativeUI.CreateItem(_U('animation_mood_nice'), '')
@@ -1328,9 +1421,7 @@ function AddSubMenuMoodMenu(menu)
 	end
 end
 
-function AddSubMenuSportsMenu(menu)
-	animSportMenu = RageUI.CreateSubMenu(menu.SubMenu, _U('animation_sports_title'))
-
+function RenderSportsMenu()
 	local muscleItem = NativeUI.CreateItem(_U('animation_sports_muscle'), '')
 	animSportMenu.SubMenu:AddItem(muscleItem)
 	local weightbarItem = NativeUI.CreateItem(_U('animation_sports_weightbar'), '')
@@ -1357,9 +1448,7 @@ function AddSubMenuSportsMenu(menu)
 	end
 end
 
-function AddSubMenuOtherMenu(menu)
-	animOtherMenu = RageUI.CreateSubMenu(menu.SubMenu, _U('animation_other_title'))
-
+function RenderOtherMenu()
 	local beerItem = NativeUI.CreateItem(_U('animation_other_beer'), '')
 	animOtherMenu.SubMenu:AddItem(beerItem)
 	local sitItem = NativeUI.CreateItem(_U('animation_other_sit'), '')
@@ -1406,9 +1495,7 @@ function AddSubMenuOtherMenu(menu)
 	end
 end
 
-function AddSubMenuPEGI21Menu(menu)
-	animPegiMenu = RageUI.CreateSubMenu(menu.SubMenu, _U('animation_pegi_title'))
-
+function RenderPEGIMenu()
 	local hSuckItem = NativeUI.CreateItem(_U('animation_pegi_hsuck'), '')
 	animPegiMenu.SubMenu:AddItem(hSuckItem)
 	local fSuckItem = NativeUI.CreateItem(_U('animation_pegi_fsuck'), '')
@@ -1459,25 +1546,10 @@ function AddSubMenuPEGI21Menu(menu)
 	end
 end
 
-function RenderVehicleMenu(menu)
-	personalmenu.frontLeftDoorOpen = false
-	personalmenu.frontRightDoorOpen = false
-	personalmenu.backLeftDoorOpen = false
-	personalmenu.backRightDoorOpen = false
-	personalmenu.hoodDoorOpen = false
-	personalmenu.trunkDoorOpen = false
-	personalmenu.doorList = {
-		_U('vehicle_door_frontleft'),
-		_U('vehicle_door_frontright'),
-		_U('vehicle_door_backleft'),
-		_U('vehicle_door_backright')
-	}
-
-	vehicleMenu = RageUI.CreateSubMenu(menu, _U('vehicle_title'))
-
+function RenderVehicleMenu()
 	local vehEngineItem = NativeUI.CreateItem(_U('vehicle_engine_button'), '')
 	vehicleMenu.SubMenu:AddItem(vehEngineItem)
-	local vehDoorListItem = NativeUI.CreateListItem(_U('vehicle_door_button'), personalmenu.doorList, 1)
+	local vehDoorListItem = NativeUI.CreateListItem(_U('vehicle_door_button'), PersonalMenu.DoorList, 1)
 	vehicleMenu.SubMenu:AddItem(vehDoorListItem)
 	local vehHoodItem = NativeUI.CreateItem(_U('vehicle_hood_button'), '')
 	vehicleMenu.SubMenu:AddItem(vehHoodItem)
@@ -1498,19 +1570,19 @@ function RenderVehicleMenu(menu)
 					SetVehicleUndriveable(plyVehicle, false)
 				end
 			elseif item == vehHoodItem then
-				if not personalmenu.hoodDoorOpen then
-					personalmenu.hoodDoorOpen = true
+				if not PersonalMenu.DoorState.Hood then
+					PersonalMenu.DoorState.Hood = true
 					SetVehicleDoorOpen(plyVehicle, 4, false, false)
-				elseif personalmenu.hoodDoorOpen then
-					personalmenu.hoodDoorOpen = false
+				elseif PersonalMenu.DoorState.Hood then
+					PersonalMenu.DoorState.Hood = false
 					SetVehicleDoorShut(plyVehicle, 4, false, false)
 				end
 			elseif item == vehTrunkItem then
-				if not personalmenu.trunkDoorOpen then
-					personalmenu.trunkDoorOpen = true
+				if not PersonalMenu.DoorState.Trunk then
+					PersonalMenu.DoorState.Trunk = true
 					SetVehicleDoorOpen(plyVehicle, 5, false, false)
-				elseif personalmenu.trunkDoorOpen then
-					personalmenu.trunkDoorOpen = false
+				elseif PersonalMenu.DoorState.Trunk then
+					PersonalMenu.DoorState.Trunk = false
 					SetVehicleDoorShut(plyVehicle, 5, false, false)
 				end
 			end
@@ -1522,37 +1594,38 @@ function RenderVehicleMenu(menu)
 			ESX.ShowNotification(_U('no_vehicle'))
 		elseif IsPedSittingInAnyVehicle(plyPed) then
 			plyVehicle = GetVehiclePedIsIn(plyPed, false)
+
 			if item == vehDoorListItem then
 				if index == 1 then
-					if not personalmenu.frontLeftDoorOpen then
-						personalmenu.frontLeftDoorOpen = true
+					if not PersonalMenu.DoorState.FrontLeft then
+						PersonalMenu.DoorState.FrontLeft = true
 						SetVehicleDoorOpen(plyVehicle, 0, false, false)
-					elseif personalmenu.frontLeftDoorOpen then
-						personalmenu.frontLeftDoorOpen = false
+					elseif PersonalMenu.DoorState.FrontLeft then
+						PersonalMenu.DoorState.FrontLeft = false
 						SetVehicleDoorShut(plyVehicle, 0, false, false)
 					end
 				elseif index == 2 then
-					if not personalmenu.frontRightDoorOpen then
-						personalmenu.frontRightDoorOpen = true
+					if not PersonalMenu.DoorState.FrontRight then
+						PersonalMenu.DoorState.FrontRight = true
 						SetVehicleDoorOpen(plyVehicle, 1, false, false)
-					elseif personalmenu.frontRightDoorOpen then
-						personalmenu.frontRightDoorOpen = false
+					elseif PersonalMenu.DoorState.FrontRight then
+						PersonalMenu.DoorState.FrontRight = false
 						SetVehicleDoorShut(plyVehicle, 1, false, false)
 					end
 				elseif index == 3 then
-					if not personalmenu.backLeftDoorOpen then
-						personalmenu.backLeftDoorOpen = true
+					if not PersonalMenu.DoorState.BackLeft then
+						PersonalMenu.DoorState.BackLeft = true
 						SetVehicleDoorOpen(plyVehicle, 2, false, false)
-					elseif personalmenu.backLeftDoorOpen then
-						personalmenu.backLeftDoorOpen = false
+					elseif PersonalMenu.DoorState.BackLeft then
+						PersonalMenu.DoorState.BackLeft = false
 						SetVehicleDoorShut(plyVehicle, 2, false, false)
 					end
 				elseif index == 4 then
-					if not personalmenu.backRightDoorOpen then
-						personalmenu.backRightDoorOpen = true
+					if not PersonalMenu.DoorState.BackRight then
+						PersonalMenu.DoorState.BackRight = true
 						SetVehicleDoorOpen(plyVehicle, 3, false, false)
-					elseif personalmenu.backRightDoorOpen then
-						personalmenu.backRightDoorOpen = false
+					elseif PersonalMenu.DoorState.BackRight then
+						PersonalMenu.DoorState.BackRight = false
 						SetVehicleDoorShut(plyVehicle, 3, false, false)
 					end
 				end
@@ -1561,9 +1634,7 @@ function RenderVehicleMenu(menu)
 	end
 end
 
-function RenderBossMenu(menu)
-	bossMenu = RageUI.CreateSubMenu(menu, _U('bossmanagement_title', ESX.PlayerData.job.label))
-
+function RenderBossMenu()
 	local coffreItem = nil
 
 	if societymoney ~= nil then
@@ -1584,48 +1655,48 @@ function RenderBossMenu(menu)
 	bossMenu.SubMenu.OnItemSelect = function(sender, item, index)
 		if item == recruterItem then
 			if ESX.PlayerData.job.grade_name == 'boss' then
-				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
+				local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
 
-				if personalmenu.closestPlayer == -1 or personalmenu.closestDistance > 3.0 then
+				if closestPlayer == -1 or closestDistance > 3.0 then
 					ESX.ShowNotification(_U('players_nearby'))
 				else
-					TriggerServerEvent('KorioZ-PersonalMenu:Boss_recruterplayer', GetPlayerServerId(personalmenu.closestPlayer), ESX.PlayerData.job.name, 0)
+					TriggerServerEvent('KorioZ-PersonalMenu:Boss_recruterplayer', GetPlayerServerId(closestPlayer), ESX.PlayerData.job.name, 0)
 				end
 			else
 				ESX.ShowNotification(_U('missing_rights'))
 			end
 		elseif item == virerItem then
 			if ESX.PlayerData.job.grade_name == 'boss' then
-				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
+				local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
 
-				if personalmenu.closestPlayer == -1 or personalmenu.closestDistance > 3.0 then
+				if closestPlayer == -1 or closestDistance > 3.0 then
 					ESX.ShowNotification(_U('players_nearby'))
 				else
-					TriggerServerEvent('KorioZ-PersonalMenu:Boss_virerplayer', GetPlayerServerId(personalmenu.closestPlayer))
+					TriggerServerEvent('KorioZ-PersonalMenu:Boss_virerplayer', GetPlayerServerId(closestPlayer))
 				end
 			else
 				ESX.ShowNotification(_U('missing_rights'))
 			end
 		elseif item == promouvoirItem then
 			if ESX.PlayerData.job.grade_name == 'boss' then
-				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
+				local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
 
-				if personalmenu.closestPlayer == -1 or personalmenu.closestDistance > 3.0 then
+				if closestPlayer == -1 or closestDistance > 3.0 then
 					ESX.ShowNotification(_U('players_nearby'))
 				else
-					TriggerServerEvent('KorioZ-PersonalMenu:Boss_promouvoirplayer', GetPlayerServerId(personalmenu.closestPlayer))
+					TriggerServerEvent('KorioZ-PersonalMenu:Boss_promouvoirplayer', GetPlayerServerId(closestPlayer))
 				end
 			else
 				ESX.ShowNotification(_U('missing_rights'))
 			end
 		elseif item == destituerItem then
 			if ESX.PlayerData.job.grade_name == 'boss' then
-				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
+				local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
 
-				if personalmenu.closestPlayer == -1 or personalmenu.closestDistance > 3.0 then
+				if closestPlayer == -1 or closestDistance > 3.0 then
 					ESX.ShowNotification(_U('players_nearby'))
 				else
-					TriggerServerEvent('KorioZ-PersonalMenu:Boss_destituerplayer', GetPlayerServerId(personalmenu.closestPlayer))
+					TriggerServerEvent('KorioZ-PersonalMenu:Boss_destituerplayer', GetPlayerServerId(closestPlayer))
 				end
 			else
 				ESX.ShowNotification(_U('missing_rights'))
@@ -1634,71 +1705,69 @@ function RenderBossMenu(menu)
 	end
 end
 
-function RenderBoss2Menu(menu)
-	bossMenu2 = RageUI.CreateSubMenu(menu, _U('bossmanagement2_title', ESX.PlayerData.job2.label))
-
+function RenderBoss2Menu()
 	local coffre2Item = nil
 
 	if societymoney2 ~= nil then
 		coffre2Item = NativeUI.CreateItem(_U('bossmanagement2_chest_button'), '')
 		coffre2Item:RightLabel('$' .. societymoney2)
-		bossMenu2.SubMenu:AddItem(coffre2Item)
+		boss2Menu.SubMenu:AddItem(coffre2Item)
 	end
 
 	local recruter2Item = NativeUI.CreateItem(_U('bossmanagement2_hire_button'), '')
-	bossMenu2.SubMenu:AddItem(recruter2Item)
+	boss2Menu.SubMenu:AddItem(recruter2Item)
 	local virer2Item = NativeUI.CreateItem(_U('bossmanagement2_fire_button'), '')
-	bossMenu2.SubMenu:AddItem(virer2Item)
+	boss2Menu.SubMenu:AddItem(virer2Item)
 	local promouvoir2Item = NativeUI.CreateItem(_U('bossmanagement2_promote_button'), '')
-	bossMenu2.SubMenu:AddItem(promouvoir2Item)
+	boss2Menu.SubMenu:AddItem(promouvoir2Item)
 	local destituer2Item = NativeUI.CreateItem(_U('bossmanagement2_demote_button'), '')
-	bossMenu2.SubMenu:AddItem(destituer2Item)
+	boss2Menu.SubMenu:AddItem(destituer2Item)
 
-	bossMenu2.SubMenu.OnItemSelect = function(sender, item, index)
+	boss2Menu.SubMenu.OnItemSelect = function(sender, item, index)
 		if item == recruter2Item then
 			if ESX.PlayerData.job2.grade_name == 'boss' then
-				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
+				local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
 
-				if personalmenu.closestPlayer == -1 or personalmenu.closestDistance > 3.0 then
+				if closestPlayer == -1 or closestDistance > 3.0 then
 					ESX.ShowNotification(_U('players_nearby'))
 				else
-					TriggerServerEvent('KorioZ-PersonalMenu:Boss_recruterplayer2', GetPlayerServerId(personalmenu.closestPlayer), ESX.PlayerData.job2.name, 0)
+					TriggerServerEvent('KorioZ-PersonalMenu:Boss_recruterplayer2', GetPlayerServerId(closestPlayer), ESX.PlayerData.job2.name, 0)
 				end
 			else
 				ESX.ShowNotification(_U('missing_rights'))
 			end
 		elseif item == virer2Item then
 			if ESX.PlayerData.job2.grade_name == 'boss' then
-				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
+				local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
 
-				if personalmenu.closestPlayer == -1 or personalmenu.closestDistance > 3.0 then
+				if closestPlayer == -1 or closestDistance > 3.0 then
 					ESX.ShowNotification(_U('players_nearby'))
 				else
-					TriggerServerEvent('KorioZ-PersonalMenu:Boss_virerplayer2', GetPlayerServerId(personalmenu.closestPlayer))
+					TriggerServerEvent('KorioZ-PersonalMenu:Boss_virerplayer2', GetPlayerServerId(closestPlayer))
 				end
 			else
 				ESX.ShowNotification(_U('missing_rights'))
 			end
 		elseif item == promouvoir2Item then
 			if ESX.PlayerData.job2.grade_name == 'boss' then
-				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
+				local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
 
-				if personalmenu.closestPlayer == -1 or personalmenu.closestDistance > 3.0 then
+				if closestPlayer == -1 or closestDistance > 3.0 then
 					ESX.ShowNotification(_U('players_nearby'))
 				else
-					TriggerServerEvent('KorioZ-PersonalMenu:Boss_promouvoirplayer2', GetPlayerServerId(personalmenu.closestPlayer))
+					TriggerServerEvent('KorioZ-PersonalMenu:Boss_promouvoirplayer2', GetPlayerServerId(closestPlayer))
 				end
 			else
 				ESX.ShowNotification(_U('missing_rights'))
 			end
 		elseif item == destituer2Item then
 			if ESX.PlayerData.job2.grade_name == 'boss' then
-				personalmenu.closestPlayer, personalmenu.closestDistance = ESX.Game.GetClosestPlayer()
+				local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
 
-				if personalmenu.closestPlayer == -1 or personalmenu.closestDistance > 3.0 then
+				if closestPlayer == -1 or closestDistance > 3.0 then
 					ESX.ShowNotification(_U('players_nearby'))
 				else
-					TriggerServerEvent('KorioZ-PersonalMenu:Boss_destituerplayer2', GetPlayerServerId(personalmenu.closestPlayer))
+					TriggerServerEvent('KorioZ-PersonalMenu:Boss_destituerplayer2', GetPlayerServerId(closestPlayer))
 				end
 			else
 				ESX.ShowNotification(_U('missing_rights'))
@@ -1707,181 +1776,124 @@ function RenderBoss2Menu(menu)
 	end
 end
 
-function RenderDemarcheVoixGPS(menu)
-	personalmenu.gps = {
-		'Aucun',
-		'Poste de Police',
-		'Garage Central',
-		'Hôpital',
-		'Concessionnaire',
-		'Benny\'s Custom',
-		'Pôle Emploie',
-		'Auto école',
-		'Téquila-la'
-	}
-
-	personalmenu.demarche = {
-		'Normal',
-		'Homme effiminer',
-		'Bouffiasse',
-		'Dépressif',
-		'Dépressive',
-		'Muscle',
-		'Hipster',
-		'Business',
-		'Intimide',
-		'Bourrer',
-		'Malheureux',
-		'Triste',
-		'Choc',
-		'Sombre',
-		'Fatiguer',
-		'Presser',
-		'Frimeur',
-		'Fier',
-		'Petite course',
-		'Pupute',
-		'Impertinente',
-		'Arrogante',
-		'Blesser',
-		'Trop manger',
-		'Casual',
-		'Determiner',
-		'Peureux',
-		'Trop Swag',
-		'Travailleur',
-		'Brute',
-		'Rando',
-		'Gangstère',
-		'Gangster'
-	}
-
-	personalmenu.nivVoix = {
-		_U('voice_whisper'),
-		_U('voice_normal'),
-		_U('voice_cry')
-	}
-
-	local gpsItem = NativeUI.CreateListItem(_U('mainmenu_gps_button'), personalmenu.gps, actualGPSIndex)
+function RenderDemarcheVoixGPS()
+	local gpsItem = NativeUI.CreateListItem(_U('mainmenu_gps_button'), PersonalMenu.GPSList, PersonalMenu.GPSIndex)
 	menu:AddItem(gpsItem)
-	local demarcheItem = NativeUI.CreateListItem(_U('mainmenu_approach_button'), personalmenu.demarche, actualDemarcheIndex)
-	menu:AddItem(demarcheItem)
-	local voixItem = NativeUI.CreateListItem(_U('mainmenu_voice_button'), personalmenu.nivVoix, actualVoiceIndex)
+	local attitudeItem = NativeUI.CreateListItem(_U('mainmenu_approach_button'), PersonalMenu.AttitudeList, PersonalMenu.AttitudeIndex)
+	menu:AddItem(attitudeItem)
+	local voixItem = NativeUI.CreateListItem(_U('mainmenu_voice_button'), PersonalMenu.VoiceList, PersonalMenu.VoiceIndex)
 	menu:AddItem(voixItem)
 
 	menu.OnListSelect = function(sender, item, index)
 		if item == gpsItem then
-			actualGPS = item:IndexToItem(index)
-			actualGPSIndex = index
+			PersonalMenu.GPSSelected = item:IndexToItem(index)
+			PersonalMenu.GPSIndex = index
+			ESX.ShowNotification(_U('gps', PersonalMenu.GPSSelected))
 
-			ESX.ShowNotification(_U('gps', actualGPS))
-
-			if actualGPS == 'Aucun' then
+			if PersonalMenu.GPSSelected == 'Aucun' then
 				local plyCoords = GetEntityCoords(plyPed)
 				SetNewWaypoint(plyCoords.x, plyCoords.y)
-			elseif actualGPS == 'Poste de Police' then
+			elseif PersonalMenu.GPSSelected == 'Poste de Police' then
 				SetNewWaypoint(425.13, -979.55)
-			elseif actualGPS == 'Hôpital' then
+			elseif PersonalMenu.GPSSelected == 'Hôpital' then
 				SetNewWaypoint(-449.67, -340.83)
-			elseif actualGPS == 'Concessionnaire' then
+			elseif PersonalMenu.GPSSelected == 'Concessionnaire' then
 				SetNewWaypoint(-33.88, -1102.37)
-			elseif actualGPS == 'Garage Central' then
+			elseif PersonalMenu.GPSSelected == 'Garage Central' then
 				SetNewWaypoint(215.06, -791.56)
-			elseif actualGPS == 'Benny\'s Custom' then
+			elseif PersonalMenu.GPSSelected == 'Benny\'s Custom' then
 				SetNewWaypoint(-212.13, -1325.27)
-			elseif actualGPS == 'Pôle Emploie' then
+			elseif PersonalMenu.GPSSelected == 'Pôle Emploie' then
 				SetNewWaypoint(-264.83, -964.54)
-			elseif actualGPS == 'Auto école' then
+			elseif PersonalMenu.GPSSelected == 'Auto école' then
 				SetNewWaypoint(-829.22, -696.99)
-			elseif actualGPS == 'Téquila-la' then
+			elseif PersonalMenu.GPSSelected == 'Téquila-la' then
 				SetNewWaypoint(-565.09, 273.45)
-			elseif actualGPS == 'Bahama Mamas' then
+			elseif PersonalMenu.GPSSelected == 'Bahama Mamas' then
 				SetNewWaypoint(-1391.06, -590.34)
 			end
-		elseif item == demarcheItem then
+		elseif item == attitudeItem then
 			TriggerEvent('skinchanger:getSkin', function(skin)
-				actualDemarche = item:IndexToItem(index)
-				actualDemarcheIndex = index
+				PersonalMenu.AttitudeSelected = item:IndexToItem(index)
+				PersonalMenu.AttitudeIndex = index
+				ESX.ShowNotification(_U('approach', PersonalMenu.AttitudeSelected))
 
-				ESX.ShowNotification(_U('approach', actualDemarche))
-
-				if actualDemarche == 'Normal' then
+				if PersonalMenu.AttitudeSelected == 'Normal' then
 					if skin.sex == 0 then
 						startAttitude('move_m@multiplayer', 'move_m@multiplayer')
 					elseif skin.sex == 1 then
 						startAttitude('move_f@multiplayer', 'move_f@multiplayer')
 					end
-				elseif actualDemarche == 'Homme effiminer' then
+				elseif PersonalMenu.AttitudeSelected == 'Homme effiminer' then
 					startAttitude('move_m@confident', 'move_m@confident')
-				elseif actualDemarche == 'Bouffiasse' then
+				elseif PersonalMenu.AttitudeSelected == 'Bouffiasse' then
 					startAttitude('move_f@heels@c','move_f@heels@c')
-				elseif actualDemarche == 'Dépressif' then
+				elseif PersonalMenu.AttitudeSelected == 'Dépressif' then
 					startAttitude('move_m@depressed@a','move_m@depressed@a')
-				elseif actualDemarche == 'Dépressive' then
+				elseif PersonalMenu.AttitudeSelected == 'Dépressive' then
 					startAttitude('move_f@depressed@a','move_f@depressed@a')
-				elseif actualDemarche == 'Muscle' then
+				elseif PersonalMenu.AttitudeSelected == 'Muscle' then
 					startAttitude('move_m@muscle@a','move_m@muscle@a')
-				elseif actualDemarche == 'Hipster' then
+				elseif PersonalMenu.AttitudeSelected == 'Hipster' then
 					startAttitude('move_m@hipster@a','move_m@hipster@a')
-				elseif actualDemarche == 'Business' then
+				elseif PersonalMenu.AttitudeSelected == 'Business' then
 					startAttitude('move_m@business@a','move_m@business@a')
-				elseif actualDemarche == 'Intimide' then
+				elseif PersonalMenu.AttitudeSelected == 'Intimide' then
 					startAttitude('move_m@hurry@a','move_m@hurry@a')
-				elseif actualDemarche == 'Bourrer' then
+				elseif PersonalMenu.AttitudeSelected == 'Bourrer' then
 					startAttitude('move_m@hobo@a','move_m@hobo@a')
-				elseif actualDemarche == 'Malheureux' then
+				elseif PersonalMenu.AttitudeSelected == 'Malheureux' then
 					startAttitude('move_m@sad@a','move_m@sad@a')
-				elseif actualDemarche == 'Triste' then
+				elseif PersonalMenu.AttitudeSelected == 'Triste' then
 					startAttitude('move_m@leaf_blower','move_m@leaf_blower')
-				elseif actualDemarche == 'Choc' then
+				elseif PersonalMenu.AttitudeSelected == 'Choc' then
 					startAttitude('move_m@shocked@a','move_m@shocked@a')
-				elseif actualDemarche == 'Sombre' then
+				elseif PersonalMenu.AttitudeSelected == 'Sombre' then
 					startAttitude('move_m@shadyped@a','move_m@shadyped@a')
-				elseif actualDemarche == 'Fatiguer' then
+				elseif PersonalMenu.AttitudeSelected == 'Fatiguer' then
 					startAttitude('move_m@buzzed','move_m@buzzed')
-				elseif actualDemarche == 'Presser' then
+				elseif PersonalMenu.AttitudeSelected == 'Presser' then
 					startAttitude('move_m@hurry_butch@a','move_m@hurry_butch@a')
-				elseif actualDemarche == 'Frimeur' then
+				elseif PersonalMenu.AttitudeSelected == 'Frimeur' then
 					startAttitude('move_m@money','move_m@money')
-				elseif actualDemarche == 'Fier' then
+				elseif PersonalMenu.AttitudeSelected == 'Fier' then
 					startAttitude('move_m@posh@','move_m@posh@')
-				elseif actualDemarche == 'Petite course' then
+				elseif PersonalMenu.AttitudeSelected == 'Petite course' then
 					startAttitude('move_m@quick','move_m@quick')
-				elseif actualDemarche == 'Pupute' then
+				elseif PersonalMenu.AttitudeSelected == 'Pupute' then
 					startAttitude('move_f@maneater','move_f@maneater')
-				elseif actualDemarche == 'Impertinente' then
+				elseif PersonalMenu.AttitudeSelected == 'Impertinente' then
 					startAttitude('move_f@sassy','move_f@sassy')
-				elseif actualDemarche == 'Arrogante' then
+				elseif PersonalMenu.AttitudeSelected == 'Arrogante' then
 					startAttitude('move_f@arrogant@a','move_f@arrogant@a')
-				elseif actualDemarche == 'Blesser' then
+				elseif PersonalMenu.AttitudeSelected == 'Blesser' then
 					startAttitude('move_m@injured','move_m@injured')
-				elseif actualDemarche == 'Trop manger' then
+				elseif PersonalMenu.AttitudeSelected == 'Trop manger' then
 					startAttitude('move_m@fat@a','move_m@fat@a')
-				elseif actualDemarche == 'Casual' then
+				elseif PersonalMenu.AttitudeSelected == 'Casual' then
 					startAttitude('move_m@casual@a','move_m@casual@a')
-				elseif actualDemarche == 'Determiner' then
+				elseif PersonalMenu.AttitudeSelected == 'Determiner' then
 					startAttitude('move_m@brave@a','move_m@brave@a')
-				elseif actualDemarche == 'Peureux' then
+				elseif PersonalMenu.AttitudeSelected == 'Peureux' then
 					startAttitude('move_m@scared','move_m@scared')
-				elseif actualDemarche == 'Trop Swag' then
+				elseif PersonalMenu.AttitudeSelected == 'Trop Swag' then
 					startAttitude('move_m@swagger@b','move_m@swagger@b')
-				elseif actualDemarche == 'Travailleur' then
+				elseif PersonalMenu.AttitudeSelected == 'Travailleur' then
 					startAttitude('move_m@tool_belt@a','move_m@tool_belt@a')
-				elseif actualDemarche == 'Brute' then
+				elseif PersonalMenu.AttitudeSelected == 'Brute' then
 					startAttitude('move_m@tough_guy@','move_m@tough_guy@')
-				elseif actualDemarche == 'Rando' then
+				elseif PersonalMenu.AttitudeSelected == 'Rando' then
 					startAttitude('move_m@hiking','move_m@hiking')
-				elseif actualDemarche == 'Gangstère' then
+				elseif PersonalMenu.AttitudeSelected == 'Gangstère' then
 					startAttitude('move_m@gangster@ng','move_m@gangster@ng')
-				elseif actualDemarche == 'Gangster' then
+				elseif PersonalMenu.AttitudeSelected == 'Gangster' then
 					startAttitude('move_m@gangster@generic','move_m@gangster@generic')
 				end
 			end)
 		elseif item == voixItem then
-			actualVoice = item:IndexToItem(index)
-			actualVoiceIndex = index
-
-			ESX.ShowNotification(_U('voice', actualVoice))
+			PersonalMenu.VoiceSelected = item:IndexToItem(index)
+			PersonalMenu.VoiceIndex = index
+			ESX.ShowNotification(_U('voice', PersonalMenu.VoiceSelected))
 
 			if index == 1 then
 				NetworkSetTalkerProximity(1.0)
@@ -1895,8 +1907,6 @@ function RenderDemarcheVoixGPS(menu)
 end
 
 function RenderAdminMenu(menu, playerGroup)
-	adminMenu = RageUI.CreateSubMenu(menu, _U('admin_title'))
-
 	if playerGroup == 'mod' then
 		local tptoPlrItem = NativeUI.CreateItem(_U('admin_goto_button'), '')
 		adminMenu.SubMenu:AddItem(tptoPlrItem)
@@ -2055,49 +2065,68 @@ function RenderAdminMenu(menu, playerGroup)
 end
 
 RageUI.CreateWhile(1.0, function()
-	if IsControlJustReleased(0, Config.Menu.clavier) and not isDead then
+	if IsControlJustReleased(0, Config.Controls.OpenMenu.keyboard) and not isDead then
 		ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(playerGroup)
-			RageUI.Visible(mainMenu, not RageUI.Visible(mainMenu))
+			ESX.PlayerData = ESX.GetPlayerData()
+			RageUI.Visible(RMenu.Get('rageui', 'personal'), not RageUI.Visible(RMenu.Get('rageui', 'personal')))
 		end)
 	end
 
-	RenderInventoryMenu(mainMenu)
-	RenderWeaponMenu(mainMenu)
-	RenderWalletMenu(mainMenu)
-	RenderClothesMenu(mainMenu)
-	RenderAccessoryMenu(mainMenu)
-	RenderAnimationMenu(mainMenu)
+	if RageUI.Visible(RMenu.Get('rageui', 'personal')) then
+		RenderPersonalMenu()
+	end
+
+	if RageUI.Visible(RMenu.Get('inventory', 'actions')) then
+		RenderActionsMenu('inventory')
+	elseif RageUI.Visible(RMenu.Get('loadout', 'actions')) then
+		RenderActionsMenu('loadout')
+	end
+
+	if RageUI.Visible(RMenu.Get('personal', 'inventory')) then
+		RenderInventoryMenu()
+	end
+
+	if RageUI.Visible(RMenu.Get('personal', 'loadout')) then
+		RenderWeaponMenu()
+	end
+
+	--[[
+	RenderWalletMenu()
+	RenderClothesMenu()
+	RenderAccessoryMenu()
+	RenderAnimationMenu()
 
 	if IsPedSittingInAnyVehicle(plyPed) then
 		if (GetPedInVehicleSeat(GetVehiclePedIsIn(plyPed, false), -1) == plyPed) then
-			RenderVehicleMenu(mainMenu)
+			RenderVehicleMenu()
 		end
 	end
 
 	if ESX.PlayerData.job ~= nil and ESX.PlayerData.job.grade_name == 'boss' then
-		RenderBossMenu(mainMenu)
+		RenderBossMenu()
 	end
 
-	if Config.doublejob then
+	if Config.DoubleJob then
 		if ESX.PlayerData.job2 ~= nil and ESX.PlayerData.job2.grade_name == 'boss' then
-			RenderBoss2Menu(mainMenu)
+			RenderBoss2Menu()
 		end
 	end
 
-	RenderBillingMenu(mainMenu)
-	RenderDemarcheVoixGPS(mainMenu)
+	RenderBillingMenu()
+	RenderDemarcheVoixGPS()
 
 	if playerGroup ~= nil and (playerGroup == 'mod' or playerGroup == 'admin' or playerGroup == 'superadmin' or playerGroup == 'owner') then
-		RenderAdminMenu(mainMenu, playerGroup)
+		RenderAdminMenu(playerGroup)
 	end
-end, 1)
+	]]--
+end, true)
 
 --[[
 mainMenu:Clear()
 inventoryMenu:Clear()
 loadoutMenu:Clear()
 
-personalmenu = {}
+PersonalMenu = {}
 invItem, wepItem, billItem = {}, {}, {}
 ]]--
 
@@ -2105,17 +2134,17 @@ Citizen.CreateThread(function()
 	while true do
 		plyPed = PlayerPedId()
 
-		if IsControlJustReleased(0, Config.stopAnim.clavier) and GetLastInputMethod(2) and not isDead then
+		if IsControlJustReleased(0, Config.Controls.StopTasks.keyboard) and IsInputDisabled(2) and not isDead then
 			handsup, pointing = false, false
 			ClearPedTasks(plyPed)
 		end
 
-		if IsControlPressed(1, Config.TPMarker.clavier1) and IsControlJustReleased(1, Config.TPMarker.clavier2) and GetLastInputMethod(2) and not isDead then
+		if IsControlPressed(1, Config.Controls.TPMarker.keyboard1) and IsControlJustReleased(1, Config.Controls.TPMarker.keyboard2) and IsInputDisabled(2) and not isDead then
 			ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(playerGroup)
 				if playerGroup ~= nil and (playerGroup == 'mod' or playerGroup == 'admin' or playerGroup == 'superadmin' or playerGroup == '_dev') then
 					admin_tp_marker()
 				end
-			end
+			end)
 		end
 
 		if showcoord then
@@ -2126,15 +2155,14 @@ Citizen.CreateThread(function()
 		if noclip then
 			local coords = GetEntityCoords(plyPed, false)
 			local camCoords = getCamDirection()
-
 			SetEntityVelocity(plyPed, 0.01, 0.01, 0.01)
 
 			if IsControlPressed(0, 32) then
-				coords = coords + (Config.noclip_speed * camCoords)
+				coords = coords + (Config.NoclipSpeed * camCoords)
 			end
 
 			if IsControlPressed(0, 269) then
-				coords = coords - (Config.noclip_speed * camCoords)
+				coords = coords - (Config.NoclipSpeed * camCoords)
 			end
 
 			SetEntityCoordsNoOffset(plyPed, coords, true, true, true)
@@ -2164,131 +2192,3 @@ Citizen.CreateThread(function()
 		Citizen.Wait(100)
 	end
 end)
-
-RMenu.Add('showcase', 'main', RageUI.CreateMenu("RageUI", "Undefined for using SetSubtitle"))
-RMenu:Get('showcase', 'main'):SetSubtitle("~b~RAGEUI SHOWCASE")
-RMenu:Get('showcase', 'main').EnableMouse = true
-RMenu:Get('showcase', 'main').Closed = function()
-	--- TODO Perform action
-end
-
-RMenu.Add('showcase', 'submenu', RageUI.CreateSubMenu(RMenu:Get('showcase', 'main'), "RageUI", "~b~RAGEUI SHOWCASE", nil, nil, "casinoui_roulette_high", "casinoui_roulette_high"))
-
----@type table
-local foods = {
-	"Banana",
-	"Apple",
-	"Pizza",
-	"Quartilicious",
-	"Steak",
-	0xF00D
-}
-
-local index = {
-	ketchup = false,
-	dish = 1,
-	quantity = 0
-}
-
----@type string
-local description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-
-RageUI.CreateWhile(1.0, function()
-	if IsControlJustPressed(1, 51) then
-		RageUI.Visible(RMenu:Get('showcase', 'main'), not RageUI.Visible(RMenu:Get('showcase', 'main')))
-	end
-
-	if RageUI.Visible(RMenu:Get('showcase', 'main')) then
-		RageUI.DrawContent({ header = true, glare = true, instructionalButton = true }, function()
-			---Items
-			RageUI.Checkbox("Add ketchup ?", "Do you wish to add ketchup ?", index.ketchup, { Style = RageUI.CheckboxStyle.Tick }, function(Hovered, Selected, Active, Checked)
-				if (Hovered) then
-				end
-
-				if (Active) then
-				end
-
-				if (Selected) then
-					RageUI.Text({
-						message = string.format("~r~Ketchup status: ~b~%s", tostring(index.ketchup))
-					})
-				end
-
-				index.ketchup = Checked
-			end)
-
-			RageUI.List("Food", foods, index.dish, "Select the type of food you want to eat.", {}, true, function(Hovered, Active, Selected, Index)
-				if (Hovered) then
-				end
-
-				if (Active) then
-					RageUI.Text({
-						message = string.format("Preparing ~b~%s~w~...", foods[index.dish])
-					})
-				end
-
-				if (Selected) then
-				end
-
-				index.dish = Index
-			end)
-
-			RageUI.Slider("Quantity", index.quantity, 10, "Select the amount of food you want to eat.", false, { }, true, function(Hovered, Selected, Active, Index)
-				if (Hovered) then
-				end
-
-				if (Selected) then
-					RageUI.Text({
-						message = string.format("Preparing ~r~%s ~b~%s(s)~w~...", index.quantity, foods[index.dish])
-					})
-				end
-
-				if (Active) then
-				end
-
-				index.quantity = Index
-			end)
-
-			RageUI.Button("Cook !", "Cook the dish with the appropriate ingredients and ketchup.", { RightBadge = RageUI.BadgeStyle.Tick }, true, function(Hovered, Active, Selected)
-				if (Hovered) then
-				end
-
-				if (Active) then
-				end
-
-				if (Selected) then
-					local string = string.format("You have ordered ~r~%s ~b~%s(s)~w~ ~r~with~w~ ketchup.", index.quantity, foods[index.dish])
-
-					if not (index.ketchup) then
-						string = string.format("You have ordered ~r~%s ~b~%s(s)~w~ ~r~without~w~ ketchup.", index.quantity, foods[index.dish])
-					end
-
-					RageUI.Text({
-						message = string
-					})
-				end
-			end)
-
-			RageUI.Button("Another Menu", "Sample description that takes more than one line. Moreso, it takes way more than two lines since it's so long. Wow, check out this length !", { RightLabel = "→→→" }, true, function(Hovered, Active, Selected)
-				if (Hovered) then
-				end
-
-				if (Active) then
-				end
-
-				if (Selected) then
-				end
-			end, RMenu:Get('showcase', 'submenu'))
-		end, function()
-			---Panels
-		end)
-	end
-
-	if RageUI.Visible(RMenu:Get('showcase', 'submenu')) then
-		RageUI.DrawContent({ header = true, glare = true, instructionalButton = true }, function()
-			---Items
-		end, function()
-			---Panels
-		end)
-	end
-end, 1)

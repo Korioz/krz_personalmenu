@@ -8,7 +8,7 @@ Locales['fr'] = {
 
 	-- Menu Default Vars
 	['default_gps'] = 'Aucun',
-	['default_demarche'] = 'Normal',
+	['default_attitude'] = 'Normal',
 	['default_voice'] = 'Normal',
 
 	-- Menu Notification
@@ -55,14 +55,14 @@ Locales['fr'] = {
 
 	-- Inventory Menu
 	['inventory_title'] = 'Inventaire',
-	['inventory_actions_subtitle'] = 'Inventaire: Action',
+	['inventory_actions_title'] = 'Inventaire: Action',
 	['inventory_use_button'] = 'Utiliser',
 	['inventory_give_button'] = 'Donner',
 	['inventory_drop_button'] = 'Jeter',
 
 	-- Loadout Menu
 	['loadout_title'] = 'Gestion des Armes',
-	['loadout_actions_subtitle'] = 'Armes: Action',
+	['loadout_actions_title'] = 'Armes: Action',
 	['loadout_give_button'] = 'Donner',
 	['loadout_givemun_button'] = 'Donner Munitions',
 	['loadout_drop_button'] = 'Jeter',

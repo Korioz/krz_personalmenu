@@ -36,7 +36,7 @@ RageUI.CheckboxStyle = {
 ---@param Box number
 ---@param BoxSelect number
 ---@return nil
-local function StyleCheckBox(Selected, Checked, Box, BoxSelect,OffSet)
+local function StyleCheckBox(Selected, Checked, Box, BoxSelect, OffSet)
 	---@type table
 	local CurrentMenu = RageUI.CurrentMenu
 
@@ -142,16 +142,17 @@ function RageUI.Checkbox(Label, Description, Checked, Style, Callback)
 							RenderSprite(RageUI.GetBadgeDictionary(LeftBadge, Selected), RageUI.GetBadgeTexture(LeftBadge, Selected), CurrentMenu.X, CurrentMenu.Y + SettingsButton.LeftBadge.Y + CurrentMenu.SubtitleHeight + RageUI.ItemOffset, SettingsButton.LeftBadge.Width, SettingsButton.LeftBadge.Height, nil, CheckBoxLockBadgeColor(Selected))
 						end
 					end
+
 					if Enabled == true or Enabled == nil then
 						if Selected then
 							if Style.RightLabel ~= nil and Style.RightLabel ~= "" then
 								RenderText(Style.RightLabel, CurrentMenu.X + SettingsButton.RightText.X - RightBadgeOffset + CurrentMenu.WidthOffset, CurrentMenu.Y + SettingsButton.RightText.Y + CurrentMenu.SubtitleHeight + RageUI.ItemOffset, 0, SettingsButton.RightText.Scale, 0, 0, 0, 255, 2)
-								BoxOffset = MeasureStringWidth(Style.RightLabel,0,0.35)
+								BoxOffset = MeasureStringWidth(Style.RightLabel, 0, 0.35)
 							end
 						else
 							if Style.RightLabel ~= nil and Style.RightLabel ~= "" then
 								RenderText(Style.RightLabel, CurrentMenu.X + SettingsButton.RightText.X - RightBadgeOffset + CurrentMenu.WidthOffset, CurrentMenu.Y + SettingsButton.RightText.Y + CurrentMenu.SubtitleHeight + RageUI.ItemOffset, 0, SettingsButton.RightText.Scale, 245, 245, 245, 255, 2)
-								BoxOffset =MeasureStringWidth(Style.RightLabel,0,0.35)
+								BoxOffset = MeasureStringWidth(Style.RightLabel, 0, 0.35)
 							end
 						end
 					end
@@ -160,14 +161,14 @@ function RageUI.Checkbox(Label, Description, Checked, Style, Callback)
 
 					if Style.Style ~= nil then
 						if Style.Style == RageUI.CheckboxStyle.Tick then
-							StyleCheckBox(Selected, Checked, 2, 4,BoxOffset)
+							StyleCheckBox(Selected, Checked, 2, 4, BoxOffset)
 						elseif Style.Style == RageUI.CheckboxStyle.Cross then
-							StyleCheckBox(Selected, Checked, 5, 6,BoxOffset)
+							StyleCheckBox(Selected, Checked, 5, 6, BoxOffset)
 						else
-							StyleCheckBox(Selected, Checked, 2, 4,BoxOffset)
+							StyleCheckBox(Selected, Checked, 2, 4, BoxOffset)
 						end
 					else
-						StyleCheckBox(Selected, Checked, 2, 4,BoxOffset)
+						StyleCheckBox(Selected, Checked, 2, 4, BoxOffset)
 					end
 
 					if Selected and (CurrentMenu.Controls.Select.Active or (Hovered and CurrentMenu.Controls.Click.Active)) and (Style.Enabled == true or Style.Enabled == nil) then
@@ -194,5 +195,3 @@ function RageUI.Checkbox(Label, Description, Checked, Style, Callback)
 		end
 	end
 end
-
-

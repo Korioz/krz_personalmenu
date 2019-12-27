@@ -9,6 +9,7 @@ function RageUI.IsMouseInBounds(X, Y, Width, Height)
 	local MX, MY = math.round(GetControlNormal(0, 239) * 1920) / 1920, math.round(GetControlNormal(0, 240) * 1080) / 1080
 	X, Y = X / 1920, Y / 1080
 	Width, Height = Width / 1920, Height / 1080
+
 	return (MX >= X and MX <= X + Width) and (MY > Y and MY < Y + Height)
 end
 
@@ -25,6 +26,32 @@ function RageUI.GetSafeZoneBounds()
 	return { X = math.round(SafeSize * ((W / H) * 5.4)), Y = math.round(SafeSize * 5.4) }
 end
 
+---GoBack
+---@return void
+---@public
+function RageUI.GoBack()
+	if RageUI.CurrentMenu ~= nil then
+		local Audio = RageUI.Settings.Audio
+		RageUI.PlaySound(Audio[Audio.Use].Back.audioName, Audio[Audio.Use].Back.audioRef)
+
+		if RageUI.CurrentMenu.Closed ~= nil then
+			RageUI.CurrentMenu.Closed()
+		end
+
+		if RageUI.CurrentMenu.Parent ~= nil then
+			if RageUI.CurrentMenu.Parent() then
+				RageUI.NextMenu = RageUI.CurrentMenu.Parent
+			else
+				RageUI.NextMenu = nil
+				RageUI.Visible(RageUI.CurrentMenu, false)
+			end
+		else
+			RageUI.NextMenu = nil
+			RageUI.Visible(RageUI.CurrentMenu, false)
+		end
+	end
+end
+
 ---GoUp
 ---@param Options number
 ---@return void
@@ -32,6 +59,7 @@ end
 function RageUI.GoUp(Options)
 	if RageUI.CurrentMenu ~= nil then
 		Options = RageUI.CurrentMenu.Options
+
 		if RageUI.CurrentMenu() then
 			if (Options ~= 0) then
 				if Options > RageUI.CurrentMenu.Pagination.Total then
@@ -75,6 +103,7 @@ end
 function RageUI.GoDown(Options)
 	if RageUI.CurrentMenu ~= nil then
 		Options = RageUI.CurrentMenu.Options
+
 		if RageUI.CurrentMenu() then
 			if (Options ~= 0) then
 				if Options > RageUI.CurrentMenu.Pagination.Total then
@@ -375,12 +404,13 @@ function RageUI.Controls()
 						end
 					end
 				end
+
 				if Controls.Back.Enabled then
 					for Index = 1, #Controls.Back.Keys do
 						if not Controls.Back.Pressed then
 							if IsDisabledControlJustPressed(Controls.Back.Keys[Index][1], Controls.Back.Keys[Index][2]) then
 								Controls.Back.Pressed = true
-								Wait(10)
+								Citizen.Wait(10)
 								break
 							end
 						end
@@ -450,28 +480,6 @@ function RageUI.Navigation()
 				RenderSprite(RageUI.Settings.Items.Navigation.Arrows.Dictionary, RageUI.Settings.Items.Navigation.Arrows.Texture, RageUI.CurrentMenu.X + RageUI.Settings.Items.Navigation.Arrows.X + (RageUI.CurrentMenu.WidthOffset / 2), RageUI.CurrentMenu.Y + RageUI.Settings.Items.Navigation.Arrows.Y + RageUI.CurrentMenu.SubtitleHeight + RageUI.ItemOffset, RageUI.Settings.Items.Navigation.Arrows.Width, RageUI.Settings.Items.Navigation.Arrows.Height)
 				RageUI.ItemOffset = RageUI.ItemOffset + (RageUI.Settings.Items.Navigation.Rectangle.Height * 2)
 			end
-		end
-	end
-end
-
----GoBack
----@return void
----@public
-function RageUI.GoBack()
-	if RageUI.CurrentMenu ~= nil then
-		local Audio = RageUI.Settings.Audio
-		RageUI.PlaySound(Audio[Audio.Use].Back.audioName, Audio[Audio.Use].Back.audioRef)
-
-		if RageUI.CurrentMenu.Parent ~= nil then
-			if RageUI.CurrentMenu.Parent() then
-				RageUI.NextMenu = RageUI.CurrentMenu.Parent
-			else
-				RageUI.NextMenu = nil
-				RageUI.Visible(RageUI.CurrentMenu, false)
-			end
-		else
-			RageUI.NextMenu = nil
-			RageUI.Visible(RageUI.CurrentMenu, false)
 		end
 	end
 end

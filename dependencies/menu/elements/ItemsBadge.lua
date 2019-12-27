@@ -149,7 +149,7 @@ RageUI.BadgeTexture = {
 	end,
 	[23] = function()
 		return "shop_tick_icon"
-	end,
+	end
 }
 
 RageUI.BadgeDictionary = {
@@ -159,7 +159,7 @@ RageUI.BadgeDictionary = {
 		else
 			return "commonmenu"
 		end
-	end,
+	end
 }
 
 RageUI.BadgeColour = {
@@ -183,7 +183,7 @@ RageUI.BadgeColour = {
 		else
 			return 255, 255, 255, 255
 		end
-	end,
+	end
 }
 
 ---GetBadgeTexture
@@ -196,15 +196,6 @@ function RageUI.GetBadgeTexture(Badge, Selected)
 		return RageUI.BadgeTexture[Badge](Selected)
 	else
 		return ""
-	end
-end
-
-
-function RageUI.CurrentIsEqualTo(Current, To, Style, DefaultStyle)
-	if (Current == To) then
-		return Style
-	else
-		return DefaultStyle or {}
 	end
 end
 
@@ -231,5 +222,20 @@ function RageUI.GetBadgeColour(Badge, Selected)
 		return RageUI.BadgeColour[Badge](Selected)
 	else
 		return 255, 255, 255, 255
+	end
+end
+
+---CurrentIsEqualTo
+---@param Current
+---@param To
+---@param Style
+---@param DefaultStyle
+---@return table
+---@public
+function RageUI.CurrentIsEqualTo(Current, To, Style, DefaultStyle)
+	if (Current == To) then
+		return Style
+	else
+		return DefaultStyle or {}
 	end
 end

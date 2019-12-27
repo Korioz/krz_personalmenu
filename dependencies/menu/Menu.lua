@@ -56,6 +56,7 @@ function RageUI.CreateMenu(Title, Subtitle, X, Y, TextureDictionary, TextureName
 	Citizen.CreateThread(function()
 		if not HasScaleformMovieLoaded(Menu.InstructionalScaleform) then
 			Menu.InstructionalScaleform = RequestScaleformMovie("INSTRUCTIONAL_BUTTONS")
+
 			while not HasScaleformMovieLoaded(Menu.InstructionalScaleform) do
 				Citizen.Wait(0)
 			end
@@ -287,15 +288,15 @@ function RageUI.Menus:UpdateInstructionalButtons(Visible)
 
 	BeginScaleformMovieMethod(self.InstructionalScaleform, "SET_DATA_SLOT")
 	ScaleformMovieMethodAddParamInt(0)
-	PushScaleformMovieMethodParameterButtonName(GetControlInstructionalButton(2, 176, 0))
-	PushScaleformMovieMethodParameterString(GetLabelText("HUD_INPUT2"))
+	ScaleformMovieMethodAddParamPlayerNameString(GetControlInstructionalButton(2, 176, 0))
+	ScaleformMovieMethodAddParamTextureNameString(GetLabelText("HUD_INPUT2"))
 	EndScaleformMovieMethod()
 
 	if self.Closable then
 		BeginScaleformMovieMethod(self.InstructionalScaleform, "SET_DATA_SLOT")
 		ScaleformMovieMethodAddParamInt(1)
-		PushScaleformMovieMethodParameterButtonName(GetControlInstructionalButton(2, 177, 0))
-		PushScaleformMovieMethodParameterString(GetLabelText("HUD_INPUT3"))
+		ScaleformMovieMethodAddParamPlayerNameString(GetControlInstructionalButton(2, 177, 0))
+		ScaleformMovieMethodAddParamTextureNameString(GetLabelText("HUD_INPUT3"))
 		EndScaleformMovieMethod()
 	end
 
@@ -307,8 +308,8 @@ function RageUI.Menus:UpdateInstructionalButtons(Visible)
 				if #self.InstructionalButtons[i] == 2 then
 					BeginScaleformMovieMethod(self.InstructionalScaleform, "SET_DATA_SLOT")
 					ScaleformMovieMethodAddParamInt(count)
-					PushScaleformMovieMethodParameterButtonName(self.InstructionalButtons[i][1])
-					PushScaleformMovieMethodParameterString(self.InstructionalButtons[i][2])
+					ScaleformMovieMethodAddParamPlayerNameString(self.InstructionalButtons[i][1])
+					ScaleformMovieMethodAddParamTextureNameString(self.InstructionalButtons[i][2])
 					EndScaleformMovieMethod()
 					count = count + 1
 				end

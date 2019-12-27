@@ -12,7 +12,7 @@ local function startPointing(plyPed)
 end
 
 local function stopPointing()
-	N_0xd01015c7316ae176(plyPed, 'Stop')
+	RequestTaskMoveNetworkStateTransition(plyPed, 'Stop')
 
 	if not IsPedInjured(plyPed) then
 		ClearPedSecondaryTask(plyPed)
@@ -25,12 +25,14 @@ end
 Citizen.CreateThread(function()
 	while true do
 		Citizen.Wait(0)
-		DisableControlAction(1, Config.crouch.clavier, true)
+		DisableControlAction(1, Config.Controls.Crouch.keyboard, true)
 
-		if IsDisabledControlJustReleased(1, Config.crouch.clavier) and GetLastInputMethod(2) then
+		if IsDisabledControlJustReleased(1, Config.Controls.Crouch.keyboard) and GetLastInputMethod(2) then
 			local plyPed = PlayerPedId()
+
 			if (DoesEntityExist(plyPed)) and (not IsEntityDead(plyPed)) and (IsPedOnFoot(plyPed)) then
 				crouched = not crouched
+
 				if crouched then 
 					RequestAnimSet('move_ped_crouched')
 		
@@ -45,14 +47,16 @@ Citizen.CreateThread(function()
 			end
 		end
 
-		if IsControlJustReleased(1, Config.handsUP.clavier) and GetLastInputMethod(2) then
+		if IsControlJustReleased(1, Config.Controls.HandsUP.keyboard) and GetLastInputMethod(2) then
 			local plyPed = PlayerPedId()
+
 			if (DoesEntityExist(plyPed)) and not (IsEntityDead(plyPed)) and (IsPedOnFoot(plyPed)) then
 				if pointing then
 					pointing = false
 				end
 
 				handsup = not handsup
+
 				if handsup then
 					RequestAnimDict('random@mugging3')
 
@@ -67,14 +71,16 @@ Citizen.CreateThread(function()
 			end
 		end
 
-		if IsControlJustReleased(1, Config.pointing.clavier) and GetLastInputMethod(2) then
+		if IsControlJustReleased(1, Config.Controls.Pointing.keyboard) and GetLastInputMethod(2) then
 			local plyPed = PlayerPedId()
+	
 			if (DoesEntityExist(plyPed)) and (not IsEntityDead(plyPed)) and (IsPedOnFoot(plyPed)) then
 				if handsup then
 					handsup = false
 				end
 
 				pointing = not pointing
+
 				if pointing then
 					startPointing(plyPed)
 				else
