@@ -88,7 +88,7 @@ Locales['br'] = {
 
 	-- Clothes Menu
 	['clothes_title'] = 'Vestuário',
-	['clothes_top'] = 'Peito',
+	['clothes_torso'] = 'Peito',
 	['clothes_pants'] = 'Pernas',
 	['clothes_shoes'] = 'Sapatos',
 	['clothes_bag'] = 'Sac',
@@ -108,6 +108,7 @@ Locales['br'] = {
 	['animation_party_smoke'] = 'Fumar um cigarro',
 	['animation_party_playsong'] = 'Tocando música',
 	['animation_party_dj'] = 'DJ',
+	['animation_party_beer'] = 'Festejando com refrigerante',
 	['animation_party_dancing'] = 'Comemorar',
 	['animation_party_airguitar'] = 'Guitarra no Ar',
 	['animation_party_shagging'] = 'Air Shagging',
@@ -171,7 +172,6 @@ Locales['br'] = {
 	['animation_sports_yoga'] = 'Faire du yoga',
 
 	['animation_other_title'] = 'Variados',
-	['animation_other_beer'] = 'Festejando com refrigerante',
 	['animation_other_sit'] = 'Sauce',
 	['animation_other_waitwall'] = 'Encostado fumando um cigarro',
 	['animation_other_ontheback'] = 'Deitado pra cima',

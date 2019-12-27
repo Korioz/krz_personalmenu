@@ -20,8 +20,7 @@ function RMenu.Add(Type, Name, Menu, ItemType)
 
 	table.insert(RMenu[Type], {
 		Name = Name,
-		Menu = Menu,
-		ItemType = ItemType or 'Button'
+		Menu = Menu
 	})
 
 	table.insert(TotalMenus, Menu)

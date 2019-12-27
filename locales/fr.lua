@@ -88,7 +88,7 @@ Locales['fr'] = {
 
 	-- Clothes Menu
 	['clothes_title'] = 'Vêtements',
-	['clothes_top'] = 'Haut',
+	['clothes_torso'] = 'Haut',
 	['clothes_pants'] = 'Bas',
 	['clothes_shoes'] = 'Chaussures',
 	['clothes_bag'] = 'Sac',
@@ -108,6 +108,7 @@ Locales['fr'] = {
 	['animation_party_smoke'] = 'Fumer une cigarette',
 	['animation_party_playsong'] = 'Jouer de la musique',
 	['animation_party_dj'] = 'DJ',
+	['animation_party_beer'] = 'Bière en Zik',
 	['animation_party_dancing'] = 'Faire la Fête',
 	['animation_party_airguitar'] = 'Air Guitar',
 	['animation_party_shagging'] = 'Air Shagging',
@@ -171,7 +172,6 @@ Locales['fr'] = {
 	['animation_sports_yoga'] = 'Faire du yoga',
 
 	['animation_other_title'] = 'Divers',
-	['animation_other_beer'] = 'Bière en Zik',
 	['animation_other_sit'] = 'S\'asseoir',
 	['animation_other_waitwall'] = 'Attendre contre un mur',
 	['animation_other_ontheback'] = 'Couché sur le dos',

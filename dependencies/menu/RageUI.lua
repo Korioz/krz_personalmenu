@@ -649,7 +649,7 @@ end
 function RageUI.CreateWhile(wait, closure, beforeWait)
 	Citizen.CreateThread(function()
 		while true do
-			if (beforeWait == true or beforeWait == nil) then
+			if (beforeWait or beforeWait == nil) then
 				Citizen.Wait(wait or 0.1)
 				closure()
 			else

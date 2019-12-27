@@ -88,7 +88,7 @@ Locales['en'] = {
 
 	-- Clothes Menu
 	['clothes_title'] = 'Clothing',
-	['clothes_top'] = 'High',
+	['clothes_torso'] = 'High',
 	['clothes_pants'] = 'Pants',
 	['clothes_shoes'] = 'Shoes',
 	['clothes_bag'] = 'Bag',
@@ -108,6 +108,7 @@ Locales['en'] = {
 	['animation_party_smoke'] = 'Smoking a cigarette',
 	['animation_party_playsong'] = 'Play music',
 	['animation_party_dj'] = 'DJ',
+	['animation_party_beer'] = 'Beer en Zik',
 	['animation_party_dancing'] = 'Make the party',
 	['animation_party_airguitar'] = 'Air Guitar',
 	['animation_party_shagging'] = 'Air Shagging',
@@ -171,7 +172,6 @@ Locales['en'] = {
 	['animation_sports_yoga'] = 'Do yoga',
 
 	['animation_other_title'] = 'Miscellaneous',
-	['animation_other_beer'] = 'Beer in Zik',
 	['animation_other_sit'] = 'Sit ',
 	['animation_other_waitwall'] = 'Wait against a wall',
 	['animation_other_ontheback'] = 'Lying on the back',
