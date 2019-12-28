@@ -22,85 +22,39 @@ Config.NoclipSpeed = 1.0 -- change it to change the speed in noclip
 Config.JSFourIDCard = false -- enable if you're using jsfour-idcard
 
 -- CONTROLS --
-Config.Controls = {}
-
-Config.Controls.OpenMenu = {
-	keyboard = Keys['F5']
-}
-
-Config.Controls.HandsUP = {
-	keyboard = Keys['~']
-}
-
-Config.Controls.Pointing = {
-	keyboard = Keys['B']
-}
-
-Config.Controls.Crouch = {
-	keyboard = Keys['LEFTCTRL']
-}
-
-Config.Controls.StopTasks = {
-	keyboard = Keys['X']
-}
-
-Config.Controls.TPMarker = {
-	keyboard1 = Keys['LEFTALT'],
-	keyboard2 = Keys['E']
+Config.Controls = {
+	OpenMenu = {keyboard = Keys['F5']},
+	HandsUP = {keyboard = Keys['~']},
+	Pointing = {keyboard = Keys['B']},
+	Crouch = {keyboard = Keys['LEFTCTRL']},
+	StopTasks = {keyboard = Keys['X']},
+	TPMarker = {keyboard1 = Keys['LEFTALT'], keyboard2 = Keys['E']}
 }
 
 -- GPS --
 Config.GPS = {
-	{
-		name = 'nothing',
-		label = 'Aucun',
-		coords = nil
-	},
-	{
-		name = 'police',
-		label = 'Poste de Police',
-		coords = vector2(425.13, -979.55)
-	},
-	{
-		name = 'garage',
-		label = 'Garage Central',
-		coords = vector2(-449.67, -340.83)
-	},
-	{
-		name = 'hospital',
-		label = 'Hôpital',
-		coords = vector2(-33.88, -1102.37)
-	},
-	{
-		name = 'carshop',
-		label = 'Concessionnaire',
-		coords = vector2(215.06, -791.56)
-	},
-	{
-		name = 'bennys',
-		label = 'Benny\'s Custom',
-		coords = vector2(-212.13, -1325.27)
-	},
-	{
-		name = 'jobcenter',
-		label = 'Pôle Emploie',
-		coords = vector2(-264.83, -964.54)
-	},
-	{
-		name = 'drivingschool',
-		label = 'Auto école',
-		coords = vector2(-829.22, -696.99)
-	},
-	{
-		name = 'tequila',
-		label = 'Téquila-la',
-		coords = vector2(-565.09, 273.45)
-	},
-	{
-		name = 'bahama',
-		label = 'Bahama Mamas',
-		coords = vector2(-1391.06, -590.34)
-	}
+	{label = 'Aucun', coords = nil},
+	{label = 'Poste de Police', coords = vector2(425.13, -979.55)},
+	{label = 'Garage Central', coords = vector2(-449.67, -340.83)},
+	{label = 'Hôpital', coords = vector2(-33.88, -1102.37)},
+	{label = 'Concessionnaire', coords = vector2(215.06, -791.56)},
+	{label = 'Benny\'s Custom', coords = vector2(-212.13, -1325.27)},
+	{label = 'Pôle Emploie', coords = vector2(-264.83, -964.54)},
+	{label = 'Auto école', coords = vector2(-829.22, -696.99)},
+	{label = 'Téquila-la', coords = vector2(-565.09, 273.45)},
+	{label = 'Bahama Mamas', coords = vector2(-1391.06, -590.34)}
+}
+
+-- VOICE --
+Config.Voice = {
+	voiceSystem = true,
+	defaultLevel = 8.0
+}
+
+Config.Voice.items = {
+	{label = _U('voice_whisper'), level = 3.0},
+	{label = _U('voice_normal'), level = Config.Voice.defaultLevel},
+	{label = _U('voice_cry'), level = 14.0}
 }
 
 -- ANIMATIONS --
@@ -252,5 +206,308 @@ Config.Animations = {
 			{label = "Impertinent", type = "attitude", data = {lib = "move_f@sassy", anim = "move_f@sassy"}},
 			{label = "Arrogante", type = "attitude", data = {lib = "move_f@arrogant@a", anim = "move_f@arrogant@a"}}
 		}
+	}
+}
+
+-- ADMIN --
+Config.Admin = {
+	{
+		name = 'goto',
+		label = _U('admin_goto_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin', 'mod'},
+		command = function()
+			local plyId = KeyboardInput('KORIOZ_BOX_ID', _U('dialogbox_playerid'), '', 8)
+
+			if plyId ~= nil then
+				plyId = tonumber(plyId)
+				
+				if type(plyId) == 'number' then
+					local targetPlyCoords = GetEntityCoords(GetPlayerPed(GetPlayerFromServerId(plyId)))
+					SetEntityCoords(plyPed, targetPlyCoords)
+				end
+			end
+
+			RageUI.CloseAll()
+		end
+	},
+	{
+		name = 'bring',
+		label = _U('admin_bring_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin', 'mod'},
+		command = function()
+			local plyId = KeyboardInput('KORIOZ_BOX_ID', _U('dialogbox_playerid'), '', 8)
+
+			if plyId ~= nil then
+				plyId = tonumber(plyId)
+				
+				if type(plyId) == 'number' then
+					local plyPedCoords = GetEntityCoords(plyPed)
+					TriggerServerEvent('KorioZ-PersonalMenu:Admin_BringS', plyId, plyPedCoords)
+				end
+			end
+
+			RageUI.CloseAll()
+		end
+	},
+	{
+		name = 'tpxyz',
+		label = _U('admin_tpxyz_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin'},
+		command = function()
+			local pos = KeyboardInput('KORIOZ_BOX_XYZ', _U('dialogbox_xyz'), '', 50)
+
+			if pos ~= nil and pos ~= '' then
+				local _, _, x, y, z = string.find(pos, '([%d%.]+) ([%d%.]+) ([%d%.]+)')
+						
+				if x ~= nil and y ~= nil and z ~= nil then
+					SetEntityCoords(plyPed, x + .0, y + .0, z + .0)
+				end
+			end
+
+			RageUI.CloseAll()
+		end
+	},
+	{
+		name = 'noclip',
+		label = _U('admin_noclip_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin', 'mod'},
+		command = function()
+			noclip = not noclip
+
+			if noclip then
+				FreezeEntityPosition(plyPed, true)
+				SetEntityInvincible(plyPed, true)
+				SetEntityCollision(plyPed, false, false)
+
+				SetEntityVisible(plyPed, false, false)
+
+				SetEveryoneIgnorePlayer(PlayerId(), true)
+				SetPoliceIgnorePlayer(PlayerId(), true)
+				ESX.ShowNotification(_U('admin_noclipon'))
+			else
+				FreezeEntityPosition(plyPed, false)
+				SetEntityInvincible(plyPed, false)
+				SetEntityCollision(plyPed, true, true)
+
+				SetEntityVisible(plyPed, true, false)
+
+				SetEveryoneIgnorePlayer(PlayerId(), false)
+				SetPoliceIgnorePlayer(PlayerId(), false)
+				ESX.ShowNotification(_U('admin_noclipoff'))
+			end
+
+			RageUI.CloseAll()
+		end
+	},
+	{
+		name = 'godmode',
+		label = _U('admin_godmode_button'),
+		groups = {'_dev', 'owner', 'superadmin'},
+		command = function()
+			godmode = not godmode
+
+			if godmode then
+				SetEntityInvincible(plyPed, true)
+				ESX.ShowNotification(_U('admin_godmodeon'))
+			else
+				SetEntityInvincible(plyPed, false)
+				ESX.ShowNotification(_U('admin_godmodeoff'))
+			end
+		end
+	},
+	{
+		name = 'ghostmode',
+		label = _U('admin_ghostmode_button'),
+		groups = {'_dev', 'owner', 'superadmin'},
+		command = function()
+			invisible = not invisible
+
+			if invisible then
+				SetEntityVisible(plyPed, false, false)
+				ESX.ShowNotification(_U('admin_ghoston'))
+			else
+				SetEntityVisible(plyPed, true, false)
+				ESX.ShowNotification(_U('admin_ghostoff'))
+			end
+		end
+	},
+	{
+		name = 'spawnveh',
+		label = _U('admin_spawnveh_button'),
+		groups = {'_dev', 'owner', 'superadmin'},
+		command = function()
+			local plyVeh = GetVehiclePedIsIn(plyPed, false)
+			SetVehicleFixed(plyVeh)
+			SetVehicleDirtLevel(plyVeh, 0.0)
+			RageUI.CloseAll()
+		end
+	},
+	{
+		name = 'repairveh',
+		label = _U('admin_repairveh_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin'},
+		command = function()
+			local modelName = KeyboardInput('KORIOZ_BOX_VEHICLE_NAME', _U('dialogbox_vehiclespawner'), '', 50)
+
+			if modelName ~= nil then
+				modelName = tostring(modelName)
+
+				if type(modelName) == 'string' then
+					ESX.Game.SpawnVehicle(modelName, GetEntityCoords(plyPed), GetEntityHeading(plyPed), function(vehicle)
+						TaskWarpPedIntoVehicle(plyPed, vehicle, -1)
+					end)
+				end
+			end
+		end
+	},
+	{
+		name = 'flipveh',
+		label = _U('admin_flipveh_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin'},
+		command = function()
+			local plyCoords = GetEntityCoords(plyPed)
+			local newCoords = plyCoords + vector3(0.0, 2.0, 0.0)
+			local closestVeh = GetClosestVehicle(plyCoords, 10.0, 0, 70)
+
+			SetEntityCoords(closestVeh, newCoords)
+			ESX.ShowNotification(_U('admin_vehicleflip'))
+		end
+	},
+	{
+		name = 'givemoney',
+		label = _U('admin_givemoney_button'),
+		groups = {'_dev', 'owner', 'superadmin'},
+		command = function()
+			local amount = KeyboardInput('KORIOZ_BOX_AMOUNT', _U('dialogbox_amount'), '', 8)
+
+			if amount ~= nil then
+				amount = tonumber(amount)
+
+				if type(amount) == 'number' then
+					TriggerServerEvent('KorioZ-PersonalMenu:Admin_giveCash', amount)
+				end
+			end
+
+			RageUI.CloseAll()
+		end
+	},
+	{
+		name = 'givebank',
+		label = _U('admin_givebank_button'),
+		groups = {'_dev', 'owner', 'superadmin'},
+		command = function()
+			local amount = KeyboardInput('KORIOZ_BOX_AMOUNT', _U('dialogbox_amount'), '', 8)
+
+			if amount ~= nil then
+				amount = tonumber(amount)
+
+				if type(amount) == 'number' then
+					TriggerServerEvent('KorioZ-PersonalMenu:Admin_giveBank', amount)
+				end
+			end
+
+			RageUI.CloseAll()
+		end
+	},
+	{
+		name = 'givedirtymoney',
+		label = _U('admin_givedirtymoney_button'),
+		groups = {'_dev', 'owner', 'superadmin'},
+		command = function()
+			local amount = KeyboardInput('KORIOZ_BOX_AMOUNT', _U('dialogbox_amount'), '', 8)
+
+			if amount ~= nil then
+				amount = tonumber(amount)
+
+				if type(amount) == 'number' then
+					TriggerServerEvent('KorioZ-PersonalMenu:Admin_giveDirtyMoney', amount)
+				end
+			end
+
+			RageUI.CloseAll()
+		end
+	},
+	{
+		name = 'showxyz',
+		label = _U('admin_showxyz_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin', 'mod'},
+		command = function()
+			showcoord = not showcoord
+		end
+	},
+	{
+		name = 'showname',
+		label = _U('admin_showname_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin', 'mod'},
+		command = function()
+			showname = not showname
+
+			if not showname then
+				for k, v in pairs(gamerTags) do
+					RemoveMpGamerTag(v)
+					gamerTags[k] = nil
+				end
+			end
+		end
+	},
+	{
+		name = 'tpmarker',
+		label = _U('admin_tpmarker_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin'},
+		command = function()
+			local waypointHandle = GetFirstBlipInfoId(8)
+
+			if DoesBlipExist(waypointHandle) then
+				local waypointCoords = GetBlipInfoIdCoord(waypointHandle)
+
+				for i = -100, 1000, 1 do
+					local foundGround, zPos = GetGroundZFor_3dCoord(waypointCoords.x, waypointCoords.y, i + 0.0)
+
+					if foundGround then
+						SetPedCoordsKeepVehicle(PlayerPedId(), waypointCoords.x, waypointCoords.y, zPos)
+						ESX.ShowNotification(_U('admin_tpmarker'))
+						break
+					end
+				end
+			else
+				ESX.ShowNotification(_U('admin_nomarker'))
+			end
+		end
+	},
+	{
+		name = 'revive',
+		label = _U('admin_revive_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin'},
+		command = function()
+			local plyId = KeyboardInput('KORIOZ_BOX_ID', _U('dialogbox_playerid'), '', 8)
+
+			if plyId ~= nil then
+				plyId = tonumber(plyId)
+				
+				if type(plyId) == 'number' then
+					TriggerServerEvent('esx_ambulancejob:revive', plyId)
+				end
+			end
+
+			RageUI.CloseAll()
+		end
+	},
+	{
+		name = 'changeskin',
+		label = _U('admin_changeskin_button'),
+		groups = {'_dev', 'owner', 'superadmin'},
+		command = function()
+			RageUI.CloseAll()
+			Citizen.Wait(100)
+			TriggerEvent('esx_skin:openSaveableMenu')
+		end
+	},
+	{
+		name = 'saveskin',
+		label = _U('admin_saveskin_button'),
+		groups = {'_dev', 'owner', 'superadmin'},
+		command = function()
+			TriggerEvent('esx_skin:requestSaveSkin')
+		end
 	}
 }

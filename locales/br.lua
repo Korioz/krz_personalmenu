@@ -40,7 +40,7 @@ Locales['br'] = {
 	['admin_nomarker'] = 'Nenhum marcador no mapa!',
 
 	-- Main Menu
-	['mainmenu_subtitle'] = '~o~Menu de interação',
+	['mainmenu_subtitle'] = 'INTERAÇÃO MENU',
 	['mainmenu_gps_button'] = 'GPS',
 	['mainmenu_approach_button'] = 'Estilo de andar',
 	['mainmenu_voice_button'] = 'Voz',

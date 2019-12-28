@@ -23,7 +23,7 @@ function RageUI.CreateMenu(Title, Subtitle, X, Y, TextureDictionary, TextureName
 	Menu.X = X or 0
 	Menu.Y = Y or 0
 	Menu.Parent = nil
-	Menu.WidthOffset = 100
+	Menu.WidthOffset = 0
 	Menu.Open = false
 	Menu.Controls = RageUI.Settings.Controls
 	Menu.Index = 1

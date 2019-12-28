@@ -71,7 +71,7 @@ function RageUI.Button(Label, Description, Style, Enabled, Callback, Submenu)
 					end
 				end
 
-				if Enabled == true or Enabled == nil then
+				if (Enabled) then
 					if Selected then
 						if Style.RightLabel ~= nil and Style.RightLabel ~= "" then
 							RenderText(Style.RightLabel, CurrentMenu.X + SettingsButton.RightText.X - RightBadgeOffset + CurrentMenu.WidthOffset, CurrentMenu.Y + SettingsButton.RightText.Y + CurrentMenu.SubtitleHeight + RageUI.ItemOffset, 0, SettingsButton.RightText.Scale, 0, 0, 0, 255, 2)
@@ -98,12 +98,17 @@ function RageUI.Button(Label, Description, Style, Enabled, Callback, Submenu)
 
 				if Selected and (CurrentMenu.Controls.Select.Active or (Hovered and CurrentMenu.Controls.Click.Active)) then
 					local Audio = RageUI.Settings.Audio
-					RageUI.PlaySound(Audio[Audio.Use].Select.audioName, Audio[Audio.Use].Select.audioRef)
 
-					if Submenu ~= nil then
-						if Submenu() then
-							RageUI.NextMenu = Submenu
+					if (Enabled) then
+						RageUI.PlaySound(Audio[Audio.Use].Select.audioName, Audio[Audio.Use].Select.audioRef)
+
+						if Submenu ~= nil then
+							if Submenu() then
+								RageUI.NextMenu = Submenu
+							end
 						end
+					else
+						RageUI.PlaySound(Audio[Audio.Use].Error.audioName, Audio[Audio.Use].Error.audioRef)
 					end
 				end
 			end

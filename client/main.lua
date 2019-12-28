@@ -12,10 +12,7 @@ local PersonalMenu = {
 	ItemIndex = {},
 	WeaponData = {},
 	WalletIndex = {},
-	WalletList = {
-		_U('wallet_option_give'),
-		_U('wallet_option_drop')
-	},
+	WalletList = {_U('wallet_option_give'), _U('wallet_option_drop')},
 	BillData = {},
 	ClothesButtons = {'torso', 'pants', 'shoes', 'bag', 'bproof'},
 	AccessoriesButtons = {'Ears', 'Glasses', 'Helmet', 'Mask'},
@@ -28,22 +25,11 @@ local PersonalMenu = {
 		Trunk = false
 	},
 	DoorIndex = 1,
-	DoorList = {
-		_U('vehicle_door_frontleft'),
-		_U('vehicle_door_frontright'),
-		_U('vehicle_door_backleft'),
-		_U('vehicle_door_backright')
-	},
-	GPSSelected = _U('default_gps'),
+	DoorList = {_U('vehicle_door_frontleft'), _U('vehicle_door_frontright'), _U('vehicle_door_backleft'), _U('vehicle_door_backright')},
 	GPSIndex = 1,
 	GPSList = {},
-	VoiceSelected = _U('default_voice'),
 	VoiceIndex = 2,
-	VoiceList = {
-		_U('voice_whisper'),
-		_U('voice_normal'),
-		_U('voice_cry')
-	},
+	VoiceList = {},
 	PlayerGroup = 'user'
 }
 
@@ -105,14 +91,43 @@ Citizen.CreateThread(function()
 	RMenu.Add('personal', 'clothes', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('clothes_title')))
 	RMenu.Add('personal', 'accessories', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('accessories_title')))
 	RMenu.Add('personal', 'animation', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('animation_title')))
-	RMenu.Add('personal', 'vehicle', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('vehicle_title')))
-	RMenu.Add('personal', 'boss', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('bossmanagement_title', ESX.PlayerData.job.label)))
+	RMenu.Add('personal', 'vehicle', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('vehicle_title')), function()
+		if IsPedSittingInAnyVehicle(plyPed) then
+			if (GetPedInVehicleSeat(GetVehiclePedIsIn(plyPed, false), -1) == plyPed) then
+				return true
+			end
+		end
+
+		return false
+	end)
+
+	RMenu.Add('personal', 'boss', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('bossmanagement_title', ESX.PlayerData.job.label)), function()
+		if ESX.PlayerData.job ~= nil and ESX.PlayerData.job.grade_name == 'boss' then
+			return true
+		end
+
+		return false
+	end)
 
 	if Config.DoubleJob then
-		RMenu.Add('personal', 'boss2', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('bossmanagement2_title', ESX.PlayerData.job2.label)))
+		RMenu.Add('personal', 'boss2', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('bossmanagement2_title', ESX.PlayerData.job2.label)), function()
+			if Config.DoubleJob then
+				if ESX.PlayerData.job2 ~= nil and ESX.PlayerData.job2.grade_name == 'boss' then
+					return true
+				end
+			end
+
+			return false
+		end)
 	end
 
-	RMenu.Add('personal', 'admin', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('admin_title')))
+	RMenu.Add('personal', 'admin', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('admin_title')), function()
+		if PersonalMenu.PlayerGroup ~= nil and (PersonalMenu.PlayerGroup == 'mod' or PersonalMenu.PlayerGroup == 'admin' or PersonalMenu.PlayerGroup == 'superadmin' or PersonalMenu.PlayerGroup == 'owner') then
+			return true
+		end
+
+		return false
+	end)
 
 	RMenu.Add('inventory', 'actions', RageUI.CreateSubMenu(RMenu.Get('personal', 'inventory'), _U('inventory_actions_title')))
 	RMenu.Get('inventory', 'actions').Closed = function()
@@ -126,34 +141,32 @@ Citizen.CreateThread(function()
 
 	for i = 1, #Config.Animations, 1 do
 		RMenu.Add('animation', Config.Animations[i].name, RageUI.CreateSubMenu(RMenu.Get('personal', 'animation'), Config.Animations[i].label))
-		RMenu.Get('animation', Config.Animations[i].name).Closed = function()
-			PersonalMenu.ItemSelected = nil
-		end
 	end
 
 	for i = 1, #Config.GPS, 1 do
 		table.insert(PersonalMenu.GPSList, Config.GPS[i].label)
 	end
-end)
 
-Citizen.CreateThread(function()
-	local fixingVoice = true
-	NetworkSetTalkerProximity(0.1)
-
-	while true do
-		NetworkSetTalkerProximity(8.0)
-
-		if not fixingVoice then
-			break
-		end
-
-		Citizen.Wait(10)
+	for i = 1, #Config.Voice.items, 1 do
+		table.insert(PersonalMenu.VoiceList, Config.Voice.items[i].label)
 	end
-
-	SetTimeout(10000, function()
-		fixingVoice = false
-	end)
 end)
+
+if Config.Voice.voiceSystem then
+	Citizen.CreateThread(function()
+		local voiceFixing = true
+		NetworkSetTalkerProximity(0.1)
+
+		SetTimeout(10000, function()
+			voiceFixing = nil
+		end)
+
+		while voiceFixing do
+			NetworkSetTalkerProximity(Config.Voice.defaultLevel)
+			Citizen.Wait(10)
+		end
+	end)
+end
 
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(xPlayer)
@@ -267,74 +280,6 @@ function KeyboardInput(entryTitle, textEntry, inputText, maxLength)
 	end
 end
 
--- GOTO JOUEUR
-function admin_tp_toplayer()
-	local plyId = KeyboardInput('KORIOZ_BOX_ID', _U('dialogbox_playerid'), '', 8)
-
-	if plyId ~= nil then
-		plyId = tonumber(plyId)
-		
-		if type(plyId) == 'number' then
-			local targetPlyCoords = GetEntityCoords(GetPlayerPed(GetPlayerFromServerId(plyId)))
-			SetEntityCoords(plyPed, targetPlyCoords)
-		end
-	end
-end
-
--- TP UN JOUEUR A MOI
-function admin_tp_playertome()
-	local plyId = KeyboardInput('KORIOZ_BOX_ID', _U('dialogbox_playerid'), '', 8)
-
-	if plyId ~= nil then
-		plyId = tonumber(plyId)
-		
-		if type(plyId) == 'number' then
-			local plyPedCoords = GetEntityCoords(plyPed)
-			TriggerServerEvent('KorioZ-PersonalMenu:Admin_BringS', plyId, plyPedCoords)
-		end
-	end
-end
-
--- TP A POSITION
-function admin_tp_pos()
-	local pos = KeyboardInput('KORIOZ_BOX_XYZ', _U('dialogbox_xyz'), '', 50)
-
-	if pos ~= nil and pos ~= '' then
-		local _, _, x, y, z = string.find(pos, '([%d%.]+) ([%d%.]+) ([%d%.]+)')
-				
-		if x ~= nil and y ~= nil and z ~= nil then
-			SetEntityCoords(plyPed, x + .0, y + .0, z + .0)
-		end
-	end
-end
-
--- NOCLIP 
-function admin_no_clip()
-	noclip = not noclip
-
-	if noclip then
-		FreezeEntityPosition(plyPed, true)
-		SetEntityInvincible(plyPed, true)
-		SetEntityCollision(plyPed, false, false)
-
-		SetEntityVisible(plyPed, false, false)
-
-		SetEveryoneIgnorePlayer(PlayerId(), true)
-		SetPoliceIgnorePlayer(PlayerId(), true)
-		ESX.ShowNotification(_U('admin_noclipon'))
-	else
-		FreezeEntityPosition(plyPed, false)
-		SetEntityInvincible(plyPed, false)
-		SetEntityCollision(plyPed, true, true)
-
-		SetEntityVisible(plyPed, true, false)
-
-		SetEveryoneIgnorePlayer(PlayerId(), false)
-		SetPoliceIgnorePlayer(PlayerId(), false)
-		ESX.ShowNotification(_U('admin_noclipoff'))
-	end
-end
-
 function getCamDirection()
 	local heading = GetGameplayCamRelativeHeading() + GetEntityHeading(plyPed)
 	local pitch = GetGameplayCamRelativePitch()
@@ -346,164 +291,6 @@ function getCamDirection()
 	end
 
 	return coords
-end
-
--- GOD MODE
-function admin_godmode()
-	godmode = not godmode
-
-	if godmode then
-		SetEntityInvincible(plyPed, true)
-		ESX.ShowNotification(_U('admin_godmodeon'))
-	else
-		SetEntityInvincible(plyPed, false)
-		ESX.ShowNotification(_U('admin_godmodeoff'))
-	end
-end
-
--- INVISIBLE
-function admin_mode_fantome()
-	invisible = not invisible
-
-	if invisible then
-		SetEntityVisible(plyPed, false, false)
-		ESX.ShowNotification(_U('admin_ghoston'))
-	else
-		SetEntityVisible(plyPed, true, false)
-		ESX.ShowNotification(_U('admin_ghostoff'))
-	end
-end
-
--- Réparer vehicule
-function admin_vehicle_repair()
-	local plyVeh = GetVehiclePedIsIn(plyPed, false)
-	SetVehicleFixed(plyVeh)
-	SetVehicleDirtLevel(plyVeh, 0.0)
-end
-
--- Spawn vehicule
-function admin_vehicle_spawn()
-	local vehicleName = KeyboardInput('KORIOZ_BOX_VEHICLE_NAME', _U('dialogbox_vehiclespawner'), '', 50)
-
-	if vehicleName ~= nil then
-		vehicleName = tostring(vehicleName)
-
-		if type(vehicleName) == 'string' then
-			ESX.Game.SpawnVehicle(vehicleName, GetEntityCoords(plyPed), GetEntityHeading(plyPed), function(vehicle)
-				TaskWarpPedIntoVehicle(plyPed, vehicle, -1)
-			end)
-		end
-	end
-end
-
--- flipVehicle
-function admin_vehicle_flip()
-	local plyCoords = GetEntityCoords(plyPed)
-	local closestCar = GetClosestVehicle(plyCoords, 10.0, 0, 70)
-	local plyCoords = plyCoords + vector3(0, 2, 0)
-
-	SetEntityCoords(closestCar, plyCoords)
-	ESX.ShowNotification(_U('admin_vehicleflip'))
-end
-
--- GIVE DE L'ARGENT
-function admin_give_money()
-	local amount = KeyboardInput('KORIOZ_BOX_AMOUNT', _U('dialogbox_amount'), '', 8)
-
-	if amount ~= nil then
-		amount = tonumber(amount)
-
-		if type(amount) == 'number' then
-			TriggerServerEvent('KorioZ-PersonalMenu:Admin_giveCash', amount)
-		end
-	end
-end
-
--- GIVE DE L'ARGENT EN BANQUE
-function admin_give_bank()
-	local amount = KeyboardInput('KORIOZ_BOX_AMOUNT', _U('dialogbox_amount'), '', 8)
-
-	if amount ~= nil then
-		amount = tonumber(amount)
-
-		if type(amount) == 'number' then
-			TriggerServerEvent('KorioZ-PersonalMenu:Admin_giveBank', amount)
-		end
-	end
-end
-
--- GIVE DE L'ARGENT SALE
-function admin_give_dirty()
-	local amount = KeyboardInput('KORIOZ_BOX_AMOUNT', _U('dialogbox_amount'), '', 8)
-
-	if amount ~= nil then
-		amount = tonumber(amount)
-
-		if type(amount) == 'number' then
-			TriggerServerEvent('KorioZ-PersonalMenu:Admin_giveDirtyMoney', amount)
-		end
-	end
-end
-
--- Afficher Coord
-function admin_showcoord()
-	showcoord = not showcoord
-end
-
--- Afficher Nom
-function admin_showname()
-	showname = not showname
-
-	if not showname then
-		for k, v in pairs(gamerTags) do
-			RemoveMpGamerTag(v)
-			gamerTags[k] = nil
-		end
-	end
-end
-
--- TP MARKER
-function admin_tp_marker()
-	local WaypointHandle = GetFirstBlipInfoId(8)
-
-	if DoesBlipExist(WaypointHandle) then
-		local waypointCoords = GetBlipInfoIdCoord(WaypointHandle)
-
-		for i = -100, 1000, 1 do
-			local foundGround, zPos = GetGroundZFor_3dCoord(waypointCoords.x, waypointCoords.y, i + 0.0)
-
-			if foundGround then
-				SetPedCoordsKeepVehicle(PlayerPedId(), waypointCoords.x, waypointCoords.y, zPos)
-				ESX.ShowNotification(_U('admin_tpmarker'))
-				break
-			end
-		end
-	else
-		ESX.ShowNotification(_U('admin_nomarker'))
-	end
-end
-
--- HEAL JOUEUR
-function admin_heal_player()
-	local plyId = KeyboardInput('KORIOZ_BOX_ID', _U('dialogbox_playerid'), '', 8)
-
-	if plyId ~= nil then
-		plyId = tonumber(plyId)
-		
-		if type(plyId) == 'number' then
-			TriggerServerEvent('esx_ambulancejob:revive', plyId)
-		end
-	end
-end
-
-function changer_skin()
-	RageUI.CloseAll()
-	Citizen.Wait(100)
-	TriggerEvent('esx_skin:openSaveableMenu', source)
-end
-
-function save_skin()
-	TriggerEvent('esx_skin:requestSaveSkin', source)
 end
 
 function startAttitude(lib, anim)
@@ -595,7 +382,7 @@ function setUniform(value, plyPed)
 	end)
 end
 
-function SetUnsetAccessory(accessory)
+function setAccessory(accessory)
 	ESX.TriggerServerCallback('esx_accessories:get', function(hasAccessory, accessorySkin)
 		local _accessory = (accessory):lower()
 
@@ -669,40 +456,41 @@ function RenderPersonalMenu()
 		local Menus = RMenu.GetType('personal')
 
 		for i = 1, #Menus, 1 do
-			RageUI.Button(Menus[i].Menu.Title, nil, {RightLabel = "→→→"}, true, function(Hovered, Active, Selected) end, Menus[i].Menu)
+			if type(Menus[i].Restriction) == 'function' then
+				if Menus[i].Restriction() then
+					RageUI.Button(Menus[i].Menu.Title, nil, {RightLabel = "→→→"}, true, function(Hovered, Active, Selected) end, Menus[i].Menu)
+				else
+					RageUI.Button(Menus[i].Menu.Title, nil, {RightBadge = RageUI.BadgeStyle.Lock}, false, function(Hovered, Active, Selected) end, Menus[i].Menu)
+				end
+			else
+				RageUI.Button(Menus[i].Menu.Title, nil, {RightLabel = "→→→"}, true, function(Hovered, Active, Selected) end, Menus[i].Menu)
+			end
 		end
 
 		RageUI.List(_U('mainmenu_gps_button'), PersonalMenu.GPSList, PersonalMenu.GPSIndex, nil, {}, true, function(Hovered, Active, Selected, Index)
+			if (Selected) then
+				if Config.GPS[Index].coords ~= nil then
+					ESX.ShowNotification(_U('gps', Config.GPS[Index].label))
+					SetNewWaypoint(Config.GPS[Index].coords)
+				else
+					DeleteWaypoint()
+				end
+			end
+
+			PersonalMenu.GPSIndex = Index
 		end)
 
-		RageUI.List(_U('mainmenu_voice_button'), PersonalMenu.VoiceList, PersonalMenu.VoiceIndex, nil, {}, true, function(Hovered, Active, Selected, Index)
-		end)
-	end)
-	local gpsItem = NativeUI.CreateListItem(_U('mainmenu_gps_button'), PersonalMenu.GPSList, PersonalMenu.GPSIndex)
-	local voixItem = NativeUI.CreateListItem(_U('mainmenu_voice_button'), PersonalMenu.VoiceList, PersonalMenu.VoiceIndex)
+		if Config.Voice.voiceSystem then
+			RageUI.List(_U('mainmenu_voice_button'), PersonalMenu.VoiceList, PersonalMenu.VoiceIndex, nil, {}, true, function(Hovered, Active, Selected, Index)
+				if (Selected) then
+					ESX.ShowNotification(_U('voice', Config.Voice.items[Index].label))
+					NetworkSetTalkerProximity(Config.Voice.items[Index].level)
+				end
 
-	menu.OnListSelect = function(sender, item, index)
-		if item == gpsItem then
-			PersonalMenu.GPSSelected = item:IndexToItem(index)
-			PersonalMenu.GPSIndex = index
-			ESX.ShowNotification(_U('gps', PersonalMenu.GPSSelected))
-
-			if PersonalMenu.GPSSelected == 'Aucun' then
-			end
-		elseif item == voixItem then
-			PersonalMenu.VoiceSelected = item:IndexToItem(index)
-			PersonalMenu.VoiceIndex = index
-			ESX.ShowNotification(_U('voice', PersonalMenu.VoiceSelected))
-
-			if index == 1 then
-				NetworkSetTalkerProximity(1.0)
-			elseif index == 2 then
-				NetworkSetTalkerProximity(8.0)
-			elseif index == 3 then
-				NetworkSetTalkerProximity(14.0)
-			end
+				PersonalMenu.VoiceIndex = Index
+			end)
 		end
-	end
+	end)
 end
 
 function RenderActionsMenu(type)
@@ -797,7 +585,7 @@ function RenderActionsMenu(type)
 									if ammo > 0 then
 										if quantity <= ammo and quantity >= 0 then
 											local finalAmmo = math.floor(ammo - quantity)
-											SetPedAmmo(plyPed, value, finalAmmo)
+											SetPedAmmo(plyPed, PersonalMenu.ItemSelected.name, finalAmmo)
 
 											TriggerServerEvent('KorioZ-PersonalMenu:Weapon_addAmmoToPedS', GetPlayerServerId(closestPlayer), PersonalMenu.ItemSelected.name, quantity)
 											ESX.ShowNotification(_U('gave_ammo', quantity, GetPlayerName(closestPlayer)))
@@ -1066,7 +854,7 @@ function RenderAccessoriesMenu()
 		for i = 1, #PersonalMenu.AccessoriesButtons, 1 do
 			RageUI.Button(_U(('accessories_%s'):format((PersonalMenu.AccessoriesButtons[i]:lower()))), nil, {RightBadge = RageUI.BadgeStyle.Clothes}, true, function(Hovered, Active, Selected)
 				if (Selected) then
-					SetUnsetAccessory(PersonalMenu.AccessoriesButtons[i])
+					setAccessory(PersonalMenu.AccessoriesButtons[i])
 				end
 			end)
 		end
@@ -1357,168 +1145,34 @@ function RenderBoss2Menu()
 end
 
 function RenderAdminMenu()
-	if PersonalMenu.PlayerGroup == 'mod' then
-		local tptoPlrItem = NativeUI.CreateItem(_U('admin_goto_button'), '')
-		adminMenu.SubMenu:AddItem(tptoPlrItem)
-		local tptoMeItem = NativeUI.CreateItem(_U('admin_bring_button'), '')
-		adminMenu.SubMenu:AddItem(tptoMeItem)
-		local showXYZItem = NativeUI.CreateItem(_U('admin_showxyz_button'), '')
-		adminMenu.SubMenu:AddItem(showXYZItem)
-		local showPlrNameItem = NativeUI.CreateItem(_U('admin_showname_button'), '')
-		adminMenu.SubMenu:AddItem(showPlrNameItem)
+	RageUI.DrawContent({header = true, glare = true, instructionalButton = true}, function()
+		for i = 1, #Config.Admin, 1 do
+			local authorized = false
 
-		adminMenu.SubMenu.OnItemSelect = function(sender, item, index)
-			if item == tptoPlrItem then
-				admin_tp_toplayer()
-				RageUI.CloseAll()
-			elseif item == tptoMeItem then
-				admin_tp_playertome()
-				RageUI.CloseAll()
-			elseif item == showXYZItem then
-				admin_showcoord()
-			elseif item == showPlrNameItem then
-				admin_showname()
+			for j = 1, #Config.Admin[i].groups, 1 do
+				if Config.Admin[i].groups[j] == PersonalMenu.PlayerGroup then
+					authorized = true
+				end
+			end
+
+			if authorized then
+				RageUI.Button(Config.Admin[i].label, nil, {}, true, function(Hovered, Active, Selected)
+					if (Selected) then
+						Config.Admin[i].command()
+					end
+				end)
+			else
+				RageUI.Button(Config.Admin[i].label, nil, {RightBadge = RageUI.BadgeStyle.Lock}, false, function(Hovered, Active, Selected) end)
 			end
 		end
-	elseif PersonalMenu.PlayerGroup == 'admin' then
-		local tptoPlrItem = NativeUI.CreateItem(_U('admin_goto_button'), '')
-		adminMenu.SubMenu:AddItem(tptoPlrItem)
-		local tptoMeItem = NativeUI.CreateItem(_U('admin_bring_button'), '')
-		adminMenu.SubMenu:AddItem(tptoMeItem)
-		local noclipItem = NativeUI.CreateItem(_U('admin_noclip_button'), '')
-		adminMenu.SubMenu:AddItem(noclipItem)
-		local repairVehItem = NativeUI.CreateItem(_U('admin_repairveh_button'), '')
-		adminMenu.SubMenu:AddItem(repairVehItem)
-		local returnVehItem = NativeUI.CreateItem(_U('admin_flipveh_button'), '')
-		adminMenu.SubMenu:AddItem(returnVehItem)
-		local showXYZItem = NativeUI.CreateItem(_U('admin_showxyz_button'), '')
-		adminMenu.SubMenu:AddItem(showXYZItem)
-		local showPlrNameItem = NativeUI.CreateItem(_U('admin_showname_button'), '')
-		adminMenu.SubMenu:AddItem(showPlrNameItem)
-		local tptoWaypointItem = NativeUI.CreateItem(_U('admin_tpmarker_button'), '')
-		adminMenu.SubMenu:AddItem(tptoWaypointItem)
-		local revivePlrItem = NativeUI.CreateItem(_U('admin_revive_button'), '')
-		adminMenu.SubMenu:AddItem(revivePlrItem)
-
-		adminMenu.SubMenu.OnItemSelect = function(sender, item, index)
-			if item == tptoPlrItem then
-				admin_tp_toplayer()
-				RageUI.CloseAll()
-			elseif item == tptoMeItem then
-				admin_tp_playertome()
-				RageUI.CloseAll()
-			elseif item == noclipItem then
-				admin_no_clip()
-				RageUI.CloseAll()
-			elseif item == repairVehItem then
-				admin_vehicle_repair()
-			elseif item == returnVehItem then
-				admin_vehicle_flip()
-			elseif item == showXYZItem then
-				admin_showcoord()
-			elseif item == showPlrNameItem then
-				admin_showname()
-			elseif item == tptoWaypointItem then
-				admin_tp_marker()
-			elseif item == revivePlrItem then
-				admin_heal_player()
-				RageUI.CloseAll()
-			end
-		end
-	elseif PersonalMenu.PlayerGroup == 'superadmin' or PersonalMenu.PlayerGroup == 'owner' then
-		local tptoPlrItem = NativeUI.CreateItem(_U('admin_goto_button'), '')
-		adminMenu.SubMenu:AddItem(tptoPlrItem)
-		local tptoMeItem = NativeUI.CreateItem(_U('admin_bring_button'), '')
-		adminMenu.SubMenu:AddItem(tptoMeItem)
-		local tptoXYZItem = NativeUI.CreateItem(_U('admin_tpxyz_button'), '')
-		adminMenu.SubMenu:AddItem(tptoXYZItem)
-		local noclipItem = NativeUI.CreateItem(_U('admin_noclip_button'), '')
-		adminMenu.SubMenu:AddItem(noclipItem)
-		local godmodeItem = NativeUI.CreateItem(_U('admin_godmode_button'), '')
-		adminMenu.SubMenu:AddItem(godmodeItem)
-		local ghostmodeItem = NativeUI.CreateItem(_U('admin_ghostmode_button'), '')
-		adminMenu.SubMenu:AddItem(ghostmodeItem)
-		local spawnVehItem = NativeUI.CreateItem(_U('admin_spawnveh_button'), '')
-		adminMenu.SubMenu:AddItem(spawnVehItem)
-		local repairVehItem = NativeUI.CreateItem(_U('admin_repairveh_button'), '')
-		adminMenu.SubMenu:AddItem(repairVehItem)
-		local returnVehItem = NativeUI.CreateItem(_U('admin_flipveh_button'), '')
-		adminMenu.SubMenu:AddItem(returnVehItem)
-		local givecashItem = NativeUI.CreateItem(_U('admin_givemoney_button'), '')
-		adminMenu.SubMenu:AddItem(givecashItem)
-		local givebankItem = NativeUI.CreateItem(_U('admin_givebank_button'), '')
-		adminMenu.SubMenu:AddItem(givebankItem)
-		local givedirtyItem = NativeUI.CreateItem(_U('admin_givedirtymoney_button'), '')
-		adminMenu.SubMenu:AddItem(givedirtyItem)
-		local showXYZItem = NativeUI.CreateItem(_U('admin_showxyz_button'), '')
-		adminMenu.SubMenu:AddItem(showXYZItem)
-		local showPlrNameItem = NativeUI.CreateItem(_U('admin_showname_button'), '')
-		adminMenu.SubMenu:AddItem(showPlrNameItem)
-		local tptoWaypointItem = NativeUI.CreateItem(_U('admin_tpmarker_button'), '')
-		adminMenu.SubMenu:AddItem(tptoWaypointItem)
-		local revivePlrItem = NativeUI.CreateItem(_U('admin_revive_button'), '')
-		adminMenu.SubMenu:AddItem(revivePlrItem)
-		local skinPlrItem = NativeUI.CreateItem(_U('admin_changeskin_button'), '')
-		adminMenu.SubMenu:AddItem(skinPlrItem)
-		local saveSkinPlrItem = NativeUI.CreateItem(_U('admin_saveskin_button'), '')
-		adminMenu.SubMenu:AddItem(saveSkinPlrItem)
-
-		adminMenu.SubMenu.OnItemSelect = function(sender, item, index)
-			if item == tptoPlrItem then
-				admin_tp_toplayer()
-				RageUI.CloseAll()
-			elseif item == tptoMeItem then
-				admin_tp_playertome()
-				RageUI.CloseAll()
-			elseif item == tptoXYZItem then
-				admin_tp_pos()
-				RageUI.CloseAll()
-			elseif item == noclipItem then
-				admin_no_clip()
-				RageUI.CloseAll()
-			elseif item == godmodeItem then
-				admin_godmode()
-			elseif item == ghostmodeItem then
-				admin_mode_fantome()
-			elseif item == spawnVehItem then
-				admin_vehicle_spawn()
-				RageUI.CloseAll()
-			elseif item == repairVehItem then
-				admin_vehicle_repair()
-			elseif item == returnVehItem then
-				admin_vehicle_flip()
-			elseif item == givecashItem then
-				admin_give_money()
-				RageUI.CloseAll()
-			elseif item == givebankItem then
-				admin_give_bank()
-				RageUI.CloseAll()
-			elseif item == givedirtyItem then
-				admin_give_dirty()
-				RageUI.CloseAll()
-			elseif item == showXYZItem then
-				admin_showcoord()
-			elseif item == showPlrNameItem then
-				admin_showname()
-			elseif item == tptoWaypointItem then
-				admin_tp_marker()
-			elseif item == revivePlrItem then
-				admin_heal_player()
-				RageUI.CloseAll()
-			elseif item == skinPlrItem then
-				changer_skin()
-			elseif item == saveSkinPlrItem then
-				save_skin()
-			end
-		end
-	end
+	end)
 end
 
 RageUI.CreateWhile(1.0, function()
 	if IsControlJustReleased(0, Config.Controls.OpenMenu.keyboard) and not isDead then
 		if not RageUI.Visible() then
 			ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(plyGroup)
-				PersonalMenu.PlayerGroup = playerGroup
+				PersonalMenu.PlayerGroup = plyGroup
 
 				ESX.TriggerServerCallback('KorioZ-PersonalMenu:Bill_getBills', function(bills)
 					PersonalMenu.BillData = bills
@@ -1568,28 +1222,20 @@ RageUI.CreateWhile(1.0, function()
 	end
 
 	if RageUI.Visible(RMenu.Get('personal', 'vehicle')) then
-		if IsPedSittingInAnyVehicle(plyPed) then
-			if (GetPedInVehicleSeat(GetVehiclePedIsIn(plyPed, false), -1) == plyPed) then
-				RenderVehicleMenu()
-			end
-		end
+		RenderVehicleMenu()
 	end
 
-	--[[
-	if ESX.PlayerData.job ~= nil and ESX.PlayerData.job.grade_name == 'boss' then
+	if RageUI.Visible(RMenu.Get('personal', 'boss')) then
 		RenderBossMenu()
 	end
 
-	if Config.DoubleJob then
-		if ESX.PlayerData.job2 ~= nil and ESX.PlayerData.job2.grade_name == 'boss' then
-			RenderBoss2Menu()
-		end
+	if RageUI.Visible(RMenu.Get('personal', 'boss2')) then
+		RenderBoss2Menu()
 	end
 
-	if PersonalMenu.PlayerGroup ~= nil and (PersonalMenu.PlayerGroup == 'mod' or PersonalMenu.PlayerGroup == 'admin' or PersonalMenu.PlayerGroup == 'superadmin' or PersonalMenu.PlayerGroup == 'owner') then
+	if RageUI.Visible(RMenu.Get('personal', 'admin')) then
 		RenderAdminMenu()
 	end
-	]]--
 
 	for i = 1, #Config.Animations, 1 do
 		if RageUI.Visible(RMenu.Get('animation', Config.Animations[i].name)) then

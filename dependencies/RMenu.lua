@@ -13,14 +13,15 @@ local TotalMenus = {}
 ---@param Menu table
 ---@return void
 ---@public
-function RMenu.Add(Type, Name, Menu, ItemType)
+function RMenu.Add(Type, Name, Menu, Restriction)
 	if RMenu[Type] == nil then
 		RMenu[Type] = {}
 	end
 
 	table.insert(RMenu[Type], {
 		Name = Name,
-		Menu = Menu
+		Menu = Menu,
+		Restriction = Restriction
 	})
 
 	table.insert(TotalMenus, Menu)
