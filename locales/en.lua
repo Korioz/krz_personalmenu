@@ -42,7 +42,6 @@ Locales['en'] = {
 	-- Main Menu
 	['mainmenu_subtitle'] = 'INTERACTION MENU',
 	['mainmenu_gps_button'] = 'GPS',
-	['mainmenu_approach_button'] = 'Approach',
 	['mainmenu_voice_button'] = 'Voice',
 	['gps'] = 'GPS: ~b~%s',
 	['approach'] = 'Approach: ~b~%s',
@@ -194,6 +193,9 @@ Locales['en'] = {
 	['animation_pegi_strip1'] = 'Strip Tease 1',
 	['animation_pegi_strip2'] = 'Strip Tease 2',
 	['animation_pegi_stripfloor'] = 'Strip Tease on the ground',
+
+	['animation_attitudes_title'] = 'Approach',
+
 	-- Vehicle Menu
 	['vehicle_title'] = 'Vehicle Management',
 	['vehicle_engine_button'] = 'Switch on / off the engine',

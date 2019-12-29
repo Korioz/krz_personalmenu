@@ -242,7 +242,7 @@ RageUI.Settings = {
 	},
 	Items = {
 		Title = {
-			Background = { Width = 431, Height = 107 },
+			Background = { Width = 431, Height = 97 },
 			Text = { X = 215, Y = 20, Scale = 1.15 }
 		},
 		Subtitle = {
@@ -386,16 +386,11 @@ function RageUI.Banner(Enabled, Glare)
 							end
 						end)
 
-						---@type number
-						local GlareX = RageUI.CurrentMenu.X / 1920
-						---@type number
-						local GlareY = RageUI.CurrentMenu.Y / 1080
-						---@type number
-						local GlareWidth = (RageUI.Settings.Items.Title.Background.Width + RageUI.CurrentMenu.WidthOffset) / 351
-						---@type number
-						local GlareHeight = (RageUI.Settings.Items.Title.Background.Height) / 74
-
-						DrawScaleformMovie(ScaleformMovie, GlareX + (GlareWidth / 2), GlareY + (GlareHeight / 2), GlareWidth, GlareHeight, 255, 255, 255, 255, 0)
+						SetScriptGfxAlign(76, 84)
+						SetScriptGfxAlignParams(-0.015, -0.014, 0, 0)
+						DrawScaleformMovieFullscreen(ScaleformMovie, 255, 255, 255, 255, 0)
+						SetScriptGfxAlign(76, 84)
+						SetScriptGfxAlignParams(0, 0, 0, 0)
 					end
 
 					RenderText(RageUI.CurrentMenu.Title, RageUI.CurrentMenu.X + RageUI.Settings.Items.Title.Text.X + (RageUI.CurrentMenu.WidthOffset / 2), RageUI.CurrentMenu.Y + RageUI.Settings.Items.Title.Text.Y, 1, RageUI.Settings.Items.Title.Text.Scale, 255, 255, 255, 255, 1)
@@ -630,14 +625,10 @@ end
 ---@return void
 ---@public
 function RageUI.ItemsSafeZone(CurrentMenu)
-	if not CurrentMenu.SafeZoneSize then
-		CurrentMenu.SafeZoneSize = { X = 0, Y = 0 }
-
-		if CurrentMenu.Safezone then
-			CurrentMenu.SafeZoneSize = RageUI.GetSafeZoneBounds()
-			SetScriptGfxAlign(76, 84)
-			SetScriptGfxAlignParams(0, 0, 0, 0)
-		end
+	if CurrentMenu.Safezone then
+		CurrentMenu.SafeZoneSize = RageUI.GetSafeZoneBounds()
+		SetScriptGfxAlign(76, 84)
+		SetScriptGfxAlignParams(0, 0, 0, 0)
 	end
 end
 

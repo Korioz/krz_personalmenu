@@ -31,7 +31,7 @@ function RageUI.CreateMenu(Title, Subtitle, X, Y, TextureDictionary, TextureName
 	Menu.Rectangle = nil
 	Menu.Pagination = { Minimum = 1, Maximum = 10, Total = 10 }
 	Menu.Safezone = true
-	Menu.SafeZoneSize = nil
+	Menu.SafeZoneSize = { X = 0, Y = 0 }
 	Menu.EnableMouse = false
 	Menu.Options = 0
 	Menu.Closable = true

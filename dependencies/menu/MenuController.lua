@@ -438,15 +438,10 @@ function RageUI.Navigation()
 				---@type boolean
 				local DownHovered = false
 
-				if not RageUI.CurrentMenu.SafeZoneSize then
-					RageUI.CurrentMenu.SafeZoneSize = { X = 0, Y = 0 }
-
-					if RageUI.CurrentMenu.Safezone then
-						RageUI.CurrentMenu.SafeZoneSize = RageUI.GetSafeZoneBounds()
-
-						SetScriptGfxAlign(76, 84)
-						SetScriptGfxAlignParams(0, 0, 0, 0)
-					end
+				if RageUI.CurrentMenu.Safezone then
+					RageUI.CurrentMenu.SafeZoneSize = RageUI.GetSafeZoneBounds()
+					SetScriptGfxAlign(76, 84)
+					SetScriptGfxAlignParams(0, 0, 0, 0)
 				end
 
 				UpHovered = RageUI.IsMouseInBounds(RageUI.CurrentMenu.X + RageUI.CurrentMenu.SafeZoneSize.X, RageUI.CurrentMenu.Y + RageUI.CurrentMenu.SafeZoneSize.Y + RageUI.CurrentMenu.SubtitleHeight + RageUI.ItemOffset, RageUI.Settings.Items.Navigation.Rectangle.Width + RageUI.CurrentMenu.WidthOffset, RageUI.Settings.Items.Navigation.Rectangle.Height)

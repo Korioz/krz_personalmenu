@@ -4,9 +4,6 @@ RageUI = {}
 ---@type table
 RMenu = setmetatable({}, RMenu)
 
----@type table
-local TotalMenus = {}
-
 ---Add
 ---@param Type string
 ---@param Name string
@@ -23,8 +20,6 @@ function RMenu.Add(Type, Name, Menu, Restriction)
 		Menu = Menu,
 		Restriction = Restriction
 	})
-
-	table.insert(TotalMenus, Menu)
 end
 
 ---Get
@@ -87,7 +82,11 @@ end
 function RMenu.Settings(Type, Name, Settings, Value)
 	for i = 1, #RMenu[Type], 1 do
 		if RMenu[Type][i].Name == Name then
-			RMenu[Type][i][Settings] = Value
+			if Value ~= nil then
+				RMenu[Type][i][Settings] = Value
+			else
+				return RMenu[Type][i][Settings]
+			end
 		end
 	end
 end

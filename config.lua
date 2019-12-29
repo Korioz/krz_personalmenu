@@ -47,7 +47,7 @@ Config.GPS = {
 
 -- VOICE --
 Config.Voice = {
-	voiceSystem = true,
+	activated = true,
 	defaultLevel = 8.0
 }
 
@@ -272,9 +272,9 @@ Config.Admin = {
 		label = _U('admin_noclip_button'),
 		groups = {'_dev', 'owner', 'superadmin', 'admin', 'mod'},
 		command = function()
-			noclip = not noclip
+			Player.noclip = not Player.noclip
 
-			if noclip then
+			if Player.noclip then
 				FreezeEntityPosition(plyPed, true)
 				SetEntityInvincible(plyPed, true)
 				SetEntityCollision(plyPed, false, false)
@@ -458,17 +458,24 @@ Config.Admin = {
 			local waypointHandle = GetFirstBlipInfoId(8)
 
 			if DoesBlipExist(waypointHandle) then
-				local waypointCoords = GetBlipInfoIdCoord(waypointHandle)
+				Citizen.CreateThread(function()
+					local waypointCoords = GetBlipInfoIdCoord(waypointHandle)
+					local foundGround, zCoords, zPos = false, -500.0, 0.0
 
-				for i = -100, 1000, 1 do
-					local foundGround, zPos = GetGroundZFor_3dCoord(waypointCoords.x, waypointCoords.y, i + 0.0)
+					while not foundGround do
+						zCoords = zCoords + 10.0
+						RequestCollisionAtCoord(waypointCoords.x, waypointCoords.y, zCoords)
+						Citizen.Wait(0)
+						foundGround, zPos = GetGroundZFor_3dCoord(waypointCoords.x, waypointCoords.y, zCoords)
 
-					if foundGround then
-						SetPedCoordsKeepVehicle(PlayerPedId(), waypointCoords.x, waypointCoords.y, zPos)
-						ESX.ShowNotification(_U('admin_tpmarker'))
-						break
+						if not foundGround and zCoords >= 2000.0 then
+							foundGround = true
+						end
 					end
-				end
+
+					SetPedCoordsKeepVehicle(plyPed, waypointCoords.x, waypointCoords.y, zPos)
+					ESX.ShowNotification(_U('admin_tpmarker'))
+				end)
 			else
 				ESX.ShowNotification(_U('admin_nomarker'))
 			end

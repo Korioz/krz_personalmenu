@@ -42,7 +42,6 @@ Locales['br'] = {
 	-- Main Menu
 	['mainmenu_subtitle'] = 'INTERAÇÃO MENU',
 	['mainmenu_gps_button'] = 'GPS',
-	['mainmenu_approach_button'] = 'Estilo de andar',
 	['mainmenu_voice_button'] = 'Voz',
 	['gps'] = 'GPS: ~b~%s',
 	['approach'] = 'Estilo de andar: ~b~%s',
@@ -194,6 +193,8 @@ Locales['br'] = {
 	['animation_pegi_strip1'] = 'Strip Tease 1',
 	['animation_pegi_strip2'] = 'Strip Tease 2',
 	['animation_pegi_stripfloor'] = 'Strip Tease au sol',
+
+	['animation_attitudes_title'] = 'Estilo de andar',
 
 	-- Vehicle Menu
 	['vehicle_title'] = 'Gestão do veículo',

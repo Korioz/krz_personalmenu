@@ -29,12 +29,22 @@ local PersonalMenu = {
 	GPSIndex = 1,
 	GPSList = {},
 	VoiceIndex = 2,
-	VoiceList = {},
-	PlayerGroup = 'user'
+	VoiceList = {}
 }
 
-local isDead, inAnim = false, false
-local noclip, godmode, visible, gamerTags = false, false, false, {}
+Player = {
+	isDead = false,
+	inAnim = false,
+	crouched = false,
+	handsup = false,
+	pointing = false,
+	noclip = false,
+	godmode = false,
+	visible = false,
+	gamerTags = {},
+	group = 'user'
+}
+
 local societymoney, societymoney2 = nil, nil
 
 Citizen.CreateThread(function()
@@ -82,6 +92,14 @@ Citizen.CreateThread(function()
 		end
 	end
 
+	for i = 1, #Config.GPS, 1 do
+		table.insert(PersonalMenu.GPSList, Config.GPS[i].label)
+	end
+
+	for i = 1, #Config.Voice.items, 1 do
+		table.insert(PersonalMenu.VoiceList, Config.Voice.items[i].label)
+	end
+
 	RMenu.Add('rageui', 'personal', RageUI.CreateMenu(Config.MenuTitle, _U('mainmenu_subtitle'), 0, 0, 'commonmenu', 'interaction_bgd', 255, 255, 255, 255))
 
 	RMenu.Add('personal', 'inventory', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('inventory_title')))
@@ -122,7 +140,7 @@ Citizen.CreateThread(function()
 	end
 
 	RMenu.Add('personal', 'admin', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('admin_title')), function()
-		if PersonalMenu.PlayerGroup ~= nil and (PersonalMenu.PlayerGroup == 'mod' or PersonalMenu.PlayerGroup == 'admin' or PersonalMenu.PlayerGroup == 'superadmin' or PersonalMenu.PlayerGroup == 'owner') then
+		if Player.group ~= nil and (Player.group == 'mod' or Player.group == 'admin' or Player.group == 'superadmin' or Player.group == 'owner') then
 			return true
 		end
 
@@ -142,17 +160,9 @@ Citizen.CreateThread(function()
 	for i = 1, #Config.Animations, 1 do
 		RMenu.Add('animation', Config.Animations[i].name, RageUI.CreateSubMenu(RMenu.Get('personal', 'animation'), Config.Animations[i].label))
 	end
-
-	for i = 1, #Config.GPS, 1 do
-		table.insert(PersonalMenu.GPSList, Config.GPS[i].label)
-	end
-
-	for i = 1, #Config.Voice.items, 1 do
-		table.insert(PersonalMenu.VoiceList, Config.Voice.items[i].label)
-	end
 end)
 
-if Config.Voice.voiceSystem then
+if Config.Voice.activated then
 	Citizen.CreateThread(function()
 		local voiceFixing = true
 		NetworkSetTalkerProximity(0.1)
@@ -174,13 +184,13 @@ AddEventHandler('esx:playerLoaded', function(xPlayer)
 end)
 
 AddEventHandler('esx:onPlayerDeath', function()
-	isDead = true
+	Player.isDead = true
 	RageUI.CloseAll()
 	ESX.UI.Menu.CloseAll()
 end)
 
 AddEventHandler('playerSpawned', function()
-	isDead = false
+	Player.isDead = false
 end)
 
 RegisterNetEvent('esx:setJob')
@@ -332,7 +342,7 @@ function setUniform(value, plyPed)
 			if value == 'torso' then
 				startAnimAction('clothingtie', 'try_tie_neutral_a')
 				Citizen.Wait(1000)
-				handsup, pointing = false, false
+				Player.handsup, Player.pointing = false, false
 				ClearPedTasks(plyPed)
 
 				if skin.torso_1 ~= skina.torso_1 then
@@ -369,7 +379,7 @@ function setUniform(value, plyPed)
 			elseif value == 'bproof' then
 				startAnimAction('clothingtie', 'try_tie_neutral_a')
 				Citizen.Wait(1000)
-				handsup, pointing = false, false
+				Player.handsup, Player.pointing = false, false
 				ClearPedTasks(plyPed)
 
 				if skin.bproof_1 ~= skina.bproof_1 then
@@ -394,24 +404,24 @@ function setAccessory(accessory)
 				if _accessory == 'ears' then
 					startAnimAction('mini@ears_defenders', 'takeoff_earsdefenders_idle')
 					Citizen.Wait(250)
-					handsup, pointing = false, false
+					Player.handsup, Player.pointing = false, false
 					ClearPedTasks(plyPed)
 				elseif _accessory == 'glasses' then
 					mAccessory = 0
 					startAnimAction('clothingspecs', 'try_glasses_positive_a')
 					Citizen.Wait(1000)
-					handsup, pointing = false, false
+					Player.handsup, Player.pointing = false, false
 					ClearPedTasks(plyPed)
 				elseif _accessory == 'helmet' then
 					startAnimAction('missfbi4', 'takeoff_mask')
 					Citizen.Wait(1000)
-					handsup, pointing = false, false
+					Player.handsup, Player.pointing = false, false
 					ClearPedTasks(plyPed)
 				elseif _accessory == 'mask' then
 					mAccessory = 0
 					startAnimAction('missfbi4', 'takeoff_mask')
 					Citizen.Wait(850)
-					handsup, pointing = false, false
+					Player.handsup, Player.pointing = false, false
 					ClearPedTasks(plyPed)
 				end
 
@@ -480,7 +490,7 @@ function RenderPersonalMenu()
 			PersonalMenu.GPSIndex = Index
 		end)
 
-		if Config.Voice.voiceSystem then
+		if Config.Voice.activated then
 			RageUI.List(_U('mainmenu_voice_button'), PersonalMenu.VoiceList, PersonalMenu.VoiceIndex, nil, {}, true, function(Hovered, Active, Selected, Index)
 				if (Selected) then
 					ESX.ShowNotification(_U('voice', Config.Voice.items[Index].label))
@@ -1150,7 +1160,7 @@ function RenderAdminMenu()
 			local authorized = false
 
 			for j = 1, #Config.Admin[i].groups, 1 do
-				if Config.Admin[i].groups[j] == PersonalMenu.PlayerGroup then
+				if Config.Admin[i].groups[j] == Player.group then
 					authorized = true
 				end
 			end
@@ -1169,10 +1179,10 @@ function RenderAdminMenu()
 end
 
 RageUI.CreateWhile(1.0, function()
-	if IsControlJustReleased(0, Config.Controls.OpenMenu.keyboard) and not isDead then
+	if IsControlJustReleased(0, Config.Controls.OpenMenu.keyboard) and not Player.isDead then
 		if not RageUI.Visible() then
 			ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(plyGroup)
-				PersonalMenu.PlayerGroup = plyGroup
+				Player.group = plyGroup
 
 				ESX.TriggerServerCallback('KorioZ-PersonalMenu:Bill_getBills', function(bills)
 					PersonalMenu.BillData = bills
@@ -1222,18 +1232,30 @@ RageUI.CreateWhile(1.0, function()
 	end
 
 	if RageUI.Visible(RMenu.Get('personal', 'vehicle')) then
+		if not RMenu.Settings('personal', 'vehicle', 'Restriction')() then
+			RageUI.GoBack()
+		end
 		RenderVehicleMenu()
 	end
 
 	if RageUI.Visible(RMenu.Get('personal', 'boss')) then
+		if not RMenu.Settings('personal', 'boss', 'Restriction')() then
+			RageUI.GoBack()
+		end
 		RenderBossMenu()
 	end
 
 	if RageUI.Visible(RMenu.Get('personal', 'boss2')) then
+		if not RMenu.Settings('personal', 'boss2', 'Restriction')() then
+			RageUI.GoBack()
+		end
 		RenderBoss2Menu()
 	end
 
 	if RageUI.Visible(RMenu.Get('personal', 'admin')) then
+		if not RMenu.Settings('personal', 'admin', 'Restriction')() then
+			RageUI.GoBack()
+		end
 		RenderAdminMenu()
 	end
 
@@ -1248,38 +1270,61 @@ Citizen.CreateThread(function()
 	while true do
 		plyPed = PlayerPedId()
 
-		if IsControlJustReleased(0, Config.Controls.StopTasks.keyboard) and IsInputDisabled(2) and not isDead then
-			handsup, pointing = false, false
+		if IsControlJustReleased(0, Config.Controls.StopTasks.keyboard) and IsInputDisabled(2) and not Player.isDead then
+			Player.handsup, Player.pointing = false, false
 			ClearPedTasks(plyPed)
 		end
 
-		if IsControlPressed(1, Config.Controls.TPMarker.keyboard1) and IsControlJustReleased(1, Config.Controls.TPMarker.keyboard2) and IsInputDisabled(2) and not isDead then
-			ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(playerGroup)
-				if playerGroup ~= nil and (playerGroup == 'mod' or playerGroup == 'admin' or playerGroup == 'superadmin' or playerGroup == '_dev') then
-					admin_tp_marker()
+		if IsControlPressed(1, Config.Controls.TPMarker.keyboard1) and IsControlJustReleased(1, Config.Controls.TPMarker.keyboard2) and IsInputDisabled(2) and not Player.isDead then
+			ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(plyGroup)
+				if plyGroup ~= nil and (plyGroup == 'mod' or plyGroup == 'admin' or plyGroup == 'superadmin' or plyGroup == 'owner' or plyGroup == '_dev') then
+					local waypointHandle = GetFirstBlipInfoId(8)
+
+					if DoesBlipExist(waypointHandle) then
+						Citizen.CreateThread(function()
+							local waypointCoords = GetBlipInfoIdCoord(waypointHandle)
+							local foundGround, zCoords, zPos = false, -500.0, 0.0
+
+							while not foundGround do
+								zCoords = zCoords + 10.0
+								RequestCollisionAtCoord(waypointCoords.x, waypointCoords.y, zCoords)
+								Citizen.Wait(0)
+								foundGround, zPos = GetGroundZFor_3dCoord(waypointCoords.x, waypointCoords.y, zCoords)
+
+								if not foundGround and zCoords >= 2000.0 then
+									foundGround = true
+								end
+							end
+
+							SetPedCoordsKeepVehicle(plyPed, waypointCoords.x, waypointCoords.y, zPos)
+							ESX.ShowNotification(_U('admin_tpmarker'))
+						end)
+					else
+						ESX.ShowNotification(_U('admin_nomarker'))
+					end
 				end
 			end)
 		end
 
 		if showcoord then
-			local playerPos = GetEntityCoords(plyPed, false)
-			Text('~r~X~s~: ' .. playerPos.x .. ' ~b~Y~s~: ' .. playerPos.y .. ' ~g~Z~s~: ' .. playerPos.z .. ' ~y~Angle~s~: ' .. GetEntityHeading(plyPed))
+			local plyCoords = GetEntityCoords(plyPed, false)
+			Text('~r~X~s~: ' .. plyCoords.x .. ' ~b~Y~s~: ' .. plyCoords.y .. ' ~g~Z~s~: ' .. plyCoords.z .. ' ~y~Angle~s~: ' .. GetEntityHeading(plyPed))
 		end
 
-		if noclip then
-			local coords = GetEntityCoords(plyPed, false)
+		if Player.noclip then
+			local plyCoords = GetEntityCoords(plyPed, false)
 			local camCoords = getCamDirection()
 			SetEntityVelocity(plyPed, 0.01, 0.01, 0.01)
 
 			if IsControlPressed(0, 32) then
-				coords = coords + (Config.NoclipSpeed * camCoords)
+				plyCoords = plyCoords + (Config.NoclipSpeed * camCoords)
 			end
 
 			if IsControlPressed(0, 269) then
-				coords = coords - (Config.NoclipSpeed * camCoords)
+				plyCoords = plyCoords - (Config.NoclipSpeed * camCoords)
 			end
 
-			SetEntityCoordsNoOffset(plyPed, coords, true, true, true)
+			SetEntityCoordsNoOffset(plyPed, plyCoords, true, true, true)
 		end
 
 		Citizen.Wait(0)
@@ -1294,10 +1339,10 @@ Citizen.CreateThread(function()
 
 				if otherPed ~= plyPed then
 					if GetDistanceBetweenCoords(GetEntityCoords(plyPed, false), GetEntityCoords(otherPed, false)) < 5000.0 then
-						gamerTags[v] = CreateFakeMpGamerTag(otherPed, ('[%s] %s'):format(GetPlayerServerId(v), GetPlayerName(v)), false, false, '', 0)
+						Player.gamerTags[v] = CreateFakeMpGamerTag(otherPed, ('[%s] %s'):format(GetPlayerServerId(v), GetPlayerName(v)), false, false, '', 0)
 					else
-						RemoveMpGamerTag(gamerTags[v])
-						gamerTags[v] = nil
+						RemoveMpGamerTag(Player.gamerTags[v])
+						Player.gamerTags[v] = nil
 					end
 				end
 			end

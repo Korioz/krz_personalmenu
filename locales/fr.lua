@@ -42,7 +42,6 @@ Locales['fr'] = {
 	-- Main Menu
 	['mainmenu_subtitle'] = 'MENU INTERACTION',
 	['mainmenu_gps_button'] = 'GPS',
-	['mainmenu_approach_button'] = 'Démarche',
 	['mainmenu_voice_button'] = 'Voix',
 	['gps'] = 'GPS: ~b~%s',
 	['approach'] = 'Démarche: ~b~%s',
@@ -194,6 +193,8 @@ Locales['fr'] = {
 	['animation_pegi_strip1'] = 'Strip Tease 1',
 	['animation_pegi_strip2'] = 'Strip Tease 2',
 	['animation_pegi_stripfloor'] = 'Strip Tease au sol',
+
+	['animation_attitudes_title'] = 'Démarche',
 
 	-- Vehicle Menu
 	['vehicle_title'] = 'Gestion Véhicule',

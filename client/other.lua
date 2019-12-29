@@ -1,5 +1,3 @@
-crouched, handsup, pointing = false, false, false
-
 local function startPointing(plyPed)
 	RequestAnimDict('anim@mp_point')
 
@@ -31,9 +29,9 @@ Citizen.CreateThread(function()
 			local plyPed = PlayerPedId()
 
 			if (DoesEntityExist(plyPed)) and (not IsEntityDead(plyPed)) and (IsPedOnFoot(plyPed)) then
-				crouched = not crouched
+				Player.crouched = not Player.crouched
 
-				if crouched then 
+				if Player.crouched then 
 					RequestAnimSet('move_ped_crouched')
 		
 					while not HasAnimSetLoaded('move_ped_crouched') do
@@ -51,13 +49,13 @@ Citizen.CreateThread(function()
 			local plyPed = PlayerPedId()
 
 			if (DoesEntityExist(plyPed)) and not (IsEntityDead(plyPed)) and (IsPedOnFoot(plyPed)) then
-				if pointing then
-					pointing = false
+				if Player.pointing then
+					Player.pointing = false
 				end
 
-				handsup = not handsup
+				Player.handsUp = not Player.handsUp
 
-				if handsup then
+				if Player.handsUp then
 					RequestAnimDict('random@mugging3')
 
 					while not HasAnimDictLoaded('random@mugging3') do
@@ -75,13 +73,13 @@ Citizen.CreateThread(function()
 			local plyPed = PlayerPedId()
 	
 			if (DoesEntityExist(plyPed)) and (not IsEntityDead(plyPed)) and (IsPedOnFoot(plyPed)) then
-				if handsup then
-					handsup = false
+				if Player.handsUp then
+					Player.handsUp = false
 				end
 
-				pointing = not pointing
+				Player.pointing = not Player.pointing
 
-				if pointing then
+				if Player.pointing then
 					startPointing(plyPed)
 				else
 					stopPointing(plyPed)
@@ -89,12 +87,12 @@ Citizen.CreateThread(function()
 			end
 		end
 
-		if crouched or handsup or pointing then
+		if Player.crouched or Player.handsUp or Player.pointing then
 			if not IsPedOnFoot(PlayerPedId()) then
 				ResetPedMovementClipset(plyPed, 0)
 				stopPointing()
-				crouched, handsup, pointing = false, false, false
-			elseif pointing then
+				Player.crouched, Player.handsUp, Player.pointing = false, false, false
+			elseif Player.pointing then
 				local ped = PlayerPedId()
 				local camPitch = GetGameplayCamRelativePitch()
 
