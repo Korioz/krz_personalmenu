@@ -1,5 +1,5 @@
 # krz_personalmenu
-**krz_personalmenu** is a **PersonalMenu** for FiveM developed on top of [ESX](https://github.com/ESX-Org/es_extended) and built with [NativeUI](https://github.com/FrazzIe/NativeUILua)
+**krz_personalmenu** is a **PersonalMenu** for FiveM developed on top of [ESX](https://github.com/ESX-Org/es_extended) and built with [RageUI](https://github.com/iTexZoz/RageUI)
 
 ### Important
 - **You are not allowed to modify the resource name**
@@ -11,7 +11,7 @@
 
 ### Screenshot
 
-![screenshot](https://i.gyazo.com/54528fac5600f0b33194d0ad3aafa08b.png)
+![screenshot](https://i.gyazo.com/df526d71ca98d0d282a17dd68880c80e.png)
 
 ### Features
 - Inventory UI
@@ -33,6 +33,7 @@
 ### Requirements
 This order also applies in the startup order.
 
+- [OneSync]
 - [es_extended](https://github.com/ESX-Org/es_extended)
 - [esx_addonaccount](https://github.com/ESX-Org/esx_addonaccount)
 - [esx_addoninventory](https://github.com/ESX-Org/esx_addoninventory)
