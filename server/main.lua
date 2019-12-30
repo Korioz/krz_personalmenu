@@ -83,12 +83,13 @@ end)
 
 -- Admin Menu --
 RegisterServerEvent('KorioZ-PersonalMenu:Admin_BringS')
-AddEventHandler('KorioZ-PersonalMenu:Admin_BringS', function(plyId, plyCoords)
+AddEventHandler('KorioZ-PersonalMenu:Admin_BringS', function(plyId, targetId)
 	local xPlayer = ESX.GetPlayerFromId(source)
 	local plyGroup = xPlayer.getGroup()
 
 	if isAuthorized(getAdminCommand('bring'), plyGroup) or isAuthorized(getAdminCommand('goto'), plyGroup) then
-		TriggerClientEvent('KorioZ-PersonalMenu:Admin_BringC', plyId, plyCoords)
+		local targetCoords = GetEntityCoords(GetPlayerPed(targetId))
+		TriggerClientEvent('KorioZ-PersonalMenu:Admin_BringC', plyId, targetCoords)
 	end
 end)
 

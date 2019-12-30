@@ -222,8 +222,7 @@ Config.Admin = {
 				plyId = tonumber(plyId)
 				
 				if type(plyId) == 'number' then
-					local plyCoords = GetEntityCoords(GetPlayerPed(GetPlayerFromServerId(plyId)))
-					SetEntityCoords(plyPed, plyCoords)
+					TriggerServerEvent('KorioZ-PersonalMenu:Admin_BringS', GetPlayerServerId(PlayerId()), plyId)
 				end
 			end
 
@@ -241,8 +240,7 @@ Config.Admin = {
 				plyId = tonumber(plyId)
 				
 				if type(plyId) == 'number' then
-					local plyCoords = GetEntityCoords(plyPed)
-					TriggerServerEvent('KorioZ-PersonalMenu:Admin_BringS', plyId, plyCoords)
+					TriggerServerEvent('KorioZ-PersonalMenu:Admin_BringS', GetPlayerServerId(PlayerId()), plyId)
 				end
 			end
 
