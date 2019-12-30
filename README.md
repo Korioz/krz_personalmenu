@@ -27,8 +27,7 @@
 - Admin UI
 - Voice System Included (With the OneSync fix)
 - All of the function of nb_menuperso reworked (credits to [nlmarcio](https://github.com/nlmarcio))
-- Changeable Header (Change the stream/commonmenu.ytd file in OpenIV)
-- EMOTE in UI (thx to fivem)
+- EMOTE and Custom Colors in UI (thx to fivem)
 
 ### Requirements
 This order also applies in the startup order.
