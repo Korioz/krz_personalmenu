@@ -222,8 +222,8 @@ Config.Admin = {
 				plyId = tonumber(plyId)
 				
 				if type(plyId) == 'number' then
-					local targetPlyCoords = GetEntityCoords(GetPlayerPed(GetPlayerFromServerId(plyId)))
-					SetEntityCoords(plyPed, targetPlyCoords)
+					local plyCoords = GetEntityCoords(GetPlayerPed(GetPlayerFromServerId(plyId)))
+					SetEntityCoords(plyPed, plyCoords)
 				end
 			end
 
@@ -241,8 +241,8 @@ Config.Admin = {
 				plyId = tonumber(plyId)
 				
 				if type(plyId) == 'number' then
-					local plyPedCoords = GetEntityCoords(plyPed)
-					TriggerServerEvent('KorioZ-PersonalMenu:Admin_BringS', plyId, plyPedCoords)
+					local plyCoords = GetEntityCoords(plyPed)
+					TriggerServerEvent('KorioZ-PersonalMenu:Admin_BringS', plyId, plyCoords)
 				end
 			end
 
@@ -304,9 +304,9 @@ Config.Admin = {
 		label = _U('admin_godmode_button'),
 		groups = {'_dev', 'owner', 'superadmin'},
 		command = function()
-			godmode = not godmode
+			Player.godmode = not Player.godmode
 
-			if godmode then
+			if Player.godmode then
 				SetEntityInvincible(plyPed, true)
 				ESX.ShowNotification(_U('admin_godmodeon'))
 			else
@@ -320,9 +320,9 @@ Config.Admin = {
 		label = _U('admin_ghostmode_button'),
 		groups = {'_dev', 'owner', 'superadmin'},
 		command = function()
-			invisible = not invisible
+			Player.ghostmode = not Player.ghostmode
 
-			if invisible then
+			if Player.ghostmode then
 				SetEntityVisible(plyPed, false, false)
 				ESX.ShowNotification(_U('admin_ghoston'))
 			else
@@ -336,17 +336,6 @@ Config.Admin = {
 		label = _U('admin_spawnveh_button'),
 		groups = {'_dev', 'owner', 'superadmin'},
 		command = function()
-			local plyVeh = GetVehiclePedIsIn(plyPed, false)
-			SetVehicleFixed(plyVeh)
-			SetVehicleDirtLevel(plyVeh, 0.0)
-			RageUI.CloseAll()
-		end
-	},
-	{
-		name = 'repairveh',
-		label = _U('admin_repairveh_button'),
-		groups = {'_dev', 'owner', 'superadmin', 'admin'},
-		command = function()
 			local modelName = KeyboardInput('KORIOZ_BOX_VEHICLE_NAME', _U('dialogbox_vehiclespawner'), '', 50)
 
 			if modelName ~= nil then
@@ -358,6 +347,18 @@ Config.Admin = {
 					end)
 				end
 			end
+
+			RageUI.CloseAll()
+		end
+	},
+	{
+		name = 'repairveh',
+		label = _U('admin_repairveh_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin'},
+		command = function()
+			local plyVeh = GetVehiclePedIsIn(plyPed, false)
+			SetVehicleFixed(plyVeh)
+			SetVehicleDirtLevel(plyVeh, 0.0)
 		end
 	},
 	{
@@ -432,7 +433,7 @@ Config.Admin = {
 		label = _U('admin_showxyz_button'),
 		groups = {'_dev', 'owner', 'superadmin', 'admin', 'mod'},
 		command = function()
-			showcoord = not showcoord
+			Player.showCoords = not Player.showCoords
 		end
 	},
 	{
@@ -440,12 +441,12 @@ Config.Admin = {
 		label = _U('admin_showname_button'),
 		groups = {'_dev', 'owner', 'superadmin', 'admin', 'mod'},
 		command = function()
-			showname = not showname
+			Player.showName = not Player.showName
 
 			if not showname then
-				for k, v in pairs(gamerTags) do
+				for k, v in pairs(Player.gamerTags) do
 					RemoveMpGamerTag(v)
-					gamerTags[k] = nil
+					Player.gamerTags[k] = nil
 				end
 			end
 		end

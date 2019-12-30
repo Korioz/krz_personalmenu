@@ -37,16 +37,6 @@ function RMenu.Get(Type, Name)
 	end
 end
 
----GetType
----@param Type string
----@return table
----@public
-function RMenu.GetType(Type)
-	if RMenu[Type] ~= nil then
-		return RMenu[Type]
-	end
-end
-
 ---Delete
 ---@param Type string
 ---@param Name string
@@ -59,16 +49,6 @@ function RMenu.Delete(Type, Name)
 				table.remove(RMenu[Type], i)
 			end
 		end
-	end
-end
-
----DeleteType
----@param Type string
----@return void
----@public
-function RMenu.DeleteType(Type)
-	if RMenu[Type] ~= nil then
-		RMenu[Type] = nil
 	end
 end
 

@@ -360,7 +360,7 @@ end
 ---@return void
 ---@public
 ---@param Enabled boolean
-function RageUI.Banner(Enabled, Glare)
+function RageUI.Banner(Enabled)
 	if type(Enabled) == "boolean" then
 		if Enabled == true then
 			if RageUI.CurrentMenu ~= nil then
@@ -371,26 +371,6 @@ function RageUI.Banner(Enabled, Glare)
 						RenderSprite(RageUI.CurrentMenu.Sprite.Dictionary, RageUI.CurrentMenu.Sprite.Texture, RageUI.CurrentMenu.X, RageUI.CurrentMenu.Y, RageUI.Settings.Items.Title.Background.Width + RageUI.CurrentMenu.WidthOffset, RageUI.Settings.Items.Title.Background.Height, 0, 255, 255, 255, 255)
 					else
 						RenderRectangle(RageUI.CurrentMenu.X, RageUI.CurrentMenu.Y, RageUI.Settings.Items.Title.Background.Width + RageUI.CurrentMenu.WidthOffset, RageUI.Settings.Items.Title.Background.Height, RageUI.CurrentMenu.Rectangle.R, RageUI.CurrentMenu.Rectangle.G, RageUI.CurrentMenu.Rectangle.B, RageUI.CurrentMenu.Rectangle.A)
-					end
-
-					if Glare then
-						local ScaleformMovie = RequestScaleformMovie("MP_MENU_GLARE")
-
-						Citizen.CreateThread(function()
-							if not HasScaleformMovieLoaded(ScaleformMovie) then
-								ScaleformMovie = RequestScaleformMovie("MP_MENU_GLARE")
-
-								while not HasScaleformMovieLoaded(ScaleformMovie) do
-									Citizen.Wait(0)
-								end
-							end
-						end)
-
-						SetScriptGfxAlign(76, 84)
-						SetScriptGfxAlignParams(-0.015, -0.014, 0, 0)
-						DrawScaleformMovieFullscreen(ScaleformMovie, 255, 255, 255, 255, 0)
-						SetScriptGfxAlign(76, 84)
-						SetScriptGfxAlignParams(0, 0, 0, 0)
 					end
 
 					RenderText(RageUI.CurrentMenu.Title, RageUI.CurrentMenu.X + RageUI.Settings.Items.Title.Text.X + (RageUI.CurrentMenu.WidthOffset / 2), RageUI.CurrentMenu.Y + RageUI.Settings.Items.Title.Text.Y, 1, RageUI.Settings.Items.Title.Text.Scale, 255, 255, 255, 255, 1)
@@ -414,6 +394,10 @@ function RageUI.Subtitle()
 			if RageUI.CurrentMenu.Subtitle ~= "" then
 				RenderRectangle(RageUI.CurrentMenu.X, RageUI.CurrentMenu.Y + RageUI.ItemOffset, RageUI.Settings.Items.Subtitle.Background.Width + RageUI.CurrentMenu.WidthOffset, RageUI.Settings.Items.Subtitle.Background.Height + RageUI.CurrentMenu.SubtitleHeight, 0, 0, 0, 255)
 				RenderText(RageUI.CurrentMenu.Subtitle, RageUI.CurrentMenu.X + RageUI.Settings.Items.Subtitle.Text.X, RageUI.CurrentMenu.Y + RageUI.Settings.Items.Subtitle.Text.Y + RageUI.ItemOffset, 0, RageUI.Settings.Items.Subtitle.Text.Scale, 245, 245, 245, 255, nil, false, false, RageUI.Settings.Items.Subtitle.Background.Width + RageUI.CurrentMenu.WidthOffset)
+
+				if RageUI.CurrentMenu.Index > RageUI.CurrentMenu.Options or RageUI.CurrentMenu.Index < 0 then
+						RageUI.CurrentMenu.Index = 1
+				end
 
 				if RageUI.CurrentMenu.PageCounter == nil then
 					RenderText(RageUI.CurrentMenu.PageCounterColour .. RageUI.CurrentMenu.Index .. " / " .. RageUI.CurrentMenu.Options, RageUI.CurrentMenu.X + RageUI.Settings.Items.Subtitle.PreText.X + RageUI.CurrentMenu.WidthOffset, RageUI.CurrentMenu.Y + RageUI.Settings.Items.Subtitle.PreText.Y + RageUI.ItemOffset, 0, RageUI.Settings.Items.Subtitle.PreText.Scale, 245, 245, 245, 255, 2)
@@ -459,8 +443,8 @@ end
 ---Header
 ---@return void
 ---@public
-function RageUI.Header(EnableBanner, EnableGlare)
-	RageUI.Banner(EnableBanner, EnableGlare)
+function RageUI.Header(EnableBanner)
+	RageUI.Banner(EnableBanner)
 	RageUI.Subtitle()
 end
 
@@ -546,10 +530,10 @@ end
 ---@param items function
 ---@param panels function
 function RageUI.DrawContent(settings, items, panels)
-	if (settings.header ~= nil and settings.glare ~= nil) then
-		RageUI.Header(settings.header, settings.glare)
+	if (settings.header ~= nil) then
+		RageUI.Header(settings.header)
 	else
-		RageUI.Header(true, true)
+		RageUI.Header(true)
 	end
 
 	if (items ~= nil) then

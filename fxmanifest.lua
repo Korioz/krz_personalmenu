@@ -2,7 +2,7 @@ fx_version 'adamant'
 games {'gta5'}
 
 author 'Korioz'
-description 'PersonalMenu for FiveM developed on top of ESX and built with RageUI'
+description 'PersonalMenu for FiveM developed on top of ESX and RageUI'
 version '2.0'
 
 dependency 'es_extended'
@@ -26,10 +26,7 @@ client_scripts {
 	"dependencies/components/*.lua",
 
 	"dependencies/menu/elements/*.lua",
-	"dependencies/menu/items/*.lua",
-	"dependencies/menu/panels/*.lua",
-	"dependencies/menu/panels/*.lua",
-	"dependencies/menu/windows/*.lua"
+	"dependencies/menu/items/*.lua"
 }
 
 client_scripts {

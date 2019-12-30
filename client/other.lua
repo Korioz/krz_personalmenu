@@ -1,12 +1,9 @@
-local function startPointing(plyPed)
-	RequestAnimDict('anim@mp_point')
-
-	while not HasAnimDictLoaded('anim@mp_point') do
-		Citizen.Wait(10)
-	end
-
-	SetPedConfigFlag(plyPed, 36, 1)
-	TaskMoveNetwork(plyPed, 'task_mp_pointing', 0.5, 0, 'anim@mp_point', 24)
+local function startPointing(plyPed)	
+	ESX.Streaming.RequestAnimDict('anim@mp_point', function()
+		SetPedConfigFlag(plyPed, 36, 1)
+		TaskMoveNetworkByName(plyPed, 'task_mp_pointing', 0.5, 0, 'anim@mp_point', 24)
+		RemoveAnimDict('anim@mp_point')
+	end)
 end
 
 local function stopPointing()
@@ -25,27 +22,24 @@ Citizen.CreateThread(function()
 		Citizen.Wait(0)
 		DisableControlAction(1, Config.Controls.Crouch.keyboard, true)
 
-		if IsDisabledControlJustReleased(1, Config.Controls.Crouch.keyboard) and GetLastInputMethod(2) then
+		if IsDisabledControlJustReleased(1, Config.Controls.Crouch.keyboard) and IsInputDisabled(2) then
 			local plyPed = PlayerPedId()
 
 			if (DoesEntityExist(plyPed)) and (not IsEntityDead(plyPed)) and (IsPedOnFoot(plyPed)) then
 				Player.crouched = not Player.crouched
 
 				if Player.crouched then 
-					RequestAnimSet('move_ped_crouched')
-		
-					while not HasAnimSetLoaded('move_ped_crouched') do
-						Citizen.Wait(10)
-					end
-		
-					SetPedMovementClipset(plyPed, 'move_ped_crouched', 0.25)
+					ESX.Streaming.RequestAnimSet('move_ped_crouched', function()
+						SetPedMovementClipset(plyPed, 'move_ped_crouched', 0.25)
+						RemoveAnimSet('move_ped_crouched')
+					end)
 				else
 					ResetPedMovementClipset(plyPed, 0)
 				end
 			end
 		end
 
-		if IsControlJustReleased(1, Config.Controls.HandsUP.keyboard) and GetLastInputMethod(2) then
+		if IsControlJustReleased(1, Config.Controls.HandsUP.keyboard) and IsInputDisabled(2) then
 			local plyPed = PlayerPedId()
 
 			if (DoesEntityExist(plyPed)) and not (IsEntityDead(plyPed)) and (IsPedOnFoot(plyPed)) then
@@ -56,20 +50,17 @@ Citizen.CreateThread(function()
 				Player.handsUp = not Player.handsUp
 
 				if Player.handsUp then
-					RequestAnimDict('random@mugging3')
-
-					while not HasAnimDictLoaded('random@mugging3') do
-						Citizen.Wait(10)
-					end
-
-					TaskPlayAnim(plyPed, 'random@mugging3', 'handsup_standing_base', 8.0, -8, -1, 49, 0, 0, 0, 0)
+					ESX.Streaming.RequestAnimDict('random@mugging3', function()
+						TaskPlayAnim(plyPed, 'random@mugging3', 'handsup_standing_base', 8.0, -8, -1, 49, 0, 0, 0, 0)
+						RemoveAnimDict('random@mugging3')
+					end)
 				else
 					ClearPedSecondaryTask(plyPed)
 				end
 			end
 		end
 
-		if IsControlJustReleased(1, Config.Controls.Pointing.keyboard) and GetLastInputMethod(2) then
+		if IsControlJustReleased(1, Config.Controls.Pointing.keyboard) and IsInputDisabled(2) then
 			local plyPed = PlayerPedId()
 	
 			if (DoesEntityExist(plyPed)) and (not IsEntityDead(plyPed)) and (IsPedOnFoot(plyPed)) then
@@ -118,10 +109,10 @@ Citizen.CreateThread(function()
 				local coords = GetOffsetFromEntityInWorldCoords(ped, (cosCamHeading * -0.2) - (sinCamHeading * (0.4 * camHeading + 0.3)), (sinCamHeading * -0.2) + (cosCamHeading * (0.4 * camHeading + 0.3)), 0.6)
 				local rayHandle, blocked = GetShapeTestResult(StartShapeTestCapsule(coords.x, coords.y, coords.z - 0.2, coords.x, coords.y, coords.z + 0.2, 0.4, 95, ped, 7))
 
-				SetTaskPropertyFloat(ped, 'Pitch', camPitch)
-				SetTaskPropertyFloat(ped, 'Heading', (camHeading * -1.0) + 1.0)
-				SetTaskPropertyBool(ped, 'isBlocked', blocked)
-				SetTaskPropertyBool(ped, 'isFirstPerson', N_0xee778f8c7e1142e2(N_0x19cafa3c87f7c2ff()) == 4)
+				SetTaskMoveNetworkSignalFloat(ped, 'Pitch', camPitch)
+				SetTaskMoveNetworkSignalFloat(ped, 'Heading', (camHeading * -1.0) + 1.0)
+				SetTaskMoveNetworkSignalBool(ped, 'isBlocked', blocked)
+				SetTaskMoveNetworkSignalBool(ped, 'isFirstPerson', N_0xee778f8c7e1142e2(N_0x19cafa3c87f7c2ff()) == 4)
 			end
 		end
 	end

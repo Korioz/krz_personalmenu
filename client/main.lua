@@ -40,7 +40,9 @@ Player = {
 	pointing = false,
 	noclip = false,
 	godmode = false,
-	visible = false,
+	ghostmode = false,
+	showCoords = false,
+	showName = false,
 	gamerTags = {},
 	group = 'user'
 }
@@ -119,7 +121,7 @@ Citizen.CreateThread(function()
 		return false
 	end)
 
-	RMenu.Add('personal', 'boss', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('bossmanagement_title', ESX.PlayerData.job.label)), function()
+	RMenu.Add('personal', 'boss', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('bossmanagement_title')), function()
 		if ESX.PlayerData.job ~= nil and ESX.PlayerData.job.grade_name == 'boss' then
 			return true
 		end
@@ -128,7 +130,7 @@ Citizen.CreateThread(function()
 	end)
 
 	if Config.DoubleJob then
-		RMenu.Add('personal', 'boss2', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('bossmanagement2_title', ESX.PlayerData.job2.label)), function()
+		RMenu.Add('personal', 'boss2', RageUI.CreateSubMenu(RMenu.Get('rageui', 'personal'), _U('bossmanagement2_title')), function()
 			if Config.DoubleJob then
 				if ESX.PlayerData.job2 ~= nil and ESX.PlayerData.job2.grade_name == 'boss' then
 					return true
@@ -227,8 +229,8 @@ end)
 
 -- Admin Menu --
 RegisterNetEvent('KorioZ-PersonalMenu:Admin_BringC')
-AddEventHandler('KorioZ-PersonalMenu:Admin_BringC', function(plyPedCoords)
-	SetEntityCoords(plyPed, plyPedCoords)
+AddEventHandler('KorioZ-PersonalMenu:Admin_BringC', function(plyCoords)
+	SetEntityCoords(plyPed, plyCoords)
 end)
 
 function RefreshMoney()
@@ -304,36 +306,25 @@ function getCamDirection()
 end
 
 function startAttitude(lib, anim)
-	Citizen.CreateThread(function()
-		RequestAnimSet(anim)
-
-		while not HasAnimSetLoaded(anim) do
-			Citizen.Wait(0)
-		end
-
+	ESX.Streaming.RequestAnimSet(anim, function()
 		SetPedMotionBlur(plyPed, false)
 		SetPedMovementClipset(plyPed, anim, true)
+		RemoveAnimSet(anim)
 	end)
 end
 
 function startAnim(lib, anim)
-	Citizen.CreateThread(function()
-		ESX.Streaming.RequestAnimDict(lib, function()
-			TaskPlayAnim(plyPed, lib, anim, 8.0, -8.0, -1, 0, 0, false, false, false)
-		end)
+	ESX.Streaming.RequestAnimDict(lib, function()
+		TaskPlayAnim(plyPed, lib, anim, 8.0, -8.0, -1, 0, 0, false, false, false)
+		RemoveAnimDict(lib)
 	end)
 end
 
 function startAnimAction(lib, anim)
-	Citizen.CreateThread(function()
-		ESX.Streaming.RequestAnimDict(lib, function()
-			TaskPlayAnim(plyPed, lib, anim, 8.0, 1.0, -1, 49, 0, false, false, false)
-		end)
+	ESX.Streaming.RequestAnimDict(lib, function()
+		TaskPlayAnim(plyPed, lib, anim, 8.0, 1.0, -1, 49, 0, false, false, false)
+		RemoveAnimDict(lib)
 	end)
-end
-
-function startScenario(anim)
-	TaskStartScenarioInPlace(plyPed, anim, 0, false)
 end
 
 function setUniform(value, plyPed)
@@ -450,8 +441,10 @@ function setAccessory(accessory)
 end
 
 function CheckQuantity(number)
+	number = tonumber(number)
+
 	if type(number) == 'number' then
-		number = ESX.Math.Round(tonumber(number))
+		number = ESX.Math.Round(number)
 
 		if number > 0 then
 			return true, number
@@ -462,29 +455,28 @@ function CheckQuantity(number)
 end
 
 function RenderPersonalMenu()
-	RageUI.DrawContent({header = true, glare = true, instructionalButton = true}, function()
-		local Menus = RMenu.GetType('personal')
-
-		for i = 1, #Menus, 1 do
-			if type(Menus[i].Restriction) == 'function' then
-				if Menus[i].Restriction() then
-					RageUI.Button(Menus[i].Menu.Title, nil, {RightLabel = "→→→"}, true, function(Hovered, Active, Selected) end, Menus[i].Menu)
+	RageUI.DrawContent({header = true, instructionalButton = true}, function()
+		for i = 1, #RMenu['personal'], 1 do
+			if type(RMenu['personal'][i].Restriction) == 'function' then
+				if RMenu['personal'][i].Restriction() then
+					RageUI.Button(RMenu['personal'][i].Menu.Title, nil, {RightLabel = "→→→"}, true, function() end, RMenu['personal'][i].Menu)
 				else
-					RageUI.Button(Menus[i].Menu.Title, nil, {RightBadge = RageUI.BadgeStyle.Lock}, false, function(Hovered, Active, Selected) end, Menus[i].Menu)
+					RageUI.Button(RMenu['personal'][i].Menu.Title, nil, {RightBadge = RageUI.BadgeStyle.Lock}, false, function() end, RMenu['personal'][i].Menu)
 				end
 			else
-				RageUI.Button(Menus[i].Menu.Title, nil, {RightLabel = "→→→"}, true, function(Hovered, Active, Selected) end, Menus[i].Menu)
+				RageUI.Button(RMenu['personal'][i].Menu.Title, nil, {RightLabel = "→→→"}, true, function() end, RMenu['personal'][i].Menu)
 			end
 		end
 
 		RageUI.List(_U('mainmenu_gps_button'), PersonalMenu.GPSList, PersonalMenu.GPSIndex, nil, {}, true, function(Hovered, Active, Selected, Index)
 			if (Selected) then
 				if Config.GPS[Index].coords ~= nil then
-					ESX.ShowNotification(_U('gps', Config.GPS[Index].label))
 					SetNewWaypoint(Config.GPS[Index].coords)
 				else
 					DeleteWaypoint()
 				end
+
+				ESX.ShowNotification(_U('gps', Config.GPS[Index].label))
 			end
 
 			PersonalMenu.GPSIndex = Index
@@ -493,8 +485,8 @@ function RenderPersonalMenu()
 		if Config.Voice.activated then
 			RageUI.List(_U('mainmenu_voice_button'), PersonalMenu.VoiceList, PersonalMenu.VoiceIndex, nil, {}, true, function(Hovered, Active, Selected, Index)
 				if (Selected) then
-					ESX.ShowNotification(_U('voice', Config.Voice.items[Index].label))
 					NetworkSetTalkerProximity(Config.Voice.items[Index].level)
+					ESX.ShowNotification(_U('voice', Config.Voice.items[Index].label))
 				end
 
 				PersonalMenu.VoiceIndex = Index
@@ -504,7 +496,7 @@ function RenderPersonalMenu()
 end
 
 function RenderActionsMenu(type)
-	RageUI.DrawContent({header = true, glare = true, instructionalButton = true}, function()
+	RageUI.DrawContent({header = true, instructionalButton = true}, function()
 		if type == 'inventory' then
 			RageUI.Button(_U('inventory_use_button'), "", {}, true, function(Hovered, Active, Selected)
 				if (Selected) then
@@ -636,7 +628,7 @@ function RenderActionsMenu(type)
 end
 
 function RenderInventoryMenu()
-	RageUI.DrawContent({header = true, glare = true, instructionalButton = true}, function()
+	RageUI.DrawContent({header = true, instructionalButton = true}, function()
 		for i = 1, #ESX.PlayerData.inventory, 1 do
 			if ESX.PlayerData.inventory[i].count > 0 then
 				local invCount = {}
@@ -658,7 +650,7 @@ function RenderInventoryMenu()
 end
 
 function RenderWeaponMenu()
-	RageUI.DrawContent({header = true, glare = true, instructionalButton = true}, function()
+	RageUI.DrawContent({header = true, instructionalButton = true}, function()
 		for i = 1, #PersonalMenu.WeaponData, 1 do
 			if HasPedGotWeapon(plyPed, PersonalMenu.WeaponData[i].hash, false) then
 				local ammo = GetAmmoInPedWeapon(plyPed, PersonalMenu.WeaponData[i].hash)
@@ -674,11 +666,11 @@ function RenderWeaponMenu()
 end
 
 function RenderWalletMenu()
-	RageUI.DrawContent({header = true, glare = true, instructionalButton = true}, function()
-		RageUI.Button(_U('wallet_job_button', ESX.PlayerData.job.label, ESX.PlayerData.job.grade_label), nil, {}, true, function(Hovered, Active, Selected) end)
+	RageUI.DrawContent({header = true, instructionalButton = true}, function()
+		RageUI.Button(_U('wallet_job_button', ESX.PlayerData.job.label, ESX.PlayerData.job.grade_label), nil, {}, true, function() end)
 
 		if Config.DoubleJob then
-			RageUI.Button(_U('wallet_job2_button', ESX.PlayerData.job2.label, ESX.PlayerData.job2.grade_label), nil, {}, true, function(Hovered, Active, Selected) end)
+			RageUI.Button(_U('wallet_job2_button', ESX.PlayerData.job2.label, ESX.PlayerData.job2.grade_label), nil, {}, true, function() end)
 		end
 
 		if PersonalMenu.WalletIndex['money'] == nil then PersonalMenu.WalletIndex['money'] = 1 end
@@ -726,7 +718,7 @@ function RenderWalletMenu()
 
 		for i = 1, #ESX.PlayerData.accounts, 1 do
 			if ESX.PlayerData.accounts[i].name == 'bank' then
-				RageUI.Button(_U('wallet_bankmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), nil, {}, true, function(Hovered, Active, Selected) end)
+				RageUI.Button(_U('wallet_bankmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), nil, {}, true, function() end)
 			end
 
 			if ESX.PlayerData.accounts[i].name == 'black_money' then
@@ -834,12 +826,14 @@ function RenderWalletMenu()
 end
 
 function RenderBillingMenu()
-	RageUI.DrawContent({header = true, glare = true, instructionalButton = true}, function()
+	RageUI.DrawContent({header = true, instructionalButton = true}, function()
 		for i = 1, #PersonalMenu.BillData, 1 do
 			RageUI.Button(PersonalMenu.BillData[i].label, nil, {RightLabel = '$' .. ESX.Math.GroupDigits(PersonalMenu.BillData[i].amount)}, true, function(Hovered, Active, Selected)
 				if (Selected) then
 					ESX.TriggerServerCallback('esx_billing:payBill', function()
-						RageUI.CloseAll()
+						ESX.TriggerServerCallback('KorioZ-PersonalMenu:Bill_getBills', function(bills)
+							PersonalMenu.BillData = bills
+						end)
 					end, PersonalMenu.BillData[i].id)
 				end
 			end)
@@ -848,7 +842,7 @@ function RenderBillingMenu()
 end
 
 function RenderClothesMenu()
-	RageUI.DrawContent({header = true, glare = true, instructionalButton = true}, function()
+	RageUI.DrawContent({header = true, instructionalButton = true}, function()
 		for i = 1, #PersonalMenu.ClothesButtons, 1 do
 			RageUI.Button(_U(('clothes_%s'):format(PersonalMenu.ClothesButtons[i])), nil, {RightBadge = RageUI.BadgeStyle.Clothes}, true, function(Hovered, Active, Selected)
 				if (Selected) then
@@ -860,7 +854,7 @@ function RenderClothesMenu()
 end
 
 function RenderAccessoriesMenu()
-	RageUI.DrawContent({header = true, glare = true, instructionalButton = true}, function()
+	RageUI.DrawContent({header = true, instructionalButton = true}, function()
 		for i = 1, #PersonalMenu.AccessoriesButtons, 1 do
 			RageUI.Button(_U(('accessories_%s'):format((PersonalMenu.AccessoriesButtons[i]:lower()))), nil, {RightBadge = RageUI.BadgeStyle.Clothes}, true, function(Hovered, Active, Selected)
 				if (Selected) then
@@ -872,17 +866,15 @@ function RenderAccessoriesMenu()
 end
 
 function RenderAnimationMenu()
-	RageUI.DrawContent({header = true, glare = true, instructionalButton = true}, function()
-		local Menus = RMenu.GetType('animation')
-
-		for i = 1, #Menus, 1 do
-			RageUI.Button(Menus[i].Menu.Title, nil, {RightLabel = "→→→"}, true, function(Hovered, Active, Selected) end, Menus[i].Menu)
+	RageUI.DrawContent({header = true, instructionalButton = true}, function()
+		for i = 1, #RMenu['animation'], 1 do
+			RageUI.Button(RMenu['animation'][i].Menu.Title, nil, {RightLabel = "→→→"}, true, function() end, RMenu['animation'][i].Menu)
 		end
 	end)
 end
 
 function RenderAnimationsSubMenu(menu)
-	RageUI.DrawContent({header = true, glare = true, instructionalButton = true}, function()
+	RageUI.DrawContent({header = true, instructionalButton = true}, function()
 		for i = 1, #Config.Animations, 1 do
 			if Config.Animations[i].name == menu then
 				for j = 1, #Config.Animations[i].items, 1 do
@@ -891,7 +883,7 @@ function RenderAnimationsSubMenu(menu)
 							if Config.Animations[i].items[j].type == 'anim' then
 								startAnim(Config.Animations[i].items[j].data.lib, Config.Animations[i].items[j].data.anim)
 							elseif Config.Animations[i].items[j].type == 'scenario' then
-								startScenario(Config.Animations[i].items[j].data.anim)
+								TaskStartScenarioInPlace(plyPed, Config.Animations[i].items[j].data.anim, 0, false)
 							elseif Config.Animations[i].items[j].type == 'attitude' then
 								startAttitude(Config.Animations[i].items[j].data.lib, Config.Animations[i].items[j].data.anim)
 							end
@@ -904,7 +896,7 @@ function RenderAnimationsSubMenu(menu)
 end
 
 function RenderVehicleMenu()
-	RageUI.DrawContent({header = true, glare = true, instructionalButton = true}, function()
+	RageUI.DrawContent({header = true, instructionalButton = true}, function()
 		RageUI.Button(_U('vehicle_engine_button'), nil, {}, true, function(Hovered, Active, Selected)
 			if (Selected) then
 				if not IsPedSittingInAnyVehicle(plyPed) then
@@ -923,7 +915,7 @@ function RenderVehicleMenu()
 			end
 		end)
 
-		RageUI.List(_U('vehicle_door_button'), PersonalMenu.DoorList, 1, nil, {}, true, function(Hovered, Active, Selected, Index)
+		RageUI.List(_U('vehicle_door_button'), PersonalMenu.DoorList, PersonalMenu.DoorIndex, nil, {}, true, function(Hovered, Active, Selected, Index)
 			if (Selected) then
 				if not IsPedSittingInAnyVehicle(plyPed) then
 					ESX.ShowNotification(_U('no_vehicle'))
@@ -964,9 +956,9 @@ function RenderVehicleMenu()
 						end
 					end
 				end
-
-				DoorIndex = Index
 			end
+
+			PersonalMenu.DoorIndex = Index
 		end)
 
 		RageUI.Button(_U('vehicle_hood_button'), nil, {}, true, function(Hovered, Active, Selected)
@@ -992,7 +984,7 @@ function RenderVehicleMenu()
 				if not IsPedSittingInAnyVehicle(plyPed) then
 					ESX.ShowNotification(_U('no_vehicle'))
 				elseif IsPedSittingInAnyVehicle(plyPed) then
-					local plyVehicle = GetVehiclePedIsIn(plyPed, false)
+					local plyVeh = GetVehiclePedIsIn(plyPed, false)
 
 					if not PersonalMenu.DoorState.Trunk then
 						PersonalMenu.DoorState.Trunk = true
@@ -1008,12 +1000,9 @@ function RenderVehicleMenu()
 end
 
 function RenderBossMenu()
-	RageUI.DrawContent({header = true, glare = true, instructionalButton = true}, function()
+	RageUI.DrawContent({header = true, instructionalButton = true}, function()
 		if societymoney ~= nil then
-			RageUI.Button(_U('bossmanagement_chest_button'), nil, {RightLabel = '$' .. societymoney}, true, function(Hovered, Active, Selected)
-				if (Selected) then
-				end
-			end)
+			RageUI.Button(_U('bossmanagement_chest_button'), nil, {RightLabel = '$' .. societymoney}, true, function() end)
 		end
 
 		RageUI.Button(_U('bossmanagement_hire_button'), nil, {}, true, function(Hovered, Active, Selected)
@@ -1083,9 +1072,9 @@ function RenderBossMenu()
 end
 
 function RenderBoss2Menu()
-	RageUI.DrawContent({header = true, glare = true, instructionalButton = true}, function()
+	RageUI.DrawContent({header = true, instructionalButton = true}, function()
 		if societymoney ~= nil then
-			RageUI.Button(_U('bossmanagement2_chest_button'), nil, {RightLabel = '$' .. societymoney2}, true, function(Hovered, Active, Selected) end)
+			RageUI.Button(_U('bossmanagement2_chest_button'), nil, {RightLabel = '$' .. societymoney2}, true, function() end)
 		end
 
 		RageUI.Button(_U('bossmanagement2_hire_button'), nil, {}, true, function(Hovered, Active, Selected)
@@ -1155,7 +1144,7 @@ function RenderBoss2Menu()
 end
 
 function RenderAdminMenu()
-	RageUI.DrawContent({header = true, glare = true, instructionalButton = true}, function()
+	RageUI.DrawContent({header = true, instructionalButton = true}, function()
 		for i = 1, #Config.Admin, 1 do
 			local authorized = false
 
@@ -1172,7 +1161,7 @@ function RenderAdminMenu()
 					end
 				end)
 			else
-				RageUI.Button(Config.Admin[i].label, nil, {RightBadge = RageUI.BadgeStyle.Lock}, false, function(Hovered, Active, Selected) end)
+				RageUI.Button(Config.Admin[i].label, nil, {RightBadge = RageUI.BadgeStyle.Lock}, false, function() end)
 			end
 		end
 	end)
@@ -1306,7 +1295,7 @@ Citizen.CreateThread(function()
 			end)
 		end
 
-		if showcoord then
+		if Player.showCoords then
 			local plyCoords = GetEntityCoords(plyPed, false)
 			Text('~r~X~s~: ' .. plyCoords.x .. ' ~b~Y~s~: ' .. plyCoords.y .. ' ~g~Z~s~: ' .. plyCoords.z .. ' ~y~Angle~s~: ' .. GetEntityHeading(plyPed))
 		end
@@ -1333,12 +1322,12 @@ end)
 
 Citizen.CreateThread(function()
 	while true do
-		if showname then
+		if Player.showName then
 			for k, v in ipairs(ESX.Game.GetPlayers()) do
 				local otherPed = GetPlayerPed(v)
 
 				if otherPed ~= plyPed then
-					if GetDistanceBetweenCoords(GetEntityCoords(plyPed, false), GetEntityCoords(otherPed, false)) < 5000.0 then
+					if #(GetEntityCoords(plyPed, false) - GetEntityCoords(otherPed, false)) < 5000.0 then
 						Player.gamerTags[v] = CreateFakeMpGamerTag(otherPed, ('[%s] %s'):format(GetPlayerServerId(v), GetPlayerName(v)), false, false, '', 0)
 					else
 						RemoveMpGamerTag(Player.gamerTags[v])

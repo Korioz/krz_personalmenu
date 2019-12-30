@@ -209,7 +209,7 @@ Locales['en'] = {
 
 	-- Boss Management Menu
 
-	['bossmanagement_title'] = 'Company Management:%s',
+	['bossmanagement_title'] = 'Company Management',
 	['bossmanagement_chest_button'] = 'Company Safe:',
 	['bossmanagement_hire_button'] = 'Recruit',
 	['bossmanagement_fire_button'] = 'Fire',
@@ -218,7 +218,7 @@ Locales['en'] = {
 
 	-- Boss Management 2 Menu
 
-	['bossmanagement2_title'] = 'Organization Management:%s',
+	['bossmanagement2_title'] = 'Organization Management',
 	['bossmanagement2_chest_button'] = 'Organization Chest:',
 	['bossmanagement2_hire_button'] = 'Recruit',
 	['bossmanagement2_fire_button'] = 'Fire',

@@ -208,7 +208,7 @@ Locales['br'] = {
 	['vehicle_door_backright'] = 'Traseira direita',
 
 	-- Boss Management Menu
-	['bossmanagement_title'] = 'Gestão Empresarial: %s',
+	['bossmanagement_title'] = 'Gestão Empresarial',
 	['bossmanagement_chest_button'] = 'Cofre empresarial:',
 	['bossmanagement_hire_button'] = 'Recruta',
 	['bossmanagement_fire_button'] = 'Virer',
@@ -216,7 +216,7 @@ Locales['br'] = {
 	['bossmanagement_demote_button'] = 'Remover',
 
 	-- Boss Management 2 Menu
-	['bossmanagement2_title'] = 'Gestão Organização: %s',
+	['bossmanagement2_title'] = 'Gestão Organização',
 	['bossmanagement2_chest_button'] = 'Cofre da organização:',
 	['bossmanagement2_hire_button'] = 'Recruta',
 	['bossmanagement2_fire_button'] = 'Virer',
