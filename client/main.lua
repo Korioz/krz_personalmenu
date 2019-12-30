@@ -51,10 +51,7 @@ local societymoney, societymoney2 = nil, nil
 
 Citizen.CreateThread(function()
 	while ESX == nil do
-		TriggerEvent('esx:getSharedObject', function(obj)
-			ESX = obj
-		end)
-
+		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 		Citizen.Wait(10)
 	end
 
@@ -1167,93 +1164,97 @@ function RenderAdminMenu()
 	end)
 end
 
-RageUI.CreateWhile(1.0, function()
-	if IsControlJustReleased(0, Config.Controls.OpenMenu.keyboard) and not Player.isDead then
-		if not RageUI.Visible() then
-			ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(plyGroup)
-				Player.group = plyGroup
+Citizen.CreateThread(function()
+	while true do
+		Citizen.Wait(0)
 
-				ESX.TriggerServerCallback('KorioZ-PersonalMenu:Bill_getBills', function(bills)
-					PersonalMenu.BillData = bills
-					ESX.PlayerData = ESX.GetPlayerData()
-					RageUI.Visible(RMenu.Get('rageui', 'personal'), true)
+		if IsControlJustReleased(0, Config.Controls.OpenMenu.keyboard) and not Player.isDead then
+			if not RageUI.Visible() then
+				ESX.TriggerServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(plyGroup)
+					Player.group = plyGroup
+
+					ESX.TriggerServerCallback('KorioZ-PersonalMenu:Bill_getBills', function(bills)
+						PersonalMenu.BillData = bills
+						ESX.PlayerData = ESX.GetPlayerData()
+						RageUI.Visible(RMenu.Get('rageui', 'personal'), true)
+					end)
 				end)
-			end)
+			end
+		end
+
+		if RageUI.Visible(RMenu.Get('rageui', 'personal')) then
+			RenderPersonalMenu()
+		end
+
+		if RageUI.Visible(RMenu.Get('inventory', 'actions')) then
+			RenderActionsMenu('inventory')
+		elseif RageUI.Visible(RMenu.Get('loadout', 'actions')) then
+			RenderActionsMenu('loadout')
+		end
+
+		if RageUI.Visible(RMenu.Get('personal', 'inventory')) then
+			RenderInventoryMenu()
+		end
+
+		if RageUI.Visible(RMenu.Get('personal', 'loadout')) then
+			RenderWeaponMenu()
+		end
+
+		if RageUI.Visible(RMenu.Get('personal', 'wallet')) then
+			RenderWalletMenu()
+		end
+
+		if RageUI.Visible(RMenu.Get('personal', 'billing')) then
+			RenderBillingMenu()
+		end
+
+		if RageUI.Visible(RMenu.Get('personal', 'clothes')) then
+			RenderClothesMenu()
+		end
+
+		if RageUI.Visible(RMenu.Get('personal', 'accessories')) then
+			RenderAccessoriesMenu()
+		end
+
+		if RageUI.Visible(RMenu.Get('personal', 'animation')) then
+			RenderAnimationMenu()
+		end
+
+		if RageUI.Visible(RMenu.Get('personal', 'vehicle')) then
+			if not RMenu.Settings('personal', 'vehicle', 'Restriction')() then
+				RageUI.GoBack()
+			end
+			RenderVehicleMenu()
+		end
+
+		if RageUI.Visible(RMenu.Get('personal', 'boss')) then
+			if not RMenu.Settings('personal', 'boss', 'Restriction')() then
+				RageUI.GoBack()
+			end
+			RenderBossMenu()
+		end
+
+		if RageUI.Visible(RMenu.Get('personal', 'boss2')) then
+			if not RMenu.Settings('personal', 'boss2', 'Restriction')() then
+				RageUI.GoBack()
+			end
+			RenderBoss2Menu()
+		end
+
+		if RageUI.Visible(RMenu.Get('personal', 'admin')) then
+			if not RMenu.Settings('personal', 'admin', 'Restriction')() then
+				RageUI.GoBack()
+			end
+			RenderAdminMenu()
+		end
+
+		for i = 1, #Config.Animations, 1 do
+			if RageUI.Visible(RMenu.Get('animation', Config.Animations[i].name)) then
+				RenderAnimationsSubMenu(Config.Animations[i].name)
+			end
 		end
 	end
-
-	if RageUI.Visible(RMenu.Get('rageui', 'personal')) then
-		RenderPersonalMenu()
-	end
-
-	if RageUI.Visible(RMenu.Get('inventory', 'actions')) then
-		RenderActionsMenu('inventory')
-	elseif RageUI.Visible(RMenu.Get('loadout', 'actions')) then
-		RenderActionsMenu('loadout')
-	end
-
-	if RageUI.Visible(RMenu.Get('personal', 'inventory')) then
-		RenderInventoryMenu()
-	end
-
-	if RageUI.Visible(RMenu.Get('personal', 'loadout')) then
-		RenderWeaponMenu()
-	end
-
-	if RageUI.Visible(RMenu.Get('personal', 'wallet')) then
-		RenderWalletMenu()
-	end
-
-	if RageUI.Visible(RMenu.Get('personal', 'billing')) then
-		RenderBillingMenu()
-	end
-
-	if RageUI.Visible(RMenu.Get('personal', 'clothes')) then
-		RenderClothesMenu()
-	end
-
-	if RageUI.Visible(RMenu.Get('personal', 'accessories')) then
-		RenderAccessoriesMenu()
-	end
-
-	if RageUI.Visible(RMenu.Get('personal', 'animation')) then
-		RenderAnimationMenu()
-	end
-
-	if RageUI.Visible(RMenu.Get('personal', 'vehicle')) then
-		if not RMenu.Settings('personal', 'vehicle', 'Restriction')() then
-			RageUI.GoBack()
-		end
-		RenderVehicleMenu()
-	end
-
-	if RageUI.Visible(RMenu.Get('personal', 'boss')) then
-		if not RMenu.Settings('personal', 'boss', 'Restriction')() then
-			RageUI.GoBack()
-		end
-		RenderBossMenu()
-	end
-
-	if RageUI.Visible(RMenu.Get('personal', 'boss2')) then
-		if not RMenu.Settings('personal', 'boss2', 'Restriction')() then
-			RageUI.GoBack()
-		end
-		RenderBoss2Menu()
-	end
-
-	if RageUI.Visible(RMenu.Get('personal', 'admin')) then
-		if not RMenu.Settings('personal', 'admin', 'Restriction')() then
-			RageUI.GoBack()
-		end
-		RenderAdminMenu()
-	end
-
-	for i = 1, #Config.Animations, 1 do
-		if RageUI.Visible(RMenu.Get('animation', Config.Animations[i].name)) then
-			RenderAnimationsSubMenu(Config.Animations[i].name)
-		end
-	end
-end, true)
+end)
 
 Citizen.CreateThread(function()
 	while true do

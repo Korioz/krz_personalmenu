@@ -7,9 +7,7 @@ print("^0======================================================================^
 
 ESX = nil
 
-TriggerEvent('esx:getSharedObject', function(obj)
-	ESX = obj
-end)
+TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
 function getMaximumGrade(jobname)
 	local result = MySQL.Sync.fetchAll('SELECT * FROM job_grades WHERE job_name = @jobname ORDER BY `grade` DESC ;', {
