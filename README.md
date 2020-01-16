@@ -7,7 +7,7 @@
 - **If you want to contribute (like translation) you can make a pull request or open a new issue**
 
 ### Links & Support
-- **Discord Username**: Korioz#3310
+- **Discord Username**: Korioz#0110
 
 ### Screenshot
 
