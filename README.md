@@ -1,6 +1,8 @@
 # krz_personalmenu
 **krz_personalmenu** is a **PersonalMenu** for FiveM developed on top of [ESX](https://github.com/ESX-Org/es_extended) and [RageUI](https://github.com/iTexZoz/RageUI)
 
+**The Wallet menu is now fully fonctionnal**
+
 ### Important
 - **You are not allowed to modify the resource name**
 - **You are not allowed to modify the repository and re-release it, you can only fork it**
