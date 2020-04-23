@@ -685,7 +685,7 @@ function RenderWalletMenu()
 									local closestPed = GetPlayerPed(closestPlayer)
 		
 									if not IsPedSittingInAnyVehicle(closestPed) then
-										TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(closestPlayer), 'item_money', 'money', quantity)
+										TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(closestPlayer), 'item_account', 'money', quantity)
 										RageUI.CloseAll()
 									else
 										ESX.ShowNotification(_U('in_vehicle_give', 'de l\'argent'))
