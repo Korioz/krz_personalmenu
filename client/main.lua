@@ -715,6 +715,9 @@ function RenderWalletMenu()
 					PersonalMenu.WalletIndex['money'] = Index
 				end)
 			end
+			if ESX.PlayerData.accounts[i].name == 'bank' then
+				RageUI.Button(_U('wallet_bankmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), nil, {}, true, function() end)
+			end
  			if ESX.PlayerData.accounts[i].name == 'black_money' then
 				if PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] == nil then PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] = 1 end
 				RageUI.List(_U('wallet_blackmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), PersonalMenu.WalletList, PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] or 1, nil, {}, true, function(Hovered, Active, Selected, Index)
