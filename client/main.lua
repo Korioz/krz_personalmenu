@@ -454,14 +454,15 @@ end
 function RenderPersonalMenu()
 	RageUI.DrawContent({header = true, instructionalButton = true}, function()
 		for i = 1, #RMenu['personal'], 1 do
+			local titleLabel = RMenu['personal'][i].Label or RMenu['personal'][i].Menu.Title
 			if type(RMenu['personal'][i].Restriction) == 'function' then
 				if RMenu['personal'][i].Restriction() then
-					RageUI.Button(RMenu['personal'][i].Menu.Title, nil, {RightLabel = "→→→"}, true, function() end, RMenu['personal'][i].Menu)
+					RageUI.Button(titleLabel, nil, {RightLabel = "→→→"}, true, function() end, RMenu['personal'][i].Menu)
 				else
-					RageUI.Button(RMenu['personal'][i].Menu.Title, nil, {RightBadge = RageUI.BadgeStyle.Lock}, false, function() end, RMenu['personal'][i].Menu)
+					RageUI.Button(titleLabel, nil, {RightBadge = RageUI.BadgeStyle.Lock}, false, function() end, RMenu['personal'][i].Menu)
 				end
 			else
-				RageUI.Button(RMenu['personal'][i].Menu.Title, nil, {RightLabel = "→→→"}, true, function() end, RMenu['personal'][i].Menu)
+				RageUI.Button(titleLabel, nil, {RightLabel = "→→→"}, true, function() end, RMenu['personal'][i].Menu)
 			end
 		end
 
