@@ -10,12 +10,20 @@ ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
 function getMaximumGrade(jobname)
-	local result = MySQL.Sync.fetchAll('SELECT * FROM job_grades WHERE job_name = @jobname ORDER BY `grade` DESC ;', {
-		['@jobname'] = jobname
-	})
+	local queryDone, queryResult = false, nil
 
-	if result[1] ~= nil then
-		return result[1].grade
+	MySQL.Async.fetchAll('SELECT * FROM job_grades WHERE job_name = @jobname ORDER BY `grade` DESC ;', {
+		['@jobname'] = jobname
+	}, function(result)
+		queryDone, queryResult = true, result
+	end)
+
+	while not queryDone do
+		Citizen.Wait(10)
+	end
+
+	if queryResult[1] then
+		return queryResult[1].grade
 	end
 
 	return nil
@@ -97,7 +105,7 @@ AddEventHandler('KorioZ-PersonalMenu:Admin_giveCash', function(money)
 	local plyGroup = xPlayer.getGroup()
 
 	if isAuthorized(getAdminCommand('givemoney'), plyGroup) then
-		xPlayer.addMoney(money)
+		xPlayer.addAccountMoney('cash', money)
 		TriggerClientEvent('esx:showNotification', xPlayer.source, 'GIVE de ' .. money .. '$')
 	end
 end)
@@ -119,7 +127,7 @@ AddEventHandler('KorioZ-PersonalMenu:Admin_giveDirtyMoney', function(money)
 	local plyGroup = xPlayer.getGroup()
 
 	if isAuthorized(getAdminCommand('givedirtymoney'), plyGroup) then
-		xPlayer.addAccountMoney('black_money', money)
+		xPlayer.addAccountMoney('dirtycash', money)
 		TriggerClientEvent('esx:showNotification', xPlayer.source, 'GIVE de ' .. money .. '$ sale')
 	end
 end)
