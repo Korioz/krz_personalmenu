@@ -41,7 +41,7 @@ Locales['fr'] = {
 
 	-- Main Menu
 	['mainmenu_subtitle'] = 'MENU INTERACTION',
-	['mainmenu_gps_button'] = 'GPS',
+	['mainmenu_gps_button'] = 'Destination GPS',
 	['mainmenu_voice_button'] = 'Voix',
 	['gps'] = 'GPS: ~b~%s',
 	['approach'] = 'Démarche: ~b~%s',
