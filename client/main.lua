@@ -68,11 +68,8 @@ Citizen.CreateThread(function()
 	ESX.PlayerData = ESX.GetPlayerData()
 
 	while actualSkin == nil do
-		TriggerEvent('skinchanger:getSkin', function(skin)
-			actualSkin = skin
-		end)
-
-		Citizen.Wait(10)
+		TriggerEvent('skinchanger:getSkin', function(skin) actualSkin = skin end)
+		Citizen.Wait(100)
 	end
 
 	RefreshMoney()
@@ -207,10 +204,11 @@ end)
 RegisterNetEvent('esx_addonaccount:setMoney')
 AddEventHandler('esx_addonaccount:setMoney', function(society, money)
 	if ESX.PlayerData.job ~= nil and ESX.PlayerData.job.grade_name == 'boss' and 'society_' .. ESX.PlayerData.job.name == society then
-		UpdateSocietyMoney(money)
+		societymoney = ESX.Math.GroupDigits(money)
 	end
+
 	if ESX.PlayerData.job2 ~= nil and ESX.PlayerData.job2.grade_name == 'boss' and 'society_' .. ESX.PlayerData.job2.name == society then
-		UpdateSociety2Money(money)
+		societymoney2 = ESX.Math.GroupDigits(money)
 	end
 end)
 
@@ -233,7 +231,7 @@ end)
 function RefreshMoney()
 	if ESX.PlayerData.job ~= nil and ESX.PlayerData.job.grade_name == 'boss' then
 		ESX.TriggerServerCallback('esx_society:getSocietyMoney', function(money)
-			UpdateSocietyMoney(money)
+			societymoney = ESX.Math.GroupDigits(money)
 		end, ESX.PlayerData.job.name)
 	end
 end
@@ -241,17 +239,9 @@ end
 function RefreshMoney2()
 	if ESX.PlayerData.job2 ~= nil and ESX.PlayerData.job2.grade_name == 'boss' then
 		ESX.TriggerServerCallback('esx_society:getSocietyMoney', function(money)
-			UpdateSociety2Money(money)
+			societymoney2 = ESX.Math.GroupDigits(money)
 		end, ESX.PlayerData.job2.name)
 	end
-end
-
-function UpdateSocietyMoney(money)
-	societymoney = ESX.Math.GroupDigits(money)
-end
-
-function UpdateSociety2Money(money)
-	societymoney2 = ESX.Math.GroupDigits(money)
 end
 
 --Message text joueur
@@ -265,13 +255,12 @@ function Text(text)
 	SetTextEdge(1, 0, 0, 0, 205)
 	BeginTextCommandDisplayText('STRING')
 	AddTextComponentSubstringPlayerName(text)
-	EndTextCommandDisplayText(0.017, 0.977)
+	EndTextCommandDisplayText(0.5, 0.03)
 end
 
 function KeyboardInput(entryTitle, textEntry, inputText, maxLength)
 	AddTextEntry(entryTitle, textEntry)
 	DisplayOnscreenKeyboard(1, entryTitle, '', inputText, '', '', '', maxLength)
-	blockinput = true
 
 	while UpdateOnscreenKeyboard() ~= 1 and UpdateOnscreenKeyboard() ~= 2 do
 		Citizen.Wait(0)
@@ -280,17 +269,15 @@ function KeyboardInput(entryTitle, textEntry, inputText, maxLength)
 	if UpdateOnscreenKeyboard() ~= 2 then
 		local result = GetOnscreenKeyboardResult()
 		Citizen.Wait(500)
-		blockinput = false
 		return result
 	else
 		Citizen.Wait(500)
-		blockinput = false
 		return nil
 	end
 end
 
 function getCamDirection()
-	local heading = GetGameplayCamRelativeHeading() + GetEntityHeading(plyPed)
+	local heading = GetGameplayCamRelativeHeading() + GetEntityPhysicsHeading(plyPed)
 	local pitch = GetGameplayCamRelativePitch()
 	local coords = vector3(-math.sin(heading * math.pi / 180.0), math.cos(heading * math.pi / 180.0), math.sin(pitch * math.pi / 180.0))
 	local len = math.sqrt((coords.x * coords.x) + (coords.y * coords.y) + (coords.z * coords.z))
@@ -454,15 +441,16 @@ end
 function RenderPersonalMenu()
 	RageUI.DrawContent({header = true, instructionalButton = true}, function()
 		for i = 1, #RMenu['personal'], 1 do
-			local titleLabel = RMenu['personal'][i].Label or RMenu['personal'][i].Menu.Title
+			local buttonLabel = RMenu['personal'][i].ButtonLabel or RMenu['personal'][i].Menu.Title
+
 			if type(RMenu['personal'][i].Restriction) == 'function' then
 				if RMenu['personal'][i].Restriction() then
-					RageUI.Button(titleLabel, nil, {RightLabel = "→→→"}, true, function() end, RMenu['personal'][i].Menu)
+					RageUI.Button(buttonLabel, nil, {RightLabel = "→→→"}, true, function() end, RMenu['personal'][i].Menu)
 				else
-					RageUI.Button(titleLabel, nil, {RightBadge = RageUI.BadgeStyle.Lock}, false, function() end, RMenu['personal'][i].Menu)
+					RageUI.Button(buttonLabel, nil, {RightBadge = RageUI.BadgeStyle.Lock}, false, function() end, RMenu['personal'][i].Menu)
 				end
 			else
-				RageUI.Button(titleLabel, nil, {RightLabel = "→→→"}, true, function() end, RMenu['personal'][i].Menu)
+				RageUI.Button(buttonLabel, nil, {RightLabel = "→→→"}, true, function() end, RMenu['personal'][i].Menu)
 			end
 		end
 
@@ -513,7 +501,7 @@ function RenderActionsMenu(type)
 					if closestDistance ~= -1 and closestDistance <= 3 then
 						local closestPed = GetPlayerPed(closestPlayer)
 
-						if not IsPedSittingInAnyVehicle(closestPed) then
+						if IsPedOnFoot(closestPed) then
 							if PersonalMenu.ItemIndex[PersonalMenu.ItemSelected.name] ~= nil and PersonalMenu.ItemSelected.count > 0 then
 								TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(closestPlayer), 'item_standard', PersonalMenu.ItemSelected.name, PersonalMenu.ItemIndex[PersonalMenu.ItemSelected.name])
 								RageUI.CloseAll()
@@ -532,7 +520,7 @@ function RenderActionsMenu(type)
 			RageUI.Button(_U('inventory_drop_button'), "", {RightBadge = RageUI.BadgeStyle.Alert}, true, function(Hovered, Active, Selected)
 				if (Selected) then
 					if PersonalMenu.ItemSelected.canRemove then
-						if not IsPedSittingInAnyVehicle(plyPed) then
+						if IsPedOnFoot(plyPed) then
 							if PersonalMenu.ItemIndex[PersonalMenu.ItemSelected.name] ~= nil then
 								TriggerServerEvent('esx:removeInventoryItem', 'item_standard', PersonalMenu.ItemSelected.name, PersonalMenu.ItemIndex[PersonalMenu.ItemSelected.name])
 								RageUI.CloseAll()
@@ -556,7 +544,7 @@ function RenderActionsMenu(type)
 						if closestDistance ~= -1 and closestDistance <= 3 then
 							local closestPed = GetPlayerPed(closestPlayer)
 
-							if not IsPedSittingInAnyVehicle(closestPed) then
+							if IsPedOnFoot(closestPed) then
 								local ammo = GetAmmoInPedWeapon(plyPed, PersonalMenu.ItemSelected.hash)
 								TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(closestPlayer), 'item_weapon', PersonalMenu.ItemSelected.name, ammo)
 								RageUI.CloseAll()
@@ -579,7 +567,7 @@ function RenderActionsMenu(type)
 							if closestDistance ~= -1 and closestDistance <= 3 then
 								local closestPed = GetPlayerPed(closestPlayer)
 
-								if not IsPedSittingInAnyVehicle(closestPed) then
+								if IsPedOnFoot(closestPed) then
 									local ammo = GetAmmoInPedWeapon(plyPed, PersonalMenu.ItemSelected.hash)
 
 									if ammo > 0 then
@@ -610,7 +598,7 @@ function RenderActionsMenu(type)
 
 				RageUI.Button(_U('loadout_drop_button'), "", {RightBadge = RageUI.BadgeStyle.Alert}, true, function(Hovered, Active, Selected)
 					if (Selected) then
-						if not IsPedSittingInAnyVehicle(plyPed) then
+						if IsPedOnFoot(plyPed) then
 							TriggerServerEvent('esx:removeInventoryItem', 'item_weapon', PersonalMenu.ItemSelected.name)
 							RageUI.CloseAll()
 						else
@@ -831,9 +819,7 @@ function RenderBillingMenu()
 			RageUI.Button(PersonalMenu.BillData[i].label, nil, {RightLabel = '$' .. ESX.Math.GroupDigits(PersonalMenu.BillData[i].amount)}, true, function(Hovered, Active, Selected)
 				if (Selected) then
 					ESX.TriggerServerCallback('esx_billing:payBill', function()
-						ESX.TriggerServerCallback('KorioZ-PersonalMenu:Bill_getBills', function(bills)
-							PersonalMenu.BillData = bills
-						end)
+						ESX.TriggerServerCallback('KorioZ-PersonalMenu:Bill_getBills', function(bills) PersonalMenu.BillData = bills end)
 					end, PersonalMenu.BillData[i].id)
 				end
 			end)
@@ -899,9 +885,7 @@ function RenderVehicleMenu()
 	RageUI.DrawContent({header = true, instructionalButton = true}, function()
 		RageUI.Button(_U('vehicle_engine_button'), nil, {}, true, function(Hovered, Active, Selected)
 			if (Selected) then
-				if not IsPedSittingInAnyVehicle(plyPed) then
-					ESX.ShowNotification(_U('no_vehicle'))
-				elseif IsPedSittingInAnyVehicle(plyPed) then
+				if IsPedSittingInAnyVehicle(plyPed) then
 					local plyVeh = GetVehiclePedIsIn(plyPed, false)
 
 					if GetIsVehicleEngineRunning(plyVeh) then
@@ -911,15 +895,15 @@ function RenderVehicleMenu()
 						SetVehicleEngineOn(plyVeh, true, false, true)
 						SetVehicleUndriveable(plyVeh, false)
 					end
+				else
+					ESX.ShowNotification(_U('no_vehicle'))
 				end
 			end
 		end)
 
 		RageUI.List(_U('vehicle_door_button'), PersonalMenu.DoorList, PersonalMenu.DoorIndex, nil, {}, true, function(Hovered, Active, Selected, Index)
 			if (Selected) then
-				if not IsPedSittingInAnyVehicle(plyPed) then
-					ESX.ShowNotification(_U('no_vehicle'))
-				elseif IsPedSittingInAnyVehicle(plyPed) then
+				if IsPedSittingInAnyVehicle(plyPed) then
 					local plyVeh = GetVehiclePedIsIn(plyPed, false)
 
 					if Index == 1 then
@@ -955,6 +939,8 @@ function RenderVehicleMenu()
 							SetVehicleDoorShut(plyVeh, 3, false, false)
 						end
 					end
+				else
+					ESX.ShowNotification(_U('no_vehicle'))
 				end
 			end
 
@@ -963,9 +949,7 @@ function RenderVehicleMenu()
 
 		RageUI.Button(_U('vehicle_hood_button'), nil, {}, true, function(Hovered, Active, Selected)
 			if (Selected) then
-				if not IsPedSittingInAnyVehicle(plyPed) then
-					ESX.ShowNotification(_U('no_vehicle'))
-				elseif IsPedSittingInAnyVehicle(plyPed) then
+				if IsPedSittingInAnyVehicle(plyPed) then
 					local plyVeh = GetVehiclePedIsIn(plyPed, false)
 
 					if not PersonalMenu.DoorState.Hood then
@@ -975,15 +959,15 @@ function RenderVehicleMenu()
 						PersonalMenu.DoorState.Hood = false
 						SetVehicleDoorShut(plyVeh, 4, false, false)
 					end
+				else
+					ESX.ShowNotification(_U('no_vehicle'))
 				end
 			end
 		end)
 
 		RageUI.Button(_U('vehicle_trunk_button'), nil, {}, true, function(Hovered, Active, Selected)
 			if (Selected) then
-				if not IsPedSittingInAnyVehicle(plyPed) then
-					ESX.ShowNotification(_U('no_vehicle'))
-				elseif IsPedSittingInAnyVehicle(plyPed) then
+				if IsPedSittingInAnyVehicle(plyPed) then
 					local plyVeh = GetVehiclePedIsIn(plyPed, false)
 
 					if not PersonalMenu.DoorState.Trunk then
@@ -993,6 +977,8 @@ function RenderVehicleMenu()
 						PersonalMenu.DoorState.Trunk = false
 						SetVehicleDoorShut(plyVeh, 5, false, false)
 					end
+				else
+					ESX.ShowNotification(_U('no_vehicle'))
 				end
 			end
 		end)
@@ -1301,7 +1287,7 @@ Citizen.CreateThread(function()
 
 		if Player.showCoords then
 			local plyCoords = GetEntityCoords(plyPed, false)
-			Text('~r~X~s~: ' .. plyCoords.x .. ' ~b~Y~s~: ' .. plyCoords.y .. ' ~g~Z~s~: ' .. plyCoords.z .. ' ~y~Angle~s~: ' .. GetEntityHeading(plyPed))
+			Text('~r~X~s~: ' .. ESX.Math.Round(plyCoords.x, 2) .. '\n~b~Y~s~: ' .. ESX.Math.Round(plyCoords.y, 2) .. '\n~g~Z~s~: ' .. ESX.Math.Round(plyCoords.z, 2) .. '\n~y~Angle~s~: ' .. ESX.Math.Round(GetEntityPhysicsHeading(plyPed), 2))
 		end
 
 		if Player.noclip then
