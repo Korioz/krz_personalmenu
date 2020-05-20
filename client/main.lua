@@ -659,22 +659,22 @@ function RenderWalletMenu()
 			RageUI.Button(_U('wallet_job2_button', ESX.PlayerData.job2.label, ESX.PlayerData.job2.grade_label), nil, {}, true, function() end)
 		end
 
+		if PersonalMenu.WalletIndex['money'] == nil then PersonalMenu.WalletIndex['money'] = 1 end
 		for i = 1, #ESX.PlayerData.accounts, 1 do
 			if ESX.PlayerData.accounts[i].name == 'money' then
-				if PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] == nil then PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] = 1 end
 				RageUI.List(_U('wallet_money_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), PersonalMenu.WalletList, PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] or 1, nil, {}, true, function(Hovered, Active, Selected, Index)
 					if (Selected) then
 						if Index == 1 then
 							local post, quantity = CheckQuantity(KeyboardInput('KORIOZ_BOX_AMOUNT', _U('dialogbox_amount'), '', 8))
-
+		
 							if post then
 								local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
-
+		
 								if closestDistance ~= -1 and closestDistance <= 3 then
 									local closestPed = GetPlayerPed(closestPlayer)
-
+		
 									if not IsPedSittingInAnyVehicle(closestPed) then
-										TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(closestPlayer), 'item_account', ESX.PlayerData.accounts[i].name, quantity)
+										TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(closestPlayer), 'item_account', 'money', quantity)
 										RageUI.CloseAll()
 									else
 										ESX.ShowNotification(_U('in_vehicle_give', 'de l\'argent'))
@@ -687,10 +687,10 @@ function RenderWalletMenu()
 							end
 						elseif Index == 2 then
 							local post, quantity = CheckQuantity(KeyboardInput('KORIOZ_BOX_AMOUNT', _U('dialogbox_amount'), '', 8))
-
+		
 							if post then
 								if not IsPedSittingInAnyVehicle(plyPed) then
-									TriggerServerEvent('esx:removeInventoryItem', 'item_account', ESX.PlayerData.accounts[i].name, quantity)
+									TriggerServerEvent('esx:removeInventoryItem', 'item_account', 'money', quantity)
 									RageUI.CloseAll()
 								else
 									ESX.ShowNotification(_U('in_vehicle_drop', 'de l\'argent'))
@@ -700,16 +700,14 @@ function RenderWalletMenu()
 							end
 						end
 					end
-
-					PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] = Index
+		
+					PersonalMenu.WalletIndex['money'] = Index
 				end)
 			end
-
 			if ESX.PlayerData.accounts[i].name == 'bank' then
 				RageUI.Button(_U('wallet_bankmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), nil, {}, true, function() end)
 			end
-
-			if ESX.PlayerData.accounts[i].name == 'black_money' then
+ 			if ESX.PlayerData.accounts[i].name == 'black_money' then
 				if PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] == nil then PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] = 1 end
 				RageUI.List(_U('wallet_blackmoney_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), PersonalMenu.WalletList, PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] or 1, nil, {}, true, function(Hovered, Active, Selected, Index)
 					if (Selected) then
