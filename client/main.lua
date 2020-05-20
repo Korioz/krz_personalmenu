@@ -662,7 +662,7 @@ function RenderWalletMenu()
 		for i = 1, #ESX.PlayerData.accounts, 1 do
 			if ESX.PlayerData.accounts[i].name == 'money' then
 				if PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] == nil then PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] = 1 end
-				RageUI.List(_U('wallet_money_button', ESX.Math.GroupDigits(ESX.PlayerData.money)), PersonalMenu.WalletList, PersonalMenu.WalletIndex['money'] or 1, nil, {}, true, function(Hovered, Active, Selected, Index)
+				RageUI.List(_U('wallet_money_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), PersonalMenu.WalletList, PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] or 1, nil, {}, true, function(Hovered, Active, Selected, Index)
 					if (Selected) then
 						if Index == 1 then
 							local post, quantity = CheckQuantity(KeyboardInput('KORIOZ_BOX_AMOUNT', _U('dialogbox_amount'), '', 8))
