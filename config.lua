@@ -13,21 +13,21 @@ local Keys = {
 Config = {}
 
 -- LANGUAGE --
-Config.Locale = 'fr'
+Config.Locale = 'tr'
 
 -- GENERAL --
-Config.MenuTitle = 'ServerName' -- change it to you're server name
+Config.MenuTitle = 'CHAOS GTA' -- change it to you're server name
 Config.DoubleJob = false -- enable if you're using esx double job
 Config.NoclipSpeed = 1.0 -- change it to change the speed in noclip
-Config.JSFourIDCard = false -- enable if you're using jsfour-idcard
+Config.JSFourIDCard = true -- enable if you're using jsfour-idcard
 
 -- CONTROLS --
 Config.Controls = {
-	OpenMenu = {keyboard = Keys['F5']},
-	HandsUP = {keyboard = Keys['~']},
+	OpenMenu = {keyboard = Keys['F3']},
+	HandsUP = {keyboard = Keys['X']},
 	Pointing = {keyboard = Keys['B']},
 	Crouch = {keyboard = Keys['LEFTCTRL']},
-	StopTasks = {keyboard = Keys['X']},
+	StopTasks = {keyboard = Keys['DELETE']},
 	TPMarker = {keyboard1 = Keys['LEFTALT'], keyboard2 = Keys['E']}
 }
 
@@ -222,7 +222,25 @@ Config.Admin = {
 				plyId = tonumber(plyId)
 				
 				if type(plyId) == 'number' then
-					TriggerServerEvent('KorioZ-PersonalMenu:Admin_BringS', GetPlayerServerId(PlayerId()), plyId)
+					TriggerServerEvent('KorioZ-PersonalMenu:Admin_Goto', GetPlayerServerId(PlayerId()), plyId)
+				end
+			end
+
+			RageUI.CloseAll()
+		end
+	},
+	{
+		name = 'goback',
+		label = _U('admin_goback_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin', 'mod'},
+		command = function()
+			local plyId = KeyboardInput('KORIOZ_BOX_ID', _U('dialogbox_playerid'), '', 8)
+
+			if plyId ~= nil then
+				plyId = tonumber(plyId)
+				
+				if type(plyId) == 'number' then
+					TriggerServerEvent('KorioZ-PersonalMenu:Admin_Goback', GetPlayerServerId(PlayerId()), plyId)
 				end
 			end
 
@@ -240,7 +258,25 @@ Config.Admin = {
 				plyId = tonumber(plyId)
 				
 				if type(plyId) == 'number' then
-					TriggerServerEvent('KorioZ-PersonalMenu:Admin_BringS', GetPlayerServerId(PlayerId()), plyId)
+					TriggerServerEvent('KorioZ-PersonalMenu:Admin_Bring', GetPlayerServerId(PlayerId()), plyId)
+				end
+			end
+
+			RageUI.CloseAll()
+		end
+	},
+	{
+		name = 'bringback',
+		label = _U('admin_bringb_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin', 'mod'},
+		command = function()
+			local plyId = KeyboardInput('KORIOZ_BOX_ID', _U('dialogbox_playerid'), '', 8)
+
+			if plyId ~= nil then
+				plyId = tonumber(plyId)
+				
+				if type(plyId) == 'number' then
+					TriggerServerEvent('KorioZ-PersonalMenu:Admin_Bringback', GetPlayerServerId(PlayerId()), plyId)
 				end
 			end
 
@@ -259,6 +295,78 @@ Config.Admin = {
 						
 				if x ~= nil and y ~= nil and z ~= nil then
 					SetEntityCoords(plyPed, x + .0, y + .0, z + .0)
+				end
+			end
+
+			RageUI.CloseAll()
+		end
+	},
+	{
+		name = 'kill',
+		label = _U('admin_kill_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin', 'mod'},
+		command = function()
+			local plyId = KeyboardInput('KORIOZ_BOX_ID', _U('dialogbox_playerid'), '', 8)
+
+			if plyId ~= nil then
+				plyId = tonumber(plyId)
+				
+				if type(plyId) == 'number' then
+					TriggerServerEvent('KorioZ-PersonalMenu:Admin_Kill', GetPlayerServerId(PlayerId()), plyId)
+				end
+			end
+
+			RageUI.CloseAll()
+		end
+	},
+	{
+		name = 'revive',
+		label = _U('admin_revive_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin'},
+		command = function()
+			local plyId = KeyboardInput('KORIOZ_BOX_ID', _U('dialogbox_playerid'), '', 8)
+
+			if plyId ~= nil then
+				plyId = tonumber(plyId)
+				
+				if type(plyId) == 'number' then
+					TriggerServerEvent('esx_ambulancejob:revive', plyId)
+				end
+			end
+
+			RageUI.CloseAll()
+		end
+	},
+	{
+		name = 'freeze',
+		label = _U('admin_freeze_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin'},
+		command = function()
+			local plyId = KeyboardInput('KORIOZ_BOX_ID', _U('dialogbox_playerid'), '', 8)
+
+			if plyId ~= nil then
+				plyId = tonumber(plyId)
+				
+				if type(plyId) == 'number' then
+					TriggerServerEvent('KorioZ-PersonalMenu:Admin_Freeze', GetPlayerServerId(PlayerId()), plyId)
+				end
+			end
+
+			RageUI.CloseAll()
+		end
+	},
+	{
+		name = 'unfreeze',
+		label = _U('admin_unfreeze_button'),
+		groups = {'_dev', 'owner', 'superadmin', 'admin'},
+		command = function()
+			local plyId = KeyboardInput('KORIOZ_BOX_ID', _U('dialogbox_playerid'), '', 8)
+
+			if plyId ~= nil then
+				plyId = tonumber(plyId)
+				
+				if type(plyId) == 'number' then
+					TriggerServerEvent('KorioZ-PersonalMenu:Admin_UnFreeze', GetPlayerServerId(PlayerId()), plyId)
 				end
 			end
 
@@ -478,24 +586,6 @@ Config.Admin = {
 			else
 				ESX.ShowNotification(_U('admin_nomarker'))
 			end
-		end
-	},
-	{
-		name = 'revive',
-		label = _U('admin_revive_button'),
-		groups = {'_dev', 'owner', 'superadmin', 'admin'},
-		command = function()
-			local plyId = KeyboardInput('KORIOZ_BOX_ID', _U('dialogbox_playerid'), '', 8)
-
-			if plyId ~= nil then
-				plyId = tonumber(plyId)
-				
-				if type(plyId) == 'number' then
-					TriggerServerEvent('esx_ambulancejob:revive', plyId)
-				end
-			end
-
-			RageUI.CloseAll()
 		end
 	},
 	{

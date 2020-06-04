@@ -9,21 +9,18 @@ ESX = nil
 
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
+local onTimer       = {}
+local savedCoords   = {}
+local warnedPlayers = {}
+local deadPlayers   = {}
+
 function getMaximumGrade(jobname)
-	local queryDone, queryResult = false, nil
-
-	MySQL.Async.fetchAll('SELECT * FROM job_grades WHERE job_name = @jobname ORDER BY `grade` DESC ;', {
+	local result = MySQL.Sync.fetchAll('SELECT * FROM job_grades WHERE job_name = @jobname ORDER BY `grade` DESC ;', {
 		['@jobname'] = jobname
-	}, function(result)
-		queryDone, queryResult = true, result
-	end)
+	})
 
-	while not queryDone do
-		Citizen.Wait(10)
-	end
-
-	if queryResult[1] then
-		return queryResult[1].grade
+	if result[1] ~= nil then
+		return result[1].grade
 	end
 
 	return nil
@@ -88,15 +85,105 @@ AddEventHandler('KorioZ-PersonalMenu:Weapon_addAmmoToPedS', function(plyId, valu
 end)
 
 -- Admin Menu --
-RegisterServerEvent('KorioZ-PersonalMenu:Admin_BringS')
-AddEventHandler('KorioZ-PersonalMenu:Admin_BringS', function(plyId, targetId)
+RegisterServerEvent('KorioZ-PersonalMenu:Admin_Goto')
+AddEventHandler('KorioZ-PersonalMenu:Admin_Goto', function(plyId, targetId)
 	local xPlayer = ESX.GetPlayerFromId(source)
-	local plyGroup = xPlayer.getGroup()
-
-	if isAuthorized(getAdminCommand('bring'), plyGroup) or isAuthorized(getAdminCommand('goto'), plyGroup) then
-		local targetCoords = GetEntityCoords(GetPlayerPed(targetId))
-		TriggerClientEvent('KorioZ-PersonalMenu:Admin_BringC', plyId, targetCoords)
+	local xTarget = ESX.GetPlayerFromId(targetId)
+	if xTarget then
+	  	local targetCoords = xTarget.getCoords()
+	  	local playerCoords = xPlayer.getCoords()
+	  	savedCoords[source] = playerCoords
+	  	xPlayer.setCoords(targetCoords)
+		xPlayer.triggerEvent("chatMessage",  _U('goto_admin'))
+	else
+		xPlayer.triggerEvent("chatMessage", _U('not_online'))
 	end
+end)
+
+RegisterServerEvent('KorioZ-PersonalMenu:Admin_Goback')
+AddEventHandler('KorioZ-PersonalMenu:Admin_Goback', function(plyId, targetId)
+	local xPlayer = ESX.GetPlayerFromId(source)
+	local playerCoords = savedCoords[source]
+	if playerCoords then
+		xPlayer.setCoords(playerCoords)
+		xPlayer.triggerEvent("chatMessage", _U('goback'))
+		savedCoords[source] = nil
+	else
+		xPlayer.triggerEvent("chatMessage", _U('goback_error'))
+
+	end
+end)
+
+RegisterServerEvent('KorioZ-PersonalMenu:Admin_Bring')
+AddEventHandler('KorioZ-PersonalMenu:Admin_Bring', function(plyId, targetId)
+	local xPlayer = ESX.GetPlayerFromId(source)
+			local xTarget = ESX.GetPlayerFromId(targetId)
+			if xTarget then
+			  	local targetCoords = xTarget.getCoords()
+			  	local playerCoords = xPlayer.getCoords()
+			  	savedCoords[targetId] = targetCoords
+				xTarget.setCoords(playerCoords)
+				xPlayer.triggerEvent("chatMessage", _U('bring_adminside'))
+				xTarget.triggerEvent("chatMessage", _U('bring_playerside'))
+			else
+				xPlayer.triggerEvent("chatMessage", _U('not_online'))
+			end
+end)
+
+RegisterServerEvent('KorioZ-PersonalMenu:Admin_Bringback')
+AddEventHandler('KorioZ-PersonalMenu:Admin_Bringback', function(plyId, targetId)
+	local xPlayer = ESX.GetPlayerFromId(source)
+			local xTarget = ESX.GetPlayerFromId(targetId)
+			if xTarget then
+				local playerCoords = savedCoords[targetId]
+				if playerCoords then
+				xTarget.setCoords(playerCoords)
+				xPlayer.triggerEvent("chatMessage", _U('bringback_admin'))
+				xTarget.triggerEvent("chatMessage",  _U('bringback_player'))
+				savedCoords[targetId] = nil
+				else
+				xPlayer.triggerEvent("chatMessage", _U('noplace_bring'))
+				end
+			end
+end)
+
+RegisterServerEvent('KorioZ-PersonalMenu:Admin_Kill')
+AddEventHandler('KorioZ-PersonalMenu:Admin_Kill', function(plyId, targetId)
+	local xPlayer = ESX.GetPlayerFromId(source)
+	local xTarget = ESX.GetPlayerFromId(targetId)
+				if xTarget then
+				  xTarget.triggerEvent("esx_admin:killPlayer")
+				  xPlayer.triggerEvent("chatMessage", _U('kill_admin'))
+				  xTarget.triggerEvent('chatMessage', _U('kill_by_admin'))
+				else
+        			xPlayer.triggerEvent("chatMessage", _U('not_online'))
+				end
+end)
+
+RegisterServerEvent('KorioZ-PersonalMenu:Admin_Freeze')
+AddEventHandler('KorioZ-PersonalMenu:Admin_Freeze', function(plyId, targetId)
+	local xPlayer = ESX.GetPlayerFromId(source)
+	local xTarget = ESX.GetPlayerFromId(targetId)
+				if xTarget then
+				xTarget.triggerEvent("esx_admin:freezePlayer", 'freeze')
+				xPlayer.triggerEvent("chatMessage", _U('freeze_admin'))
+				xTarget.triggerEvent("chatMessage", _U('freeze_player'))
+			  else
+				xPlayer.triggerEvent("chatMessage", _U('not_online'))
+				end
+end)
+
+RegisterServerEvent('KorioZ-PersonalMenu:Admin_UnFreeze')
+AddEventHandler('KorioZ-PersonalMenu:Admin_UnFreeze', function(plyId, targetId)
+	local xPlayer = ESX.GetPlayerFromId(source)
+	local xTarget = ESX.GetPlayerFromId(targetId)
+				if xTarget then
+					xTarget.triggerEvent("esx_admin:freezePlayer", 'unfreeze')
+					xPlayer.triggerEvent("chatMessage", _U('unfreeze_admin'))
+					xTarget.triggerEvent("chatMessage", _U('unfreeze_player'))
+      			else
+        			xPlayer.triggerEvent("chatMessage", _U('not_online'))
+				end
 end)
 
 RegisterServerEvent('KorioZ-PersonalMenu:Admin_giveCash')
@@ -105,7 +192,7 @@ AddEventHandler('KorioZ-PersonalMenu:Admin_giveCash', function(money)
 	local plyGroup = xPlayer.getGroup()
 
 	if isAuthorized(getAdminCommand('givemoney'), plyGroup) then
-		xPlayer.addAccountMoney('cash', money)
+		xPlayer.addMoney(money)
 		TriggerClientEvent('esx:showNotification', xPlayer.source, 'GIVE de ' .. money .. '$')
 	end
 end)
@@ -127,7 +214,7 @@ AddEventHandler('KorioZ-PersonalMenu:Admin_giveDirtyMoney', function(money)
 	local plyGroup = xPlayer.getGroup()
 
 	if isAuthorized(getAdminCommand('givedirtymoney'), plyGroup) then
-		xPlayer.addAccountMoney('dirtycash', money)
+		xPlayer.addAccountMoney('black_money', money)
 		TriggerClientEvent('esx:showNotification', xPlayer.source, 'GIVE de ' .. money .. '$ sale')
 	end
 end)
