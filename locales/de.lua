@@ -14,8 +14,8 @@ Locales['de'] = {
 	-- Menu Notification
 	['missing_rights'] = 'Du hast nicht die ~r~Rechte~w~',
 	['no_vehicle'] = 'Du bist in keinem Fahrzeug',
-	['players_nearby'] = 'Keine Spieler in der NÃ¤he',
-	['amount_invalid'] = 'UngÃ¼ltiger Betrag',
+	['players_nearby'] = 'Keine Spieler in der Nähe',
+	['amount_invalid'] = 'Ungültiger Betrag',
 	['in_vehicle_give'] = '%s kann nicht im Auto gegeben werden',
 	['in_vehicle_drop'] = 'Can not throw %s in a vehicle',
 	['not_usable'] = '%s ist nicht verwendbar',
@@ -24,7 +24,7 @@ Locales['de'] = {
 	['no_ammo'] = 'Du hast keine Munition',
 	['not_enough_ammo'] = 'Du hast nicht so viel Munition',
 
-	['accessories_no_ears'] = 'Du hast kein Ohr ZubehÃ¶r',
+	['accessories_no_ears'] = 'Du hast kein Ohr Zubehör',
 	['accessories_no_glasses'] = 'Du hast keine Brille',
 	['accessories_no_helmet'] = 'Du hast keinen Helm/Hut',
 	['accessories_no_mask'] = 'Du hast keine Maske',
@@ -35,12 +35,12 @@ Locales['de'] = {
 	['admin_godmodeoff'] = 'Invincible ~r~ deaktiviert',
 	['admin_ghoston'] = 'Ghost mode ~g~ aktiviert',
 	['admin_ghostoff'] = 'Ghost mode ~r~ deaktiviert',
-	['admin_vehicleflip'] = 'Auto zurÃ¼ckgegeben',
+	['admin_vehicleflip'] = 'Auto zurückgegeben',
 	['admin_tpmarker'] = 'Teleportiert zur Markierung!',
 	['admin_nomarker'] = 'Keine Markierung auf der Karte',
 
 	-- Main Menu
-	['mainmenu_subtitle'] = 'INTERAKTIONSMENÃœ',
+	['mainmenu_subtitle'] = 'INTERAKTIONSMENÜ',
 	['mainmenu_gps_button'] = 'GPS',
 	['mainmenu_voice_button'] = 'Stimme',
 	['gps'] = 'GPS: ~b~%s',
@@ -48,7 +48,7 @@ Locales['de'] = {
 	['voice'] = 'Stimme: ~b~%s',
 
 	-- Menu Voice Level
-	['voice_whisper'] = ' FlÃ¼stern',
+	['voice_whisper'] = ' Flüstern',
 	['voice_normal'] = 'Normal',
 	['voice_cry'] = 'Schreien',
 
@@ -60,7 +60,7 @@ Locales['de'] = {
 	['inventory_drop_button'] = 'Verwerfen',
 
 	-- Loadout Menu
-	['loadout_title'] = 'WaffenmenÃ¼',
+	['loadout_title'] = 'Waffenmenü',
 	['loadout_actions_title'] = 'Waffen: Aktion',
 	['loadout_give_button'] = 'Geben',
 	['loadout_givemun_button'] = 'Munition geben',
@@ -77,8 +77,8 @@ Locales['de'] = {
 	['wallet_blackmoney_button'] = 'Schwarzgeld: $%s',
 	['wallet_show_idcard_button'] = 'Personalausweis zeigen',
 	['wallet_check_idcard_button'] = 'Personalausweis anschauen',
-	['wallet_show_driver_button'] = 'FÃ¼hrerschein zeigen',
-	['wallet_check_driver_button'] = 'FÃ¼hrerschein anschauen',
+	['wallet_show_driver_button'] = 'Führerschein zeigen',
+	['wallet_check_driver_button'] = 'Führerschein anschauen',
 	['wallet_show_firearms_button'] = 'Waffenlizenz zeigen',
 	['wallet_check_firearms_button'] = 'Waffenlizenz anschauen',
 
@@ -86,7 +86,7 @@ Locales['de'] = {
 	['bills_title'] = 'Rechnungen',
 
 	-- Clothes Menu
-	['clothes_title'] = 'KleidungsmenÃ¼',
+	['clothes_title'] = 'Kleidungsmenü',
 	['clothes_torso'] = 'Oberteil',
 	['clothes_pants'] = 'Hose',
 	['clothes_shoes'] = 'Schuhe',
@@ -94,8 +94,8 @@ Locales['de'] = {
 	['clothes_bproof'] = 'Schusssichere Weste',
 
 	-- Accessories Menu
-	['accessories_title'] = 'ZubehÃ¶r',
-	['accessories_ears'] = 'Ohren ZubehÃ¶r',
+	['accessories_title'] = 'Zubehör',
+	['accessories_ears'] = 'Ohren Zubehör',
 	['accessories_glasses'] = 'Brille',
 	['accessories_helmet'] = 'Hut / Helm',
 	['accessories_mask'] = 'Maske',
@@ -197,11 +197,11 @@ Locales['de'] = {
 	['animation_attitudes_title'] = 'Approach',
 
 	-- Vehicle Menu
-	['vehicle_title'] = 'FahrzeugmenÃ¼',
+	['vehicle_title'] = 'Fahrzeugmenü',
 	['vehicle_engine_button'] = 'Motor an/aus schalten',
-	['vehicle_door_button'] = 'TÃ¼r Ã¶ffnen/schlieÃŸen',
-	['vehicle_hood_button'] = 'Motorhaube Ã¶ffnen/schlieÃŸen',
-	['vehicle_trunk_button'] = 'Kofferraum Ã¶ffnen/schlieÃŸen',
+	['vehicle_door_button'] = 'Tür öffnen/schließen',
+	['vehicle_hood_button'] = 'Motorhaube öffnen/schließen',
+	['vehicle_trunk_button'] = 'Kofferraum öffnen/schließen',
 	['vehicle_door_frontleft'] = 'Vorne Links',
 	['vehicle_door_frontright'] = 'Vorne Rechts',
 	['vehicle_door_backleft'] = 'Hinten Links',
@@ -213,7 +213,7 @@ Locales['de'] = {
 	['bossmanagement_chest_button'] = 'Tresor: ',
 	['bossmanagement_hire_button'] = 'Einstellen',
 	['bossmanagement_fire_button'] = 'Entlassen',
-	['bossmanagement_promote_button'] = 'BefÃ¶rdern',
+	['bossmanagement_promote_button'] = 'Befördern',
 	['bossmanagement_demote_button'] = 'Degradieren',
 
 	-- Boss Management 2 Menu
@@ -222,7 +222,7 @@ Locales['de'] = {
 	['bossmanagement2_chest_button'] = 'Organisation Truhe:',
 	['bossmanagement2_hire_button'] = 'Einstellen',
 	['bossmanagement2_fire_button'] = 'Entlassen',
-	['bossmanagement2_promote_button'] = 'BefÃ¶rdern',
+	['bossmanagement2_promote_button'] = 'Befördern',
 	['bossmanagement2_demote_button'] = 'Degradieren',
 
 	-- Admin Menu
@@ -235,7 +235,7 @@ Locales['de'] = {
 	['admin_ghostmode_button'] = 'Unsichtbarer Modus',
 	['admin_spawnveh_button'] = 'Fahrzeug spawnen',
 	['admin_repairveh_button'] = 'Fahrzeug reparieren',
-	['admin_flipveh_button'] = 'RÃ¼ckgabe des Fahrzeugs',
+	['admin_flipveh_button'] = 'Rückgabe des Fahrzeugs',
 	['admin_givemoney_button'] = 'Geld geben ',
 	['admin_givebank_button'] = 'Geld geben (bank) ',
 	['admin_givedirtymoney_button'] = 'Schwarzgeld senden',
@@ -243,6 +243,6 @@ Locales['de'] = {
 	['admin_showname_button'] = 'Spielernamen ein-/ausblenden',
 	['admin_tpmarker_button'] = 'Zur Markierung teleportieren',
 	['admin_revive_button'] = 'Spieler wiederbeleben',
-	['admin_changeskin_button'] = 'Aussehen Ã¤ndern',
+	['admin_changeskin_button'] = 'Aussehen ändern',
 	['admin_saveskin_button'] = 'Aussehen speichern'
 }
