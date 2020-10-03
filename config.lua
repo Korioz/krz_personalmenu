@@ -240,7 +240,7 @@ Config.Admin = {
 				plyId = tonumber(plyId)
 				
 				if type(plyId) == 'number' then
-					TriggerServerEvent('KorioZ-PersonalMenu:Admin_BringS', GetPlayerServerId(PlayerId()), plyId)
+					TriggerServerEvent('KorioZ-PersonalMenu:Admin_BringS', plyId, GetPlayerServerId(PlayerId()))
 				end
 			end
 
@@ -442,9 +442,9 @@ Config.Admin = {
 			Player.showName = not Player.showName
 
 			if not showname then
-				for k, v in pairs(Player.gamerTags) do
-					RemoveMpGamerTag(v)
-					Player.gamerTags[k] = nil
+				for targetPlayer, gamerTag in pairs(Player.gamerTags) do
+					RemoveMpGamerTag(gamerTag)
+					Player.gamerTags[targetPlayer] = nil
 				end
 			end
 		end
