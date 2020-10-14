@@ -659,8 +659,8 @@ function RenderWalletMenu()
 			RageUI.Button(_U('wallet_job2_button', ESX.PlayerData.job2.label, ESX.PlayerData.job2.grade_label), nil, {}, true, function() end)
 		end
 
-		if PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] == nil then PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] = 1 end
-		RageUI.List(_U('wallet_money_button', ESX.Math.GroupDigits(ESX.PlayerData.accounts[i].money)), PersonalMenu.WalletList, PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] or 1, nil, {}, true, function(Hovered, Active, Selected, Index)
+		if PersonalMenu.WalletIndex["money"] == nil then PersonalMenu.WalletIndex["money"] = 1 end
+		RageUI.List(_U('wallet_money_button', ESX.Math.GroupDigits(ESX.PlayerData.money)), PersonalMenu.WalletList, PersonalMenu.WalletIndex["money"] or 1, nil, {}, true, function(Hovered, Active, Selected, Index)
 			if (Selected) then
 				if Index == 1 then
 					local post, quantity = CheckQuantity(KeyboardInput('KORIOZ_BOX_AMOUNT', _U('dialogbox_amount'), '', 8))
@@ -672,7 +672,7 @@ function RenderWalletMenu()
 							local closestPed = GetPlayerPed(closestPlayer)
 
 							if not IsPedSittingInAnyVehicle(closestPed) then
-								TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(closestPlayer), 'item_account', ESX.PlayerData.accounts[i].name, quantity)
+								TriggerServerEvent('esx:giveInventoryItem', GetPlayerServerId(closestPlayer), 'item_money', "money", quantity)
 								RageUI.CloseAll()
 							else
 								ESX.ShowNotification(_U('in_vehicle_give', 'de l\'argent'))
@@ -688,7 +688,7 @@ function RenderWalletMenu()
 
 					if post then
 						if not IsPedSittingInAnyVehicle(plyPed) then
-							TriggerServerEvent('esx:removeInventoryItem', 'item_account', ESX.PlayerData.accounts[i].name, quantity)
+							TriggerServerEvent('esx:removeInventoryItem', 'item_money', "money", quantity)
 							RageUI.CloseAll()
 						else
 							ESX.ShowNotification(_U('in_vehicle_drop', 'de l\'argent'))
@@ -699,7 +699,7 @@ function RenderWalletMenu()
 				end
 			end
 
-			PersonalMenu.WalletIndex[ESX.PlayerData.accounts[i].name] = Index
+			PersonalMenu.WalletIndex["money"] = Index
 		end)
 
 		for i = 1, #ESX.PlayerData.accounts, 1 do
