@@ -127,7 +127,7 @@ AddEventHandler('KorioZ-PersonalMenu:Admin_giveDirtyMoney', function(money)
 	local plyGroup = xPlayer.getGroup()
 
 	if isAuthorized(getAdminCommand('givedirtymoney'), plyGroup) then
-		xPlayer.addAccountMoney('dirtycash', money)
+		xPlayer.addAccountMoney('black_money', money)
 		TriggerClientEvent('esx:showNotification', xPlayer.source, 'GIVE de ' .. money .. '$ sale')
 	end
 end)
