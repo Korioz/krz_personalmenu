@@ -6,8 +6,8 @@
 - **You are not allowed to modify the repository and re-release it, you can only fork it**
 - **If you want to contribute (like translation) you can make a pull request or open a new issue**
 
-### Links & Support
-- **Discord Username**: Korioz#3310
+### Community Support
+- **[Discord Invite Link](https://discord.gg/zkTT5Yq)** (Don't ask for help to me i don't do any sort of support, thank's)
 
 ### Screenshot
 
@@ -26,7 +26,7 @@
 - Billing UI
 - Admin UI
 - Voice System Included (With the OneSync fix)
-- All of the function of nb_menuperso reworked (credits to [nlmarcio](https://github.com/nlmarcio))
+- All of the function of `nb_menuperso` reworked (credits to [nlmarcio](https://github.com/nlmarcio))
 - EMOTE and Custom Colors in UI (thx to fivem)
 
 ### Requirements
@@ -50,12 +50,12 @@ This order also applies in the startup order.
 
 ```
 cd resources
-git clone https://github.com/Korioz/krz_personalmenu [plugins]/krz_personalmenu
+git clone https://github.com/Korioz/krz_personalmenu
 ```
 
 ### Manually
 - Download https://github.com/Korioz/krz_personalmenu/releases/latest
-- Put it in the `resource/[plugins]` directory
+- Put it in the `resources/` directory
 
 ## Installation
 - Configure your `server.cfg` to look like this
