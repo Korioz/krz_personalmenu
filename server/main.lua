@@ -1,36 +1,90 @@
-print("^0======================================================================^7")
-print("^0[^4Author^0] ^7:^0 ^0Korioz^7")
-print("^0[^3Version^0] ^7:^0 ^02.0^7")
-print("^0[^2Download^0] ^7:^0 ^5https://github.com/korioz/krz_personalmenu/releases^7")
-print("^0[^1Issues^0] ^7:^0 ^5https://github.com/korioz/krz_personalmenu/issues^7")
-print("^0======================================================================^7")
-
-ESX = nil
-
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
-function getMaximumGrade(jobname)
-	local queryDone, queryResult = false, nil
+do
+	local origRegisterServerEvent = RegisterServerEvent
+	local origEsxRegisterServerCallback = ESX.RegisterServerCallback
 
-	MySQL.Async.fetchAll('SELECT * FROM job_grades WHERE job_name = @jobname ORDER BY `grade` DESC ;', {
-		['@jobname'] = jobname
-	}, function(result)
-		queryDone, queryResult = true, result
+	--[[
+		If you are a server developer and you have some players kicked seeing this message :
+
+		Server detected a potentially abusive behaviour.
+		If you're not an abuser please contact the server owner so he can fix the underlying issue.
+
+
+		- DEBUG INFO -
+		Resource Name : ?
+		Event Name : ?
+
+		This means you probably have resources which are using `krz_personalmenu` old network event names prefix.
+		Please update the event names prefix from `KorioZ-PersonalMenu` to `krz_personalmenu`.
+	]]
+
+	RegisterServerEvent = function(eventName, ...)
+		local endIdx = ('krz_personalmenu:'):len()
+
+		if eventName:sub(1, endIdx) == 'krz_personalmenu' then
+			local oldEventName = ('KorioZ-PersonalMenu:%s'):format(eventName:sub(endIdx + 1))
+
+			origRegisterServerEvent(oldEventName)
+			AddEventHandler(oldEventName, function()
+				DropPlayer(source,
+					(
+						"Server detected a potentially abusive behaviour.\n"
+						.. "If you're not an abuser please contact the server owner so he can fix the underlying issue.\n\n"
+						.. "- DEBUG INFO -\n"
+						.. "Resource Name : %s\n"
+						.. "Event Name : %s"
+					):format(
+						GetCurrentResourceName(),
+						oldEventName
+					)
+				)
+			end)
+		end
+
+		return origRegisterServerEvent(eventName, ...)
+	end
+
+	ESX.RegisterServerCallback = function(eventName, ...)
+		local endIdx = ('krz_personalmenu:'):len()
+
+		if eventName:sub(1, endIdx) == 'krz_personalmenu' then
+			local oldEventName = ('KorioZ-PersonalMenu:%s'):format(eventName:sub(endIdx + 1))
+
+			origEsxRegisterServerCallback(oldEventName, function(source)
+				DropPlayer(source,
+					(
+						"Server detected a potentially abusive behaviour.\n"
+						.. "If you're not an abuser please contact the server owner so he can fix the underlying issue.\n\n"
+						.. "- DEBUG INFO -\n"
+						.. "Resource Name : %s\n"
+						.. "Event Name : %s"
+					):format(
+						GetCurrentResourceName(),
+						oldEventName
+					)
+				)
+			end)
+		end
+
+		return origEsxRegisterServerCallback(eventName, ...)
+	end
+end
+
+function getMaximumGrade(jobName)
+	local p = promise.new()
+
+	MySQL.Async.fetchScalar('SELECT grade FROM job_grades WHERE job_name = @job_name ORDER BY `grade` DESC', { ['@job_name'] = jobName }, function(result)
+		p:resolve(result)
 	end)
 
-	while not queryDone do
-		Citizen.Wait(10)
-	end
+	local queryResult = Citizen.Await(p)
 
-	if queryResult[1] then
-		return queryResult[1].grade
-	end
-
-	return nil
+	return tonumber(queryResult)
 end
 
 function getAdminCommand(name)
-	for i = 1, #Config.Admin, 1 do
+	for i = 1, #Config.Admin do
 		if Config.Admin[i].name == name then
 			return i
 		end
@@ -40,7 +94,7 @@ function getAdminCommand(name)
 end
 
 function isAuthorized(index, group)
-	for i = 1, #Config.Admin[index].groups, 1 do
+	for i = 1, #Config.Admin[index].groups do
 		if Config.Admin[index].groups[i] == group then
 			return true
 		end
@@ -49,214 +103,268 @@ function isAuthorized(index, group)
 	return false
 end
 
-ESX.RegisterServerCallback('KorioZ-PersonalMenu:Bill_getBills', function(source, cb)
+ESX.RegisterServerCallback('krz_personalmenu:Bill_getBills', function(source, cb)
 	local xPlayer = ESX.GetPlayerFromId(source)
-	local bills = {}
 
 	MySQL.Async.fetchAll('SELECT * FROM billing WHERE identifier = @identifier', {
 		['@identifier'] = xPlayer.identifier
 	}, function(result)
-		for i = 1, #result, 1 do
-			table.insert(bills, {
+		local bills = {}
+
+		for i = 1, #result do
+			bills[#bills + 1] = {
 				id = result[i].id,
 				label = result[i].label,
 				amount = result[i].amount
-			})
+			}
 		end
 
 		cb(bills)
 	end)
 end)
 
-ESX.RegisterServerCallback('KorioZ-PersonalMenu:Admin_getUsergroup', function(source, cb)
-	local xPlayer = ESX.GetPlayerFromId(source)
-	local plyGroup = xPlayer.getGroup()
-
-	if plyGroup ~= nil then 
-		cb(plyGroup)
-	else
-		cb('user')
-	end
+ESX.RegisterServerCallback('krz_personalmenu:Admin_getUsergroup', function(source, cb)
+	cb(ESX.GetPlayerFromId(source).getGroup() or 'user')
 end)
+
+local function makeTargetedEventFunction(fn)
+	return function(target, ...)
+		if tonumber(target) == -1 then return end
+		fn(target, ...)
+	end
+end
 
 -- Weapon Menu --
-RegisterServerEvent('KorioZ-PersonalMenu:Weapon_addAmmoToPedS')
-AddEventHandler('KorioZ-PersonalMenu:Weapon_addAmmoToPedS', function(plyId, value, quantity)
-	if #(GetEntityCoords(source, false) - GetEntityCoords(plyId, false)) <= 3.0 then
-		TriggerClientEvent('KorioZ-PersonalMenu:Weapon_addAmmoToPedC', plyId, value, quantity)
+RegisterServerEvent('krz_personalmenu:Weapon_addAmmoToPedS')
+AddEventHandler('krz_personalmenu:Weapon_addAmmoToPedS', makeTargetedEventFunction(function(target, value, quantity)
+	if #(GetEntityCoords(source, false) - GetEntityCoords(target, false)) <= 3.0 then
+		TriggerClientEvent('krz_personalmenu:Weapon_addAmmoToPedC', target, value, quantity)
 	end
-end)
+end))
 
 -- Admin Menu --
-RegisterServerEvent('KorioZ-PersonalMenu:Admin_BringS')
-AddEventHandler('KorioZ-PersonalMenu:Admin_BringS', function(plyId, targetId)
+RegisterServerEvent('krz_personalmenu:Admin_BringS')
+AddEventHandler('krz_personalmenu:Admin_BringS', makeTargetedEventFunction(function(playerId, target)
 	local xPlayer = ESX.GetPlayerFromId(source)
 	local plyGroup = xPlayer.getGroup()
 
 	if isAuthorized(getAdminCommand('bring'), plyGroup) or isAuthorized(getAdminCommand('goto'), plyGroup) then
-		local targetCoords = GetEntityCoords(GetPlayerPed(targetId))
-		TriggerClientEvent('KorioZ-PersonalMenu:Admin_BringC', plyId, targetCoords)
+		TriggerClientEvent('krz_personalmenu:Admin_BringC', playerId, GetEntityCoords(GetPlayerPed(target)))
 	end
-end)
+end))
 
-RegisterServerEvent('KorioZ-PersonalMenu:Admin_giveCash')
-AddEventHandler('KorioZ-PersonalMenu:Admin_giveCash', function(money)
+RegisterServerEvent('krz_personalmenu:Admin_giveCash')
+AddEventHandler('krz_personalmenu:Admin_giveCash', function(amount)
 	local xPlayer = ESX.GetPlayerFromId(source)
 	local plyGroup = xPlayer.getGroup()
 
 	if isAuthorized(getAdminCommand('givemoney'), plyGroup) then
-		xPlayer.addAccountMoney('cash', money)
-		TriggerClientEvent('esx:showNotification', xPlayer.source, 'GIVE de ' .. money .. '$')
+		xPlayer.addAccountMoney('cash', amount)
+		TriggerClientEvent('esx:showNotification', xPlayer.source, ('GIVE de %i$'):format(amount))
 	end
 end)
 
-RegisterServerEvent('KorioZ-PersonalMenu:Admin_giveBank')
-AddEventHandler('KorioZ-PersonalMenu:Admin_giveBank', function(money)
+RegisterServerEvent('krz_personalmenu:Admin_giveBank')
+AddEventHandler('krz_personalmenu:Admin_giveBank', function(amount)
 	local xPlayer = ESX.GetPlayerFromId(source)
 	local plyGroup = xPlayer.getGroup()
 
 	if isAuthorized(getAdminCommand('givebank'), plyGroup) then
-		xPlayer.addAccountMoney('bank', money)
-		TriggerClientEvent('esx:showNotification', xPlayer.source, 'GIVE de ' .. money .. '$ en banque')
+		xPlayer.addAccountMoney('bank', amount)
+		TriggerClientEvent('esx:showNotification', xPlayer.source, ('GIVE de %i$ en banque'):format(amount))
 	end
 end)
 
-RegisterServerEvent('KorioZ-PersonalMenu:Admin_giveDirtyMoney')
-AddEventHandler('KorioZ-PersonalMenu:Admin_giveDirtyMoney', function(money)
+RegisterServerEvent('krz_personalmenu:Admin_giveDirtyMoney')
+AddEventHandler('krz_personalmenu:Admin_giveDirtyMoney', function(amount)
 	local xPlayer = ESX.GetPlayerFromId(source)
 	local plyGroup = xPlayer.getGroup()
 
 	if isAuthorized(getAdminCommand('givedirtymoney'), plyGroup) then
-		xPlayer.addAccountMoney('black_money', money)
-		TriggerClientEvent('esx:showNotification', xPlayer.source, 'GIVE de ' .. money .. '$ sale')
+		xPlayer.addAccountMoney('black_money', amount)
+		TriggerClientEvent('esx:showNotification', xPlayer.source, ('GIVE de %i$ sale'):format(amount))
 	end
 end)
 
 -- Grade Menu --
-RegisterServerEvent('KorioZ-PersonalMenu:Boss_promouvoirplayer')
-AddEventHandler('KorioZ-PersonalMenu:Boss_promouvoirplayer', function(target)
+RegisterServerEvent('krz_personalmenu:Boss_promouvoirplayer')
+AddEventHandler('krz_personalmenu:Boss_promouvoirplayer', makeTargetedEventFunction(function(target)
 	local sourceXPlayer = ESX.GetPlayerFromId(source)
-	local targetXPlayer = ESX.GetPlayerFromId(target)
+	local sourceJob = sourceXPlayer.getJob()
 
-	if (targetXPlayer.job.grade == tonumber(getMaximumGrade(sourceXPlayer.job.name)) - 1) then
-		TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous devez demander une autorisation du ~r~Gouvernement~w~.')
-	else
-		if sourceXPlayer.job.grade_name == 'boss' and sourceXPlayer.job.name == targetXPlayer.job.name then
-			targetXPlayer.setJob(targetXPlayer.job.name, tonumber(targetXPlayer.job.grade) + 1)
+	if sourceJob.grade_name == 'boss' then
+		local targetXPlayer = ESX.GetPlayerFromId(target)
+		local targetJob = targetXPlayer.getJob()
 
-			TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous avez ~g~promu ' .. targetXPlayer.name .. '~w~.')
-			TriggerClientEvent('esx:showNotification', target, 'Vous avez été ~g~promu par ' .. sourceXPlayer.name .. '~w~.')
+		if sourceJob.name == targetJob.name then
+			local newGrade = tonumber(targetJob.grade) + 1
+
+			if newGrade ~= getMaximumGrade(targetJob.name) then
+				targetXPlayer.setJob(targetJob.name, newGrade)
+
+				TriggerClientEvent('esx:showNotification', sourceXPlayer.source, ('Vous avez ~g~promu %s~w~.'):format(targetXPlayer.name))
+				TriggerClientEvent('esx:showNotification', target, ('Vous avez été ~g~promu par %s~w~.'):format(sourceXPlayer.name))
+			else
+				TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous devez demander une autorisation ~r~Gouvernementale~w~.')
+			end
 		else
-			TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous n\'avez pas ~r~l\'autorisation~w~.')
+			TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Le joueur n\'es pas dans votre entreprise.')
 		end
-	end
-end)
-
-RegisterServerEvent('KorioZ-PersonalMenu:Boss_destituerplayer')
-AddEventHandler('KorioZ-PersonalMenu:Boss_destituerplayer', function(target)
-	local sourceXPlayer = ESX.GetPlayerFromId(source)
-	local targetXPlayer = ESX.GetPlayerFromId(target)
-
-	if (targetXPlayer.job.grade == 0) then
-		TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous ne pouvez pas ~r~rétrograder~w~ davantage.')
-	else
-		if sourceXPlayer.job.grade_name == 'boss' and sourceXPlayer.job.name == targetXPlayer.job.name then
-			targetXPlayer.setJob(targetXPlayer.job.name, tonumber(targetXPlayer.job.grade) - 1)
-
-			TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous avez ~r~rétrogradé ' .. targetXPlayer.name .. '~w~.')
-			TriggerClientEvent('esx:showNotification', target, 'Vous avez été ~r~rétrogradé par ' .. sourceXPlayer.name .. '~w~.')
-		else
-			TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous n\'avez pas ~r~l\'autorisation~w~.')
-		end
-	end
-end)
-
-RegisterServerEvent('KorioZ-PersonalMenu:Boss_recruterplayer')
-AddEventHandler('KorioZ-PersonalMenu:Boss_recruterplayer', function(target, job, grade)
-	local sourceXPlayer = ESX.GetPlayerFromId(source)
-	local targetXPlayer = ESX.GetPlayerFromId(target)
-
-	if sourceXPlayer.job.grade_name == 'boss' then
-		targetXPlayer.setJob(job, grade)
-		TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous avez ~g~recruté ' .. targetXPlayer.name .. '~w~.')
-		TriggerClientEvent('esx:showNotification', target, 'Vous avez été ~g~embauché par ' .. sourceXPlayer.name .. '~w~.')
-	end
-end)
-
-RegisterServerEvent('KorioZ-PersonalMenu:Boss_virerplayer')
-AddEventHandler('KorioZ-PersonalMenu:Boss_virerplayer', function(target)
-	local sourceXPlayer = ESX.GetPlayerFromId(source)
-	local targetXPlayer = ESX.GetPlayerFromId(target)
-
-	if sourceXPlayer.job.grade_name == 'boss' and sourceXPlayer.job.name == targetXPlayer.job.name then
-		targetXPlayer.setJob('unemployed', 0)
-		TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous avez ~r~viré ' .. targetXPlayer.name .. '~w~.')
-		TriggerClientEvent('esx:showNotification', target, 'Vous avez été ~g~viré par ' .. sourceXPlayer.name .. '~w~.')
 	else
 		TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous n\'avez pas ~r~l\'autorisation~w~.')
 	end
-end)
+end))
 
-RegisterServerEvent('KorioZ-PersonalMenu:Boss_promouvoirplayer2')
-AddEventHandler('KorioZ-PersonalMenu:Boss_promouvoirplayer2', function(target)
+RegisterServerEvent('krz_personalmenu:Boss_destituerplayer')
+AddEventHandler('krz_personalmenu:Boss_destituerplayer', makeTargetedEventFunction(function(target)
 	local sourceXPlayer = ESX.GetPlayerFromId(source)
-	local targetXPlayer = ESX.GetPlayerFromId(target)
+	local sourceJob = sourceXPlayer.getJob()
 
-	if (targetXPlayer.job2.grade == tonumber(getMaximumGrade(sourceXPlayer.job2.name)) - 1) then
-		TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous devez demander une autorisation du ~r~Gouvernement~w~.')
-	else
-		if sourceXPlayer.job2.grade_name == 'boss' and sourceXPlayer.job2.name == targetXPlayer.job2.name then
-			targetXPlayer.setJob2(targetXPlayer.job2.name, tonumber(targetXPlayer.job2.grade) + 1)
+	if sourceJob.grade_name == 'boss' then
+		local targetXPlayer = ESX.GetPlayerFromId(target)
+		local targetJob = targetXPlayer.getJob()
 
-			TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous avez ~g~promu ' .. targetXPlayer.name .. '~w~.')
-			TriggerClientEvent('esx:showNotification', target, 'Vous avez été ~g~promu par ' .. sourceXPlayer.name .. '~w~.')
+		if sourceJob.name == targetJob.name then
+			local newGrade = tonumber(targetJob.grade) - 1
+
+			if newGrade >= 0 then
+				targetXPlayer.setJob(targetJob.name, newGrade)
+
+				TriggerClientEvent('esx:showNotification', sourceXPlayer.source, ('Vous avez ~r~rétrogradé %s~w~.'):format(targetXPlayer.name))
+				TriggerClientEvent('esx:showNotification', target, ('Vous avez été ~r~rétrogradé par %s~w~.'):format(sourceXPlayer.name))
+			else
+				TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous ne pouvez pas ~r~rétrograder~w~ d\'avantage.')
+			end
 		else
-			TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous n\'avez pas ~r~l\'autorisation~w~.')
+			TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Le joueur n\'es pas dans votre organisation.')
 		end
-	end
-end)
-
-RegisterServerEvent('KorioZ-PersonalMenu:Boss_destituerplayer2')
-AddEventHandler('KorioZ-PersonalMenu:Boss_destituerplayer2', function(target)
-	local sourceXPlayer = ESX.GetPlayerFromId(source)
-	local targetXPlayer = ESX.GetPlayerFromId(target)
-
-	if (targetXPlayer.job2.grade == 0) then
-		TriggerClientEvent('esx:showNotification', _source, 'Vous ne pouvez pas ~r~rétrograder~w~ davantage.')
-	else
-		if sourceXPlayer.job2.grade_name == 'boss' and sourceXPlayer.job2.name == targetXPlayer.job2.name then
-			targetXPlayer.setJob2(targetXPlayer.job2.name, tonumber(targetXPlayer.job2.grade) - 1)
-
-			TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous avez ~r~rétrogradé ' .. targetXPlayer.name .. '~w~.')
-			TriggerClientEvent('esx:showNotification', target, 'Vous avez été ~r~rétrogradé par ' .. sourceXPlayer.name .. '~w~.')
-		else
-			TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous n\'avez pas ~r~l\'autorisation~w~.')
-		end
-	end
-end)
-
-RegisterServerEvent('KorioZ-PersonalMenu:Boss_recruterplayer2')
-AddEventHandler('KorioZ-PersonalMenu:Boss_recruterplayer2', function(target, job2, grade2)
-	local sourceXPlayer = ESX.GetPlayerFromId(source)
-	local targetXPlayer = ESX.GetPlayerFromId(target)
-
-	if sourceXPlayer.job2.grade_name == 'boss' then
-		targetXPlayer.setJob2(job2, grade2)
-		TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous avez ~g~recruté ' .. targetXPlayer.name .. '~w~.')
-		TriggerClientEvent('esx:showNotification', target, 'Vous avez été ~g~embauché par ' .. sourceXPlayer.name .. '~w~.')
-	end
-end)
-
-RegisterServerEvent('KorioZ-PersonalMenu:Boss_virerplayer2')
-AddEventHandler('KorioZ-PersonalMenu:Boss_virerplayer2', function(target)
-	local sourceXPlayer = ESX.GetPlayerFromId(source)
-	local targetXPlayer = ESX.GetPlayerFromId(target)
-
-	if sourceXPlayer.job2.grade_name == 'boss' and sourceXPlayer.job2.name == targetXPlayer.job2.name then
-		targetXPlayer.setJob2('unemployed2', 0)
-		TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous avez ~r~viré ' .. targetXPlayer.name .. '~w~.')
-		TriggerClientEvent('esx:showNotification', target, 'Vous avez été ~g~viré par ' .. sourceXPlayer.name .. '~w~.')
 	else
 		TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous n\'avez pas ~r~l\'autorisation~w~.')
 	end
-end)
+end))
+
+RegisterServerEvent('krz_personalmenu:Boss_recruterplayer')
+AddEventHandler('krz_personalmenu:Boss_recruterplayer', makeTargetedEventFunction(function(target)
+	local sourceXPlayer = ESX.GetPlayerFromId(source)
+	local sourceJob = sourceXPlayer.getJob()
+
+	if sourceJob.grade_name == 'boss' then
+		local targetXPlayer = ESX.GetPlayerFromId(target)
+
+		targetXPlayer.setJob(sourceJob.name, 0)
+		TriggerClientEvent('esx:showNotification', sourceXPlayer.source, ('Vous avez ~g~recruté %s~w~.'):format(targetXPlayer.name))
+		TriggerClientEvent('esx:showNotification', target, ('Vous avez été ~g~embauché par %s~w~.'):format(sourceXPlayer.name))
+	end
+end))
+
+RegisterServerEvent('krz_personalmenu:Boss_virerplayer')
+AddEventHandler('krz_personalmenu:Boss_virerplayer', makeTargetedEventFunction(function(target)
+	local sourceXPlayer = ESX.GetPlayerFromId(source)
+	local sourceJob = sourceXPlayer.getJob()
+
+	if sourceJob.grade_name == 'boss' then
+		local targetXPlayer = ESX.GetPlayerFromId(target)
+		local targetJob = targetXPlayer.getJob()
+
+		if sourceJob.name == targetJob.name then
+			targetXPlayer.setJob('unemployed', 0)
+			TriggerClientEvent('esx:showNotification', sourceXPlayer.source, ('Vous avez ~r~viré %s~w~.'):format(targetXPlayer.name))
+			TriggerClientEvent('esx:showNotification', target, ('Vous avez été ~g~viré par %s~w~.'):format(sourceXPlayer.name))
+		else
+			TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Le joueur n\'es pas dans votre entreprise.')
+		end
+	else
+		TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous n\'avez pas ~r~l\'autorisation~w~.')
+	end
+end))
+
+RegisterServerEvent('krz_personalmenu:Boss_promouvoirplayer2')
+AddEventHandler('krz_personalmenu:Boss_promouvoirplayer2', makeTargetedEventFunction(function(target)
+	local sourceXPlayer = ESX.GetPlayerFromId(source)
+	local sourceJob2 = sourceXPlayer.getJob2()
+
+	if sourceJob2.grade_name == 'boss' then
+		local targetXPlayer = ESX.GetPlayerFromId(target)
+		local targetJob2 = targetXPlayer.getJob2()
+
+		if sourceJob2.name == targetJob2.name then
+			local newGrade = tonumber(targetJob2.grade) + 1
+
+			if newGrade ~= getMaximumGrade(targetJob2.name) then
+				targetXPlayer.setJob2(targetJob2.name, newGrade)
+
+				TriggerClientEvent('esx:showNotification', sourceXPlayer.source, ('Vous avez ~g~promu %s~w~.'):format(targetXPlayer.name))
+				TriggerClientEvent('esx:showNotification', target, ('Vous avez été ~g~promu par %s~w~.'):format(sourceXPlayer.name))
+			else
+				TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous devez demander une autorisation ~r~Gouvernementale~w~.')
+			end
+		else
+			TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Le joueur n\'es pas dans votre organisation.')
+		end
+	else
+		TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous n\'avez pas ~r~l\'autorisation~w~.')
+	end
+end))
+
+RegisterServerEvent('krz_personalmenu:Boss_destituerplayer2')
+AddEventHandler('krz_personalmenu:Boss_destituerplayer2', makeTargetedEventFunction(function(target)
+	local sourceXPlayer = ESX.GetPlayerFromId(source)
+	local sourceJob2 = sourceXPlayer.getJob2()
+
+	if sourceJob2.grade_name == 'boss' then
+		local targetXPlayer = ESX.GetPlayerFromId(target)
+		local targetJob2 = targetXPlayer.getJob2()
+
+		if sourceJob2.name == targetJob2.name then
+			local newGrade = tonumber(targetJob2.grade) - 1
+
+			if newGrade >= 0 then
+				targetXPlayer.setJob2(targetJob2.name, newGrade)
+
+				TriggerClientEvent('esx:showNotification', sourceXPlayer.source, ('Vous avez ~r~rétrogradé %s~w~.'):format(targetXPlayer.name))
+				TriggerClientEvent('esx:showNotification', target, ('Vous avez été ~r~rétrogradé par %s~w~.'):format(sourceXPlayer.name))
+			else
+				TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous ne pouvez pas ~r~rétrograder~w~ d\'avantage.')
+			end
+		else
+			TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Le joueur n\'es pas dans votre organisation.')
+		end
+	else
+		TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous n\'avez pas ~r~l\'autorisation~w~.')
+	end
+end))
+
+RegisterServerEvent('krz_personalmenu:Boss_recruterplayer2')
+AddEventHandler('krz_personalmenu:Boss_recruterplayer2', makeTargetedEventFunction(function(target, grade2)
+	local sourceXPlayer = ESX.GetPlayerFromId(source)
+	local sourceJob2 = sourceXPlayer.getJob2()
+
+	if sourceJob2.grade_name == 'boss' then
+		local targetXPlayer = ESX.GetPlayerFromId(target)
+
+		targetXPlayer.setJob2(sourceJob2.name, 0)
+		TriggerClientEvent('esx:showNotification', sourceXPlayer.source, ('Vous avez ~g~recruté %s~w~.'):format(targetXPlayer.name))
+		TriggerClientEvent('esx:showNotification', target, ('Vous avez été ~g~embauché par %s~w~.'):format(sourceXPlayer.name))
+	end
+end))
+
+RegisterServerEvent('krz_personalmenu:Boss_virerplayer2')
+AddEventHandler('krz_personalmenu:Boss_virerplayer2', makeTargetedEventFunction(function(target)
+	local sourceXPlayer = ESX.GetPlayerFromId(source)
+	local sourceJob2 = sourceXPlayer.getJob2()
+
+	if sourceJob2.grade_name == 'boss' then
+		local targetXPlayer = ESX.GetPlayerFromId(target)
+		local targetJob2 = targetXPlayer.getJob2()
+
+		if sourceJob2.name == targetJob2.name then
+			targetXPlayer.setJob2('unemployed2', 0)
+			TriggerClientEvent('esx:showNotification', sourceXPlayer.source, ('Vous avez ~r~viré %s~w~.'):format(targetXPlayer.name))
+			TriggerClientEvent('esx:showNotification', target, ('Vous avez été ~g~viré par %s~w~.'):format(sourceXPlayer.name))
+		else
+			TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Le joueur n\'es pas dans votre organisation.')
+		end
+	else
+		TriggerClientEvent('esx:showNotification', sourceXPlayer.source, 'Vous n\'avez pas ~r~l\'autorisation~w~.')
+	end
+end))
