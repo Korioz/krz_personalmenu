@@ -142,28 +142,26 @@ end
 
 function RageUI.GoLeft(Controls)
 	if Controls.Left.Enabled then
-		for Index = 1, #Controls.Left.Keys do
-			if not Controls.Left.Pressed then
+		if not Controls.Left.Pressed then
+			for Index = 1, #Controls.Left.Keys do
 				if IsDisabledControlJustPressed(Controls.Left.Keys[Index][1], Controls.Left.Keys[Index][2]) then
-					Controls.Left.Pressed = true
-
-					Citizen.CreateThread(function()
+					CreateThread(function()
+						Controls.Left.Pressed = true
 						Controls.Left.Active = true
-						Citizen.Wait(0.01)
+						Wait(0)
 
 						Controls.Left.Active = false
-						Citizen.Wait(174.99)
+						Wait(175)
 
 						while Controls.Left.Enabled and IsDisabledControlPressed(Controls.Left.Keys[Index][1], Controls.Left.Keys[Index][2]) do
 							Controls.Left.Active = true
-							Citizen.Wait(0.01)
+							Wait(0)
 
 							Controls.Left.Active = false
-							Citizen.Wait(124.99)
+							Wait(125)
 						end
 
 						Controls.Left.Pressed = false
-						Wait(10)
 					end)
 
 					break
@@ -175,28 +173,26 @@ end
 
 function RageUI.GoRight(Controls)
 	if Controls.Right.Enabled then
-		for Index = 1, #Controls.Right.Keys do
-			if not Controls.Right.Pressed then
+		if not Controls.Right.Pressed then
+			for Index = 1, #Controls.Right.Keys do
 				if IsDisabledControlJustPressed(Controls.Right.Keys[Index][1], Controls.Right.Keys[Index][2]) then
-					Controls.Right.Pressed = true
-
-					Citizen.CreateThread(function()
+					CreateThread(function()
+						Controls.Right.Pressed = true
 						Controls.Right.Active = true
-						Citizen.Wait(0.01)
+						Wait(0)
 
 						Controls.Right.Active = false
-						Citizen.Wait(174.99)
+						Wait(175)
 
 						while Controls.Right.Enabled and IsDisabledControlPressed(Controls.Right.Keys[Index][1], Controls.Right.Keys[Index][2]) do
 							Controls.Right.Active = true
-							Citizen.Wait(1)
+							Wait(0)
 
 							Controls.Right.Active = false
-							Citizen.Wait(124.99)
+							Wait(125)
 						end
 
 						Controls.Right.Pressed = false
-						Wait(10)
 					end)
 
 					break
@@ -208,20 +204,19 @@ end
 
 function RageUI.GoSliderLeft(Controls)
 	if Controls.SliderLeft.Enabled then
-		for Index = 1, #Controls.SliderLeft.Keys do
-			if not Controls.SliderLeft.Pressed then
+		if not Controls.SliderLeft.Pressed then
+			for Index = 1, #Controls.SliderLeft.Keys do
 				if IsDisabledControlJustPressed(Controls.SliderLeft.Keys[Index][1], Controls.SliderLeft.Keys[Index][2]) then
-					Controls.SliderLeft.Pressed = true
-
-					Citizen.CreateThread(function()
+					CreateThread(function()
+						Controls.SliderLeft.Pressed = true
 						Controls.SliderLeft.Active = true
-						Citizen.Wait(1)
+						Wait(0)
 
 						Controls.SliderLeft.Active = false
 
 						while Controls.SliderLeft.Enabled and IsDisabledControlPressed(Controls.SliderLeft.Keys[Index][1], Controls.SliderLeft.Keys[Index][2]) do
 							Controls.SliderLeft.Active = true
-							Citizen.Wait(1)
+							Wait(0)
 
 							Controls.SliderLeft.Active = false
 						end
@@ -238,19 +233,20 @@ end
 
 function RageUI.GoSliderRight(Controls)
 	if Controls.SliderRight.Enabled then
-		for Index = 1, #Controls.SliderRight.Keys do
-			if not Controls.SliderRight.Pressed then
+		if not Controls.SliderRight.Pressed then
+			for Index = 1, #Controls.SliderRight.Keys do
 				if IsDisabledControlJustPressed(Controls.SliderRight.Keys[Index][1], Controls.SliderRight.Keys[Index][2]) then
-					Controls.SliderRight.Pressed = true
-
-					Citizen.CreateThread(function()
+					CreateThread(function()
+						Controls.SliderRight.Pressed = true
 						Controls.SliderRight.Active = true
-						Citizen.Wait(1)
+						Wait(0)
+
 						Controls.SliderRight.Active = false
 
 						while Controls.SliderRight.Enabled and IsDisabledControlPressed(Controls.SliderRight.Keys[Index][1], Controls.SliderRight.Keys[Index][2]) do
 							Controls.SliderRight.Active = true
-							Citizen.Wait(1)
+							Wait(0)
+
 							Controls.SliderRight.Active = false
 						end
 
@@ -281,7 +277,7 @@ function RageUI.Controls()
 					DisableAllControlActions(2)
 				end
 
-				if not IsInputDisabled(2) then
+				if not IsUsingKeyboard(2) then
 					for Index = 1, #Controls.Enabled.Controller do
 						EnableControlAction(Controls.Enabled.Controller[Index][1], Controls.Enabled.Controller[Index][2], true)
 					end
@@ -292,18 +288,19 @@ function RageUI.Controls()
 				end
 
 				if Controls.Up.Enabled then
-					for Index = 1, #Controls.Up.Keys do
-						if not Controls.Up.Pressed then
+					if not Controls.Up.Pressed then
+						for Index = 1, #Controls.Up.Keys do
 							if IsDisabledControlJustPressed(Controls.Up.Keys[Index][1], Controls.Up.Keys[Index][2]) then
-								Controls.Up.Pressed = true
+								CreateThread(function()
+									Controls.Up.Pressed = true
+									Wait(0)
 
-								Citizen.CreateThread(function()
 									RageUI.GoUp(Options)
-									Citizen.Wait(175)
+									Wait(175)
 
 									while Controls.Up.Enabled and IsDisabledControlPressed(Controls.Up.Keys[Index][1], Controls.Up.Keys[Index][2]) do
 										RageUI.GoUp(Options)
-										Citizen.Wait(50)
+										Wait(100)
 									end
 
 									Controls.Up.Pressed = false
@@ -316,18 +313,19 @@ function RageUI.Controls()
 				end
 
 				if Controls.Down.Enabled then
-					for Index = 1, #Controls.Down.Keys do
-						if not Controls.Down.Pressed then
+					if not Controls.Down.Pressed then
+						for Index = 1, #Controls.Down.Keys do
 							if IsDisabledControlJustPressed(Controls.Down.Keys[Index][1], Controls.Down.Keys[Index][2]) then
-								Controls.Down.Pressed = true
+								CreateThread(function()
+									Controls.Down.Pressed = true
+									Wait(0)
 
-								Citizen.CreateThread(function()
 									RageUI.GoDown(Options)
-									Citizen.Wait(175)
+									Wait(175)
 
 									while Controls.Down.Enabled and IsDisabledControlPressed(Controls.Down.Keys[Index][1], Controls.Down.Keys[Index][2]) do
 										RageUI.GoDown(Options)
-										Citizen.Wait(50)
+										Wait(100)
 									end
 
 									Controls.Down.Pressed = false
@@ -346,26 +344,15 @@ function RageUI.Controls()
 				RageUI.GoSliderRight(Controls)
 
 				if Controls.Select.Enabled then
-					for Index = 1, #Controls.Select.Keys do
-						if not Controls.Select.Pressed then
+					if not Controls.Select.Pressed then
+						for Index = 1, #Controls.Select.Keys do
 							if IsDisabledControlJustPressed(Controls.Select.Keys[Index][1], Controls.Select.Keys[Index][2]) then
-								Controls.Select.Pressed = true
-
-								Citizen.CreateThread(function()
+								CreateThread(function()
+									Controls.Select.Pressed = true
 									Controls.Select.Active = true
-									Citizen.Wait(0.01)
+									Wait(0)
 
 									Controls.Select.Active = false
-									Citizen.Wait(174.99)
-
-									while Controls.Select.Enabled and IsDisabledControlPressed(Controls.Select.Keys[Index][1], Controls.Select.Keys[Index][2]) do
-										Controls.Select.Active = true
-										Citizen.Wait(0.01)
-
-										Controls.Select.Active = false
-										Citizen.Wait(124.99)
-									end
-
 									Controls.Select.Pressed = false
 								end)
 
@@ -376,26 +363,15 @@ function RageUI.Controls()
 				end
 
 				if Controls.Click.Enabled then
-					for Index = 1, #Controls.Click.Keys do
-						if not Controls.Click.Pressed then
+					if not Controls.Click.Pressed then
+						for Index = 1, #Controls.Click.Keys do
 							if IsDisabledControlJustPressed(Controls.Click.Keys[Index][1], Controls.Click.Keys[Index][2]) then
-								Controls.Click.Pressed = true
-
-								Citizen.CreateThread(function()
+								CreateThread(function()
+									Controls.Click.Pressed = true
 									Controls.Click.Active = true
-									Citizen.Wait(0.01)
+									Wait(0)
 
 									Controls.Click.Active = false
-									Citizen.Wait(174.99)
-
-									while Controls.Click.Enabled and IsDisabledControlPressed(Controls.Click.Keys[Index][1], Controls.Click.Keys[Index][2]) do
-										Controls.Click.Active = true
-										Citizen.Wait(0.01)
-
-										Controls.Click.Active = false
-										Citizen.Wait(124.99)
-									end
-
 									Controls.Click.Pressed = false
 								end)
 
@@ -406,11 +382,11 @@ function RageUI.Controls()
 				end
 
 				if Controls.Back.Enabled then
-					for Index = 1, #Controls.Back.Keys do
-						if not Controls.Back.Pressed then
+					if not Controls.Back.Pressed then
+						for Index = 1, #Controls.Back.Keys do
 							if IsDisabledControlJustPressed(Controls.Back.Keys[Index][1], Controls.Back.Keys[Index][2]) then
 								Controls.Back.Pressed = true
-								Citizen.Wait(10)
+								Wait(10)
 								break
 							end
 						end
