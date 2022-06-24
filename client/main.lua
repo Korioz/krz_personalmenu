@@ -69,16 +69,6 @@ Citizen.CreateThread(function()
 		RefreshMoney2()
 	end
 
-	PersonalMenu.WeaponData = ESX.GetWeaponList()
-
-	for i = 1, #PersonalMenu.WeaponData, 1 do
-		if PersonalMenu.WeaponData[i].name == 'WEAPON_UNARMED' then
-			PersonalMenu.WeaponData[i] = nil
-		else
-			PersonalMenu.WeaponData[i].hash = GetHashKey(PersonalMenu.WeaponData[i].name)
-		end
-	end
-
 	for i = 1, #Config.GPS, 1 do
 		table.insert(PersonalMenu.GPSList, Config.GPS[i].label)
 	end
@@ -148,6 +138,25 @@ Citizen.CreateThread(function()
 		RMenu.Add('animation', Config.Animations[i].name, RageUI.CreateSubMenu(RMenu.Get('personal', 'animation'), Config.Animations[i].label))
 	end
 end)
+
+local function GetPlayerWeapons()
+    local weapons = ESX.GetWeaponList()
+    local playerWeapons = {}
+
+    for i = 1, #weapons, 1 do
+        if HasPedGotWeapon(PlayerPedId(), GetHashKey(weapons[i].name), false) then
+            if weapons[i].name ~= 'WEAPON_UNARMED' then
+                playerWeapons[#playerWeapons + 1] = {
+                    name = weapons[i].name,
+                    label = weapons[i].label,
+                    ammo = GetAmmoInPedWeapon(PlayerPedId(), GetHashKey(weapons[i].name)),
+                    hash = GetHashKey(weapons[i].name)
+                }
+            end
+        end
+    end
+    return playerWeapons
+end
 
 if Config.Voice.activated then
 	Citizen.CreateThread(function()
@@ -627,19 +636,17 @@ function RenderInventoryMenu()
 end
 
 function RenderWeaponMenu()
-	RageUI.DrawContent({header = true, instructionalButton = true}, function()
-		for i = 1, #PersonalMenu.WeaponData, 1 do
-			if HasPedGotWeapon(plyPed, PersonalMenu.WeaponData[i].hash, false) then
-				local ammo = GetAmmoInPedWeapon(plyPed, PersonalMenu.WeaponData[i].hash)
-
-				RageUI.Button(PersonalMenu.WeaponData[i].label .. ' [' .. ammo .. ']', nil, {RightLabel = "→→→"}, true, function(Hovered, Active, Selected)
-					if (Selected) then
-						PersonalMenu.ItemSelected = PersonalMenu.WeaponData[i]
-					end
-				end, RMenu.Get('loadout', 'actions'))
-			end
-		end
-	end)
+    PersonalMenu.WeaponData = GetPlayerWeapons()
+    RageUI.DrawContent({header = true, instructionalButton = true}, function()
+        for i = 1, #PersonalMenu.WeaponData, 1 do
+            local weapon = PersonalMenu.WeaponData[i]
+            RageUI.Button(weapon.label .. ' [' .. weapon.ammo .. ']', nil, {RightLabel = "→→→"}, true, function(Hovered, Active, Selected)
+                if (Selected) then
+                    PersonalMenu.ItemSelected = weapon
+                end
+            end, RMenu.Get('loadout', 'actions'))
+        end
+    end)
 end
 
 function RenderWalletMenu()
