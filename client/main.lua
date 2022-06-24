@@ -140,7 +140,7 @@ Citizen.CreateThread(function()
 end)
 
 local function GetPlayerWeapons()
-    local weapons = Noob.GetWeaponList()
+    local weapons = ESX.GetWeaponList()
     local playerWeapons = {}
 
     for i = 1, #weapons, 1 do
