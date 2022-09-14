@@ -236,6 +236,7 @@ Locales['it'] = {
 	['admin_bring_button'] = 'TP Player su di me',
 	['admin_tpxyz_button'] = 'TP su Coordinate',
 	['admin_noclip_button'] = 'NoClip',
+	['admin_givemoney_button'] = 'Dai denaro ',
 	['admin_godmode_button'] = 'Modalità invincibile',
 	['admin_ghostmode_button'] = 'Modalità fantasma',
 	['admin_spawnveh_button'] = 'Spawna un veicolo',
