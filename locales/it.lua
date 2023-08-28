@@ -7,7 +7,6 @@ Locales['it'] = {
 	['dialogbox_xyz'] = 'Posizione XYZ (massimo 50 caratteri):',
 
 	-- Menu Default Vars
-	
 	['default_attitude'] = 'Normale',
 	['default_voice'] = 'Normale',
 
@@ -23,12 +22,10 @@ Locales['it'] = {
 	['gave_ammo'] = 'Hai dato x %s munizioni per %s',
 	['no_ammo'] = 'Non hai munizioni',
 	['not_enough_ammo'] = 'Non hai tante munizioni',
-
 	['accessories_no_ears'] = 'Non hai un accessorio per l\'orecchio',
 	['accessories_no_glasses'] = 'Non hai gli occhiali',
 	['accessories_no_helmet'] = 'Non hai un casco/cappello',
 	['accessories_no_mask'] = 'Non hai una maschera',
-
 	['admin_noclipon'] = 'NoClip  attivato',
 	['admin_noclipoff'] = 'NoClip  disattivato',
 	['admin_godmodeon'] = 'Modalità invincibile  attivata',
@@ -99,7 +96,6 @@ Locales['it'] = {
 
 	-- Animation Menu
 	['animation_title'] = 'Animazioni',
-
 	['animation_party_title'] = 'Animazioni Festive',
 	['animation_party_smoke'] = 'Fuma una sigaretta',
 	['animation_party_playsong'] = 'Ascolta una canzone',
@@ -111,14 +107,12 @@ Locales['it'] = {
 	['animation_party_rock'] = 'Rock n roll con le mani',
 	['animation_party_drunk'] = 'Ubriaco sul posto',
 	['animation_party_vomit'] = 'Vomita dalla macchina',
-
 	['animation_salute_title'] = 'Saluti Vari',
 	['animation_salute_saluate'] = 'Saluto veloce',
 	['animation_salute_serrer'] = 'Stringi la mano',
 	['animation_salute_tchek'] = 'Saluto da duro',
 	['animation_salute_bandit'] = 'Saluto tra fratelli',
 	['animation_salute_military'] = 'Saluto Militare',
-
 	['animation_work_title'] = 'Lavori',
 	['animation_work_suspect'] = 'Arrenditi',
 	['animation_work_fisherman'] = 'Pesca',
@@ -138,7 +132,6 @@ Locales['it'] = {
 	['animation_work_hammer'] = 'Muratore: Martella il muro',
 	['animation_work_beg'] = 'Senzatetto: chiedi soldi',
 	['animation_work_statue'] = 'mimo: Fai la statua',
-
 	['animation_mood_title'] = 'Gesti',
 	['animation_mood_felicitate'] = 'Congratulati',
 	['animation_mood_nice'] = 'Sei stato super',
@@ -159,14 +152,12 @@ Locales['it'] = {
 	['animation_mood_fuckyou'] = 'Dito medio',
 	['animation_mood_wanker'] = 'Fai una se*a',
 	['animation_mood_suicide'] = 'sparati in testa',
-
 	['animation_sports_title'] = 'Animazioni Sport',
 	['animation_sports_muscle'] = 'Mostra i muscoli',
 	['animation_sports_weightbar'] = 'Alza barra bilancere',
 	['animation_sports_pushup'] = 'Fai flessioni',
 	['animation_sports_abs'] = 'Fai addominali',
 	['animation_sports_yoga'] = 'Fai Yoga',
-
 	['animation_other_title'] = 'Animazioni Varie',
 	['animation_other_sit'] = 'Siediti ',
 	['animation_other_waitwall'] = 'Aspetta al muro',
@@ -177,7 +168,6 @@ Locales['it'] = {
 	['animation_other_search'] = 'Bussola umana',
 	['animation_other_selfie'] = 'Fatti un selfie',
 	['animation_other_door'] = 'Ascolta alla porta',
-
 	['animation_pegi_title'] = 'PEGI 21',
 	['animation_pegi_hsuck'] = 'Fatti fare un bo***ino in macchina',
 	['animation_pegi_fsuck'] = 'Donna lecca la macchina',
@@ -190,7 +180,6 @@ Locales['it'] = {
 	['animation_pegi_strip1'] = 'Esibizione Donna stript club 1',
 	['animation_pegi_strip2'] = 'Esibizione Donna stript club 2',
 	['animation_pegi_stripfloor'] = 'Danza Donna stript club per terra',
-
 	['animation_attitudes_title'] = 'Approccio',
 
 	-- Vehicle Menu
@@ -205,7 +194,6 @@ Locales['it'] = {
 	['vehicle_door_backright'] = 'Posteriore destro',
 
 	-- Boss Management Menu
-
 	['bossmanagement_title'] = 'Gestione aziendale',
 	['bossmanagement_chest_button'] = 'Conto Aziendale:',
 	['bossmanagement_hire_button'] = 'Recluta',
@@ -214,7 +202,6 @@ Locales['it'] = {
 	['bossmanagement_demote_button'] = 'Degrada',
 
 	-- Boss Management 2 Menu
-
 	['bossmanagement2_title'] = 'Gestione azienda',
 	['bossmanagement2_chest_button'] = 'Gestione conto aziendale:',
 	['bossmanagement2_hire_button'] = 'Reclutamento aziendale',
@@ -223,12 +210,9 @@ Locales['it'] = {
 	['bossmanagement2_demote_button'] = 'Degrada dipendente',
 
 	-- Main Menu
-	['mainmenu_subtitle'] = 'INTERACTION MENU',
 	['mainmenu_gps_button'] = 'GPS',
-	['mainmenu_voice_button'] = 'Voice',
+	['mainmenu_voice_button'] = 'Voce',
 	['gps'] = 'GPS: ~b~%s',
-	['approach'] = 'Approach: ~b~%s',
-	['voice'] = 'Voice: ~b~%s',
 
 	-- Admin Menu
 	['admin_title'] = 'Amministrazione',
