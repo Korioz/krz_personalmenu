@@ -23,12 +23,10 @@ Locales['de'] = {
 	['gave_ammo'] = 'Du hast x %s Munition an %s gegeben',
 	['no_ammo'] = 'Du hast keine Munition',
 	['not_enough_ammo'] = 'Du hast nicht so viel Munition',
-
 	['accessories_no_ears'] = 'Du hast kein Ohr Zubehör',
 	['accessories_no_glasses'] = 'Du hast keine Brille',
 	['accessories_no_helmet'] = 'Du hast keinen Helm/Hut',
 	['accessories_no_mask'] = 'Du hast keine Maske',
-
 	['admin_noclipon'] = 'NoClip ~g~ aktiviert',
 	['admin_noclipoff'] = 'NoClip ~r~ deaktiviert',
 	['admin_godmodeon'] = 'Invincible ~g~ aktiviert',
@@ -114,14 +112,12 @@ Locales['de'] = {
 	['animation_party_rock'] = 'Rock n roll',
 	['animation_party_drunk'] = 'Stuck on the spot',
 	['animation_party_vomit'] = 'Vomit by car',
-
 	['animation_salute_title'] = 'Greetings',
 	['animation_salute_saluate'] = 'Greet',
 	['animation_salute_serrer'] = 'Shake hands',
 	['animation_salute_tchek'] = 'Chek',
 	['animation_salute_bandit'] = 'Hi bandit',
 	['animation_salute_military'] = 'Hi Military',
-
 	['animation_work_title'] = 'Work',
 	['animation_work_suspect'] = 'surrender',
 	['animation_work_fisherman'] = 'Fisherman',
@@ -141,7 +137,6 @@ Locales['de'] = {
 	['animation_work_hammer'] = 'All: Hammer blow',
 	['animation_work_beg'] = 'SDF: Make the round',
 	['animation_work_statue'] = 'SDF: Make the statue',
-
 	['animation_mood_title'] = 'Moods',
 	['animation_mood_felicitate'] = 'Congratulate',
 	['animation_mood_nice'] = 'Super',
@@ -162,14 +157,12 @@ Locales['de'] = {
 	['animation_mood_fuckyou'] = 'Finger of Honor',
 	['animation_mood_wanker'] = 'Wanker',
 	['animation_mood_suicide'] = 'Ball in the head',
-
 	['animation_sports_title'] = 'Sports',
 	['animation_sports_muscle'] = 'Show your muscles',
 	['animation_sports_weightbar'] = 'Weight bar',
 	['animation_sports_pushup'] = 'Make pumps',
 	['animation_sports_abs'] = 'Make abs',
 	['animation_sports_yoga'] = 'Do yoga',
-
 	['animation_other_title'] = 'Miscellaneous',
 	['animation_other_sit'] = 'Sit ',
 	['animation_other_waitwall'] = 'Wait against a wall',
@@ -180,7 +173,6 @@ Locales['de'] = {
 	['animation_other_search'] = 'Search Position',
 	['animation_other_selfie'] = 'Take a selfie',
 	['animation_other_door'] = 'Listen to a door',
-
 	['animation_pegi_title'] = 'PEGI 21',
 	['animation_pegi_hsuck'] = 'Man getting sucked in the car',
 	['animation_pegi_fsuck'] = 'Woman sucks in the car',
@@ -193,7 +185,6 @@ Locales['de'] = {
 	['animation_pegi_strip1'] = 'Strip Tease 1',
 	['animation_pegi_strip2'] = 'Strip Tease 2',
 	['animation_pegi_stripfloor'] = 'Strip Tease on the ground',
-
 	['animation_attitudes_title'] = 'Approach',
 
 	-- Vehicle Menu
@@ -208,7 +199,6 @@ Locales['de'] = {
 	['vehicle_door_backright'] = 'Hinten Rechts',
 
 	-- Boss Management Menu
-
 	['bossmanagement_title'] = 'Firmen Managment',
 	['bossmanagement_chest_button'] = 'Tresor: ',
 	['bossmanagement_hire_button'] = 'Einstellen',
@@ -217,7 +207,6 @@ Locales['de'] = {
 	['bossmanagement_demote_button'] = 'Degradieren',
 
 	-- Boss Management 2 Menu
-
 	['bossmanagement2_title'] = 'Organisation Management',
 	['bossmanagement2_chest_button'] = 'Organisation Truhe:',
 	['bossmanagement2_hire_button'] = 'Einstellen',
@@ -244,5 +233,17 @@ Locales['de'] = {
 	['admin_tpmarker_button'] = 'Zur Markierung teleportieren',
 	['admin_revive_button'] = 'Spieler wiederbeleben',
 	['admin_changeskin_button'] = 'Aussehen ändern',
-	['admin_saveskin_button'] = 'Aussehen speichern'
+	['admin_saveskin_button'] = 'Aussehen speichern',
+
+	-- GPS
+	['none'] = 'No Location', -- No translated
+	['police_station'] = 'Police Station', -- No translated
+	['central_garage'] = 'Central garage', -- No translated
+	['hospital'] = 'Hospital', -- No translated
+	['dealer'] = 'Cardealer', -- No translated
+	['bennys_custom'] = 'Bennys Custom', -- No translated
+	['job_center'] = 'Employment center', -- No translated
+	['driving_school'] = 'Driving school', -- No translated
+	['tequila-la'] = 'tequila-la', -- No translated
+	['bahama_mamas'] = 'bahama_mamas' -- No translated
 }

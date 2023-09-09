@@ -23,12 +23,10 @@ Locales['es'] = {
 	['gave_ammo'] = 'Distes x %s munición a %s',
 	['no_ammo'] = 'No tienes munición',
 	['not_enough_ammo'] = 'No tienes suficiente munición',
-
 	['accessories_no_ears'] = 'No tienes un accesorio de oreja',
 	['accessories_no_glasses'] = 'No tienes gafas',
 	['accessories_no_helmet'] = 'No tienes casco / gorra / gorro',
 	['accessories_no_mask'] = 'No tienes una máscara',
-
 	['admin_noclipon'] = 'NoClip ~g~ habilitado',
 	['admin_noclipoff'] = 'NoClip ~r~ deshabilitado',
 	['admin_godmodeon'] = 'Invencible ~g~ habilitado',
@@ -102,7 +100,6 @@ Locales['es'] = {
 
 	-- Animation Menu
 	['animation_title'] = 'Animaciones',
-
 	['animation_party_title'] = 'Festivales',
 	['animation_party_smoke'] = 'Fumar un cigarro',
 	['animation_party_playsong'] = 'Poner música',
@@ -114,14 +111,12 @@ Locales['es'] = {
 	['animation_party_rock'] = 'Rock n roll',
 	['animation_party_drunk'] = 'Borracho',
 	['animation_party_vomit'] = 'Vomitar',
-
 	['animation_salute_title'] = 'Saludos',
 	['animation_salute_saluate'] = 'Saludar',
 	['animation_salute_serrer'] = 'Dar la mano',
 	['animation_salute_tchek'] = 'Chek',
 	['animation_salute_bandit'] = 'Saludo bandido',
 	['animation_salute_military'] = 'Saludo militar',
-
 	['animation_work_title'] = 'Trabajo',
 	['animation_work_suspect'] = 'Rendirse',
 	['animation_work_fisherman'] = 'Pescadero',
@@ -141,7 +136,6 @@ Locales['es'] = {
 	['animation_work_hammer'] = 'Todos: Golpe de martillo',
 	['animation_work_beg'] = 'SDF: hacer la ronda',
 	['animation_work_statue'] = 'SDF: hacer la estatua',
-
 	['animation_mood_title'] = 'Estado',
 	['animation_mood_felicitate'] = 'Felicitar',
 	['animation_mood_nice'] = 'Guay',
@@ -162,14 +156,12 @@ Locales['es'] = {
 	['animation_mood_fuckyou'] = 'Dedo del medio',
 	['animation_mood_wanker'] = 'Una buena paja',
 	['animation_mood_suicide'] = 'Bala en la cabeza',
-
 	['animation_sports_title'] = 'Deportes',
 	['animation_sports_muscle'] = 'Mostrar tus músculos',
 	['animation_sports_weightbar'] = 'Barra de pesas',
 	['animation_sports_pushup'] = 'Hacer flexiones',
 	['animation_sports_abs'] = 'Hacer abdominales',
 	['animation_sports_yoga'] = 'Hacer yoga',
-
 	['animation_other_title'] = 'Random',
 	['animation_other_sit'] = 'Sentarse',
 	['animation_other_waitwall'] = 'Apoyarse contra el muro',
@@ -180,7 +172,6 @@ Locales['es'] = {
 	['animation_other_search'] = 'Buscar posición',
 	['animation_other_selfie'] = 'Sacar un selfie',
 	['animation_other_door'] = 'Escuchar por la puerta',
-
 	['animation_pegi_title'] = 'PEGI 18',
 	['animation_pegi_hsuck'] = 'Hombre recibiendo felación',
 	['animation_pegi_fsuck'] = 'Mujer chupa en el coche',
@@ -193,7 +184,6 @@ Locales['es'] = {
 	['animation_pegi_strip1'] = 'Strip Tease 1',
 	['animation_pegi_strip2'] = 'Strip Tease 2',
 	['animation_pegi_stripfloor'] = 'Strip Tease en el suelo',
-
 	['animation_attitudes_title'] = 'Acercarse',
 
 	-- Vehicle Menu
@@ -208,7 +198,6 @@ Locales['es'] = {
 	['vehicle_door_backright'] = 'Puerta trasera derecha',
 
 	-- Boss Management Menu
-
 	['bossmanagement_title'] = 'Negocios',
 	['bossmanagement_chest_button'] = 'Negocio Cofre:',
 	['bossmanagement_hire_button'] = 'Reclutar',
@@ -217,7 +206,6 @@ Locales['es'] = {
 	['bossmanagement_demote_button'] = 'Degradar',
 
 	-- Boss Management 2 Menu
-
 	['bossmanagement2_title'] = 'Organización',
 	['bossmanagement2_chest_button'] = 'Organization Cofre:',
 	['bossmanagement2_hire_button'] = 'Reclutar',
@@ -244,5 +232,17 @@ Locales['es'] = {
 	['admin_tpmarker_button'] = 'TP al marcador',
 	['admin_revive_button'] = 'Revivir un jugador',
 	['admin_changeskin_button'] = 'Cambiar apariencia',
-	['admin_saveskin_button'] = 'Guardar apariencia'
+	['admin_saveskin_button'] = 'Guardar apariencia',
+
+	-- GPS
+	['none'] = 'No Location', -- No translated
+	['police_station'] = 'Police Station', -- No translated
+	['central_garage'] = 'Central garage', -- No translated
+	['hospital'] = 'Hospital', -- No translated
+	['dealer'] = 'Cardealer', -- No translated
+	['bennys_custom'] = 'Bennys Custom', -- No translated
+	['job_center'] = 'Employment center', -- No translated
+	['driving_school'] = 'Driving school', -- No translated
+	['tequila-la'] = 'tequila-la', -- No translated
+	['bahama_mamas'] = 'bahama_mamas' -- No translated
 }
