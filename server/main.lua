@@ -1,4 +1,4 @@
-TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+ESX = exports["es_extended"]:getSharedObject()
 
 do
 	local origRegisterServerEvent = RegisterServerEvent
