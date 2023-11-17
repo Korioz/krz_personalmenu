@@ -23,12 +23,10 @@ Locales['en'] = {
 	['gave_ammo'] = 'You have given x %s ammo to %s',
 	['no_ammo'] = 'You do not have any ammo',
 	['not_enough_ammo'] = 'You do not have as many ammo',
-
 	['accessories_no_ears'] = 'You do not have an Ear Accessory',
 	['accessories_no_glasses'] = 'You do not have glasses',
 	['accessories_no_helmet'] = 'You do not have a Helmet / Hat',
 	['accessories_no_mask'] = 'You do not have a mask',
-
 	['admin_noclipon'] = 'NoClip ~g~ enabled',
 	['admin_noclipoff'] = 'NoClip ~r~ disabled',
 	['admin_godmodeon'] = 'Invincible ~g~ enabled',
@@ -102,7 +100,6 @@ Locales['en'] = {
 
 	-- Animation Menu
 	['animation_title'] = 'Animations',
-
 	['animation_party_title'] = 'Festivals',
 	['animation_party_smoke'] = 'Smoking a cigarette',
 	['animation_party_playsong'] = 'Play music',
@@ -114,14 +111,12 @@ Locales['en'] = {
 	['animation_party_rock'] = 'Rock n roll',
 	['animation_party_drunk'] = 'Stuck on the spot',
 	['animation_party_vomit'] = 'Vomit by car',
-
 	['animation_salute_title'] = 'Greetings',
 	['animation_salute_saluate'] = 'Greet',
 	['animation_salute_serrer'] = 'Shake hands',
 	['animation_salute_tchek'] = 'Chek',
 	['animation_salute_bandit'] = 'Hi bandit',
 	['animation_salute_military'] = 'Hi Military',
-
 	['animation_work_title'] = 'Work',
 	['animation_work_suspect'] = 'surrender',
 	['animation_work_fisherman'] = 'Fisherman',
@@ -141,7 +136,6 @@ Locales['en'] = {
 	['animation_work_hammer'] = 'All: Hammer blow',
 	['animation_work_beg'] = 'SDF: Make the round',
 	['animation_work_statue'] = 'SDF: Make the statue',
-
 	['animation_mood_title'] = 'Moods',
 	['animation_mood_felicitate'] = 'Congratulate',
 	['animation_mood_nice'] = 'Super',
@@ -162,14 +156,12 @@ Locales['en'] = {
 	['animation_mood_fuckyou'] = 'Finger of Honor',
 	['animation_mood_wanker'] = 'Wanker',
 	['animation_mood_suicide'] = 'Ball in the head',
-
 	['animation_sports_title'] = 'Sports',
 	['animation_sports_muscle'] = 'Show your muscles',
 	['animation_sports_weightbar'] = 'Weight bar',
 	['animation_sports_pushup'] = 'Make pumps',
 	['animation_sports_abs'] = 'Make abs',
 	['animation_sports_yoga'] = 'Do yoga',
-
 	['animation_other_title'] = 'Miscellaneous',
 	['animation_other_sit'] = 'Sit ',
 	['animation_other_waitwall'] = 'Wait against a wall',
@@ -180,7 +172,6 @@ Locales['en'] = {
 	['animation_other_search'] = 'Search Position',
 	['animation_other_selfie'] = 'Take a selfie',
 	['animation_other_door'] = 'Listen to a door',
-
 	['animation_pegi_title'] = 'PEGI 21',
 	['animation_pegi_hsuck'] = 'Man getting sucked in the car',
 	['animation_pegi_fsuck'] = 'Woman sucks in the car',
@@ -193,7 +184,6 @@ Locales['en'] = {
 	['animation_pegi_strip1'] = 'Strip Tease 1',
 	['animation_pegi_strip2'] = 'Strip Tease 2',
 	['animation_pegi_stripfloor'] = 'Strip Tease on the ground',
-
 	['animation_attitudes_title'] = 'Approach',
 
 	-- Vehicle Menu
@@ -208,7 +198,6 @@ Locales['en'] = {
 	['vehicle_door_backright'] = 'Rear Right',
 
 	-- Boss Management Menu
-
 	['bossmanagement_title'] = 'Company Management',
 	['bossmanagement_chest_button'] = 'Company Safe:',
 	['bossmanagement_hire_button'] = 'Recruit',
@@ -217,7 +206,6 @@ Locales['en'] = {
 	['bossmanagement_demote_button'] = 'Demote',
 
 	-- Boss Management 2 Menu
-
 	['bossmanagement2_title'] = 'Organization Management',
 	['bossmanagement2_chest_button'] = 'Organization Chest:',
 	['bossmanagement2_hire_button'] = 'Recruit',
@@ -244,5 +232,17 @@ Locales['en'] = {
 	['admin_tpmarker_button'] = 'TP on the Marker',
 	['admin_revive_button'] = 'Revive a Player',
 	['admin_changeskin_button'] = 'Change Appearance',
-	['admin_saveskin_button'] = 'Save Appearance'
+	['admin_saveskin_button'] = 'Save Appearance',
+
+	-- GPS
+	['none'] = 'No Location',
+	['police_station'] = 'Police Station',
+	['central_garage'] = 'Central garage',
+	['hospital'] = 'Hospital',
+	['dealer'] = 'Cardealer',
+	['bennys_custom'] = 'Bennys Custom',
+	['job_center'] = 'Employment center',
+	['driving_school'] = 'Driving school',
+	['tequila-la'] = 'tequila-la',
+	['bahama_mamas'] = 'bahama_mamas'
 }

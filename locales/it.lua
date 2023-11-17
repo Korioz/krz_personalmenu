@@ -233,5 +233,17 @@ Locales['it'] = {
 	['admin_tpmarker_button'] = 'TP sul Marker',
 	['admin_revive_button'] = 'Rianima Player',
 	['admin_changeskin_button'] = 'Cambia aspetto',
-	['admin_saveskin_button'] = 'Salva aspetto'
+	['admin_saveskin_button'] = 'Salva aspetto',
+
+	-- GPS
+	['none'] = 'Nessuna Posizione',
+	['police_station'] = 'Stazione di polizia',
+	['central_garage'] = 'Garage Centrale',
+	['hospital'] = 'Ospedale',
+	['dealer'] = 'Concessionario',
+	['bennys_custom'] = 'Bennys Custom',
+	['job_center'] = 'Centro per l\'Impiego',
+	['driving_school'] = 'Scuola Guida',
+	['tequila-la'] = 'tequila-la',
+	['bahama_mamas'] = 'bahama_mamas'
 }

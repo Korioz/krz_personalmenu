@@ -23,12 +23,10 @@ Locales['fr'] = {
 	['gave_ammo'] = 'Vous avez donné x%s munitions à %s',
 	['no_ammo'] = 'Vous ne possédez pas de munitions',
 	['not_enough_ammo'] = 'Vous ne possédez pas autant de munitions',
-
 	['accessories_no_ears'] = 'Vous ne possédez pas d\'Accessoire d\'Oreilles',
 	['accessories_no_glasses'] = 'Vous ne possédez pas de Lunettes',
 	['accessories_no_helmet'] = 'Vous ne possédez pas de Casque/Chapeau',
 	['accessories_no_mask'] = 'Vous ne possédez pas de Masque',
-
 	['admin_noclipon'] = 'NoClip ~g~activé',
 	['admin_noclipoff'] = 'NoClip ~r~désactivé',
 	['admin_godmodeon'] = 'Mode invincible ~g~activé',
@@ -114,14 +112,12 @@ Locales['fr'] = {
 	['animation_party_rock'] = 'Rock\'n\'roll',
 	['animation_party_drunk'] = 'Bourré sur place',
 	['animation_party_vomit'] = 'Vomir en voiture',
-
 	['animation_salute_title'] = 'Salutations',
 	['animation_salute_saluate'] = 'Saluer',
 	['animation_salute_serrer'] = 'Serrer la main',
 	['animation_salute_tchek'] = 'Tchek',
 	['animation_salute_bandit'] = 'Salut bandit',
 	['animation_salute_military'] = 'Salut Militaire',
-
 	['animation_work_title'] = 'Travail',
 	['animation_work_suspect'] = 'Se rendre',
 	['animation_work_fisherman'] = 'Pêcheur',
@@ -141,7 +137,6 @@ Locales['fr'] = {
 	['animation_work_hammer'] = 'Tout : Coup de marteau',
 	['animation_work_beg'] = 'SDF : Faire la manche',
 	['animation_work_statue'] = 'SDF : Faire la statue',
-
 	['animation_mood_title'] = 'Humeurs',
 	['animation_mood_felicitate'] = 'Féliciter',
 	['animation_mood_nice'] = 'Super',
@@ -162,14 +157,12 @@ Locales['fr'] = {
 	['animation_mood_fuckyou'] = 'Doigt d\'honneur',
 	['animation_mood_wanker'] = 'Branleur',
 	['animation_mood_suicide'] = 'Balle dans la tête',
-
 	['animation_sports_title'] = 'Sports',
 	['animation_sports_muscle'] = 'Montrer ses muscles',
 	['animation_sports_weightbar'] = 'Barre de musculation',
 	['animation_sports_pushup'] = 'Faire des pompes',
 	['animation_sports_abs'] = 'Faire des abdos',
 	['animation_sports_yoga'] = 'Faire du yoga',
-
 	['animation_other_title'] = 'Divers',
 	['animation_other_sit'] = 'S\'asseoir',
 	['animation_other_waitwall'] = 'Attendre contre un mur',
@@ -180,7 +173,6 @@ Locales['fr'] = {
 	['animation_other_search'] = 'Position de Fouille',
 	['animation_other_selfie'] = 'Prendre un selfie',
 	['animation_other_door'] = 'Ecouter à une porte',
-
 	['animation_pegi_title'] = 'PEGI 21',
 	['animation_pegi_hsuck'] = 'Homme se faire suc** en voiture',
 	['animation_pegi_fsuck'] = 'Femme suc** en voiture',
@@ -193,7 +185,6 @@ Locales['fr'] = {
 	['animation_pegi_strip1'] = 'Strip Tease 1',
 	['animation_pegi_strip2'] = 'Strip Tease 2',
 	['animation_pegi_stripfloor'] = 'Strip Tease au sol',
-
 	['animation_attitudes_title'] = 'Démarche',
 
 	-- Vehicle Menu
@@ -242,5 +233,17 @@ Locales['fr'] = {
 	['admin_tpmarker_button'] = 'TP sur le Marqueur',
 	['admin_revive_button'] = 'Réanimer un Joueur',
 	['admin_changeskin_button'] = 'Changer l\'Apparence',
-	['admin_saveskin_button'] = 'Sauvegarder l\'Apparence'
+	['admin_saveskin_button'] = 'Sauvegarder l\'Apparence',
+
+	-- GPS
+	['none'] = 'Aucun',
+	['police_station'] = 'Poste de Police',
+	['central_garage'] = 'Garage Central',
+	['hospital'] = 'Hôpital',
+	['dealer'] = 'Concessionnaire',
+	['bennys_custom'] = 'Benny\'s Custom',
+	['job_center'] = 'Pôle Emploie',
+	['driving_school'] = 'Auto école',
+	['tequila-la'] = 'Téquila-la',
+	['bahama_mamas'] = 'Bahama Mamas'
 }

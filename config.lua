@@ -13,7 +13,7 @@ local Keys = {
 Config = {}
 
 -- LANGUAGE --
-Config.Locale = 'fr'
+Config.Locale = 'en'
 
 -- GENERAL --
 Config.MenuTitle = 'ServerName' -- change it to you're server name
@@ -33,16 +33,16 @@ Config.Controls = {
 
 -- GPS --
 Config.GPS = {
-	{label = 'Aucun', coords = nil},
-	{label = 'Poste de Police', coords = vector2(425.13, -979.55)},
-	{label = 'Garage Central', coords = vector2(-449.67, -340.83)},
-	{label = 'Hôpital', coords = vector2(-33.88, -1102.37)},
-	{label = 'Concessionnaire', coords = vector2(215.06, -791.56)},
-	{label = 'Benny\'s Custom', coords = vector2(-212.13, -1325.27)},
-	{label = 'Pôle Emploie', coords = vector2(-264.83, -964.54)},
-	{label = 'Auto école', coords = vector2(-829.22, -696.99)},
-	{label = 'Téquila-la', coords = vector2(-565.09, 273.45)},
-	{label = 'Bahama Mamas', coords = vector2(-1391.06, -590.34)}
+	{label = _U('none'), coords = nil},
+	{label = _U('police_station'), coords = vector2(425.13, -979.55)},
+	{label = _U('central_garage'), coords = vector2(-449.67, -340.83)},
+	{label = _U('hospital'), coords = vector2(-33.88, -1102.37)},
+	{label = _U('dealer'), coords = vector2(215.06, -791.56)},
+	{label = _U('bennys_custom'), coords = vector2(-212.13, -1325.27)},
+	{label = _U('job_center'), coords = vector2(-264.83, -964.54)},
+	{label = _U('driving_school'), coords = vector2(-829.22, -696.99)},
+	{label = _U('tequila-la'), coords = vector2(-565.09, 273.45)},
+	{label = _U('bahama_mamas'), coords = vector2(-1391.06, -590.34)}
 }
 
 -- VOICE --
@@ -220,7 +220,7 @@ Config.Admin = {
 
 			if plyId ~= nil then
 				plyId = tonumber(plyId)
-				
+
 				if type(plyId) == 'number' then
 					TriggerServerEvent('krz_personalmenu:Admin_BringS', GetPlayerServerId(PlayerId()), plyId)
 				end
@@ -238,7 +238,7 @@ Config.Admin = {
 
 			if plyId ~= nil then
 				plyId = tonumber(plyId)
-				
+
 				if type(plyId) == 'number' then
 					TriggerServerEvent('krz_personalmenu:Admin_BringS', plyId, GetPlayerServerId(PlayerId()))
 				end
@@ -256,7 +256,7 @@ Config.Admin = {
 
 			if pos ~= nil and pos ~= '' then
 				local _, _, x, y, z = string.find(pos, '([%d%.]+) ([%d%.]+) ([%d%.]+)')
-						
+
 				if x ~= nil and y ~= nil and z ~= nil then
 					SetEntityCoords(plyPed, x + .0, y + .0, z + .0)
 				end
@@ -489,7 +489,7 @@ Config.Admin = {
 
 			if plyId ~= nil then
 				plyId = tonumber(plyId)
-				
+
 				if type(plyId) == 'number' then
 					TriggerServerEvent('esx_ambulancejob:revive', plyId)
 				end
