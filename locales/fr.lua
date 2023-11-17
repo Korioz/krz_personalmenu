@@ -236,14 +236,14 @@ Locales['fr'] = {
 	['admin_saveskin_button'] = 'Sauvegarder l\'Apparence',
 
 	-- GPS
-	['none'] = 'No Location', -- No translated
-	['police_station'] = 'Police Station', -- No translated
-	['central_garage'] = 'Central garage', -- No translated
-	['hospital'] = 'Hospital', -- No translated
-	['dealer'] = 'Cardealer', -- No translated
-	['bennys_custom'] = 'Bennys Custom', -- No translated
-	['job_center'] = 'Employment center', -- No translated
-	['driving_school'] = 'Driving school', -- No translated
-	['tequila-la'] = 'tequila-la', -- No translated
-	['bahama_mamas'] = 'bahama_mamas' -- No translated
+	['none'] = 'Aucun',
+	['police_station'] = 'Poste de Police',
+	['central_garage'] = 'Garage Central',
+	['hospital'] = 'Hôpital',
+	['dealer'] = 'Concessionnaire',
+	['bennys_custom'] = 'Benny\'s Custom',
+	['job_center'] = 'Pôle Emploie',
+	['driving_school'] = 'Auto école',
+	['tequila-la'] = 'Téquila-la',
+	['bahama_mamas'] = 'Bahama Mamas'
 }
