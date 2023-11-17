@@ -26,9 +26,9 @@ Citizen.CreateThread(function()
 			local plyPed = PlayerPedId()
 
 			if (DoesEntityExist(plyPed)) and (not IsEntityDead(plyPed)) and (IsPedOnFoot(plyPed)) then
-				Player.crouched = not Player.crouched
+				PlayerVars.crouched = not PlayerVars.crouched
 
-				if Player.crouched then 
+				if PlayerVars.crouched then 
 					ESX.Streaming.RequestAnimSet('move_ped_crouched', function()
 						SetPedMovementClipset(plyPed, 'move_ped_crouched', 0.25)
 						RemoveAnimSet('move_ped_crouched')
@@ -43,13 +43,13 @@ Citizen.CreateThread(function()
 			local plyPed = PlayerPedId()
 
 			if (DoesEntityExist(plyPed)) and not (IsEntityDead(plyPed)) and (IsPedOnFoot(plyPed)) then
-				if Player.pointing then
-					Player.pointing = false
+				if PlayerVars.pointing then
+					PlayerVars.pointing = false
 				end
 
-				Player.handsUp = not Player.handsUp
+				PlayerVars.handsUp = not PlayerVars.handsUp
 
-				if Player.handsUp then
+				if PlayerVars.handsUp then
 					ESX.Streaming.RequestAnimDict('random@mugging3', function()
 						TaskPlayAnim(plyPed, 'random@mugging3', 'handsup_standing_base', 8.0, -8, -1, 49, 0, 0, 0, 0)
 						RemoveAnimDict('random@mugging3')
@@ -64,13 +64,13 @@ Citizen.CreateThread(function()
 			local plyPed = PlayerPedId()
 	
 			if (DoesEntityExist(plyPed)) and (not IsEntityDead(plyPed)) and (IsPedOnFoot(plyPed)) then
-				if Player.handsUp then
-					Player.handsUp = false
+				if PlayerVars.handsUp then
+					PlayerVars.handsUp = false
 				end
 
-				Player.pointing = not Player.pointing
+				PlayerVars.pointing = not PlayerVars.pointing
 
-				if Player.pointing then
+				if PlayerVars.pointing then
 					startPointing(plyPed)
 				else
 					stopPointing(plyPed)
@@ -78,12 +78,12 @@ Citizen.CreateThread(function()
 			end
 		end
 
-		if Player.crouched or Player.handsUp or Player.pointing then
+		if PlayerVars.crouched or PlayerVars.handsUp or PlayerVars.pointing then
 			if not IsPedOnFoot(PlayerPedId()) then
 				ResetPedMovementClipset(plyPed, 0)
 				stopPointing()
-				Player.crouched, Player.handsUp, Player.pointing = false, false, false
-			elseif Player.pointing then
+				PlayerVars.crouched, PlayerVars.handsUp, PlayerVars.pointing = false, false, false
+			elseif PlayerVars.pointing then
 				local ped = PlayerPedId()
 				local camPitch = GetGameplayCamRelativePitch()
 
