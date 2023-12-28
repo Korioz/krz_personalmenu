@@ -72,7 +72,7 @@ Citizen.CreateThread(function()
 		if PersonalMenu.WeaponData[i].name == 'WEAPON_UNARMED' then
 			PersonalMenu.WeaponData[i] = nil
 		else
-			PersonalMenu.WeaponData[i].hash = GetHashKey(PersonalMenu.WeaponData[i].name)
+			PersonalMenu.WeaponData[i].hash = joaat(PersonalMenu.WeaponData[i].name)
 		end
 	end
 
@@ -203,7 +203,7 @@ end)
 -- Weapon Menu --
 RegisterNetEvent('krz_personalmenu:Weapon_addAmmoToPedC')
 AddEventHandler('krz_personalmenu:Weapon_addAmmoToPedC', function(value, quantity)
-	local weaponHash = GetHashKey(value)
+	local weaponHash = joaat(value)
 
 	if HasPedGotWeapon(plyPed, weaponHash, false) and value ~= 'WEAPON_UNARMED' then
 		AddAmmoToPed(plyPed, value, quantity)
