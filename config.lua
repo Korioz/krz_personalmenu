@@ -270,9 +270,9 @@ Config.Admin = {
 		label = _U('admin_noclip_button'),
 		groups = {'_dev', 'owner', 'superadmin', 'admin', 'mod'},
 		command = function()
-			Player.noclip = not Player.noclip
+			PlayerVars.noclip = not PlayerVars.noclip
 
-			if Player.noclip then
+			if PlayerVars.noclip then
 				FreezeEntityPosition(plyPed, true)
 				SetEntityInvincible(plyPed, true)
 				SetEntityCollision(plyPed, false, false)
@@ -302,9 +302,9 @@ Config.Admin = {
 		label = _U('admin_godmode_button'),
 		groups = {'_dev', 'owner', 'superadmin'},
 		command = function()
-			Player.godmode = not Player.godmode
+			PlayerVars.godmode = not PlayerVars.godmode
 
-			if Player.godmode then
+			if PlayerVars.godmode then
 				SetEntityInvincible(plyPed, true)
 				ESX.ShowNotification(_U('admin_godmodeon'))
 			else
@@ -318,9 +318,9 @@ Config.Admin = {
 		label = _U('admin_ghostmode_button'),
 		groups = {'_dev', 'owner', 'superadmin'},
 		command = function()
-			Player.ghostmode = not Player.ghostmode
+			PlayerVars.ghostmode = not PlayerVars.ghostmode
 
-			if Player.ghostmode then
+			if PlayerVars.ghostmode then
 				SetEntityVisible(plyPed, false, false)
 				ESX.ShowNotification(_U('admin_ghoston'))
 			else
@@ -431,7 +431,7 @@ Config.Admin = {
 		label = _U('admin_showxyz_button'),
 		groups = {'_dev', 'owner', 'superadmin', 'admin', 'mod'},
 		command = function()
-			Player.showCoords = not Player.showCoords
+			PlayerVars.showCoords = not PlayerVars.showCoords
 		end
 	},
 	{
@@ -439,12 +439,12 @@ Config.Admin = {
 		label = _U('admin_showname_button'),
 		groups = {'_dev', 'owner', 'superadmin', 'admin', 'mod'},
 		command = function()
-			Player.showName = not Player.showName
+			PlayerVars.showName = not PlayerVars.showName
 
 			if not showname then
-				for targetPlayer, gamerTag in pairs(Player.gamerTags) do
+				for targetPlayer, gamerTag in pairs(PlayerVars.gamerTags) do
 					RemoveMpGamerTag(gamerTag)
-					Player.gamerTags[targetPlayer] = nil
+					PlayerVars.gamerTags[targetPlayer] = nil
 				end
 			end
 		end
