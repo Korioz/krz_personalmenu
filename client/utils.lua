@@ -1,28 +1,28 @@
 function LoadAnimDict(dict)
-	RequestAnimDict(dict)
+    RequestAnimDict(dict)
 
-	while not HasAnimDictLoaded(dict) do
-		Wait(0)
-	end
+    while not HasAnimDictLoaded(dict) do
+        Wait(0)
+    end
 end
 
 function LoadAnimSet(animSet)
-	RequestAnimSet(animSet)
+    RequestAnimSet(animSet)
 
-	while not HasAnimSetLoaded(animSet) do
-		Wait(0)
-	end
+    while not HasAnimSetLoaded(animSet) do
+        Wait(0)
+    end
 end
 
 function MathRound(v, numDecimal)
-	if math.type(v) ~= 'float' then v += 0.0 end
+    if math.type(v) ~= 'float' then v += 0.0 end
 
-	if numDecimal then
-		local power = 10 ^ numDecimal
-		return math.floor(v * power + 0.5) / power
-	end
+    if numDecimal then
+        local power = 10 ^ numDecimal
+        return math.floor(v * power + 0.5) / power
+    end
 
-	return math.floor(v + 0.5)
+    return math.floor(v + 0.5)
 end
 
 if Config.Framework == 'esx' then
@@ -130,7 +130,7 @@ if Config.Framework == 'esx' then
         if playerJob.isBoss and ('society_%s'):format(playerJob.id) == societyId then
             societyMoney = money
         end
-    
+
         if Config.DoubleJob then
             local playerJob = GetPlayerJob2()
             if playerJob2.isBoss and ('society_%s'):format(playerJob2.id) == societyId then
