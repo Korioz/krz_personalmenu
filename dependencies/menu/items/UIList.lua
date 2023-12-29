@@ -43,8 +43,8 @@ function RageUI.List(Label, Items, Index, Description, Style, Enabled, Callback,
 				RageUI.ItemsSafeZone(CurrentMenu)
 
 				local Hovered = false
-				local LeftBadgeOffset = ((Style.LeftBadge == RageUI.BadgeStyle.None or tonumber(Style.LeftBadge) == nil) and 0 or 27)
-				local RightBadgeOffset = ((Style.RightBadge == RageUI.BadgeStyle.None or tonumber(Style.RightBadge) == nil) and 0 or 32)
+				local LeftBadgeOffset = ((Style?.LeftBadge == RageUI.BadgeStyle.None or tonumber(Style?.LeftBadge) == nil) and 0 or 27)
+				local RightBadgeOffset = ((Style?.RightBadge == RageUI.BadgeStyle.None or tonumber(Style?.RightBadge) == nil) and 0 or 32)
 				local RightOffset = 0
 
 				---@type boolean
@@ -53,16 +53,18 @@ function RageUI.List(Label, Items, Index, Description, Style, Enabled, Callback,
 				end
 
 				local ListText = (type(Items[Index]) == "table") and tostring(Items[Index].Name) or tostring(Items[Index]) or "NIL"
+
 				local name = ListText
-				local name = name:gsub("é", "e")
-				local name = name:gsub("â", "a")
-				local name = name:gsub("à", "a")
-				local name = name:gsub("è", "e")
-				local name = name:gsub("ê", "e")
-				local name = name:gsub("î", "i")
-				local name = name:gsub("ç", "c")
-				local name = name:gsub("ô", "o")
-				local name = name:gsub("É", "E")
+					:gsub("é", "e")
+					:gsub("â", "a")
+					:gsub("à", "a")
+					:gsub("è", "e")
+					:gsub("ê", "e")
+					:gsub("î", "i")
+					:gsub("ç", "c")
+					:gsub("ô", "o")
+					:gsub("É", "E")
+
 				local TextOffset = MeasureStringWidth(name, 0, 0.35)
 
 				if Selected then
@@ -73,12 +75,12 @@ function RageUI.List(Label, Items, Index, Description, Style, Enabled, Callback,
 
 				if Enabled == true or Enabled == nil then
 					if Selected then
-						if Style.RightLabel ~= nil and Style.RightLabel ~= "" then
+						if Style?.RightLabel ~= nil and Style.RightLabel ~= "" then
 							RenderText(Style.RightLabel, CurrentMenu.X + SettingsButton.RightText.X - RightBadgeOffset + CurrentMenu.WidthOffset, CurrentMenu.Y + SettingsButton.RightText.Y + CurrentMenu.SubtitleHeight + RageUI.ItemOffset, 0, SettingsButton.RightText.Scale, 0, 0, 0, 255, 2)
 							RightOffset = MeasureStringWidth(Style.RightLabel,0,0.35)
 						end
 					else
-						if Style.RightLabel ~= nil and Style.RightLabel ~= "" then
+						if Style?.RightLabel ~= nil and Style.RightLabel ~= "" then
 							RightOffset = MeasureStringWidth(Style.RightLabel,0,0.35)
 							RenderText(Style.RightLabel, CurrentMenu.X + SettingsButton.RightText.X - RightBadgeOffset + CurrentMenu.WidthOffset, CurrentMenu.Y + SettingsButton.RightText.Y + CurrentMenu.SubtitleHeight + RageUI.ItemOffset, 0, SettingsButton.RightText.Scale, 245, 245, 245, 255, 2)
 						end
@@ -138,8 +140,6 @@ function RageUI.List(Label, Items, Index, Description, Style, Enabled, Callback,
 							RenderSprite(RageUI.GetBadgeDictionary(LeftBadge, Selected), RageUI.GetBadgeTexture(LeftBadge, Selected), CurrentMenu.X, CurrentMenu.Y + SettingsButton.LeftBadge.Y + CurrentMenu.SubtitleHeight + RageUI.ItemOffset, SettingsButton.LeftBadge.Width, SettingsButton.LeftBadge.Height, nil, CheckBoxLockBadgeColor(Selected))
 						end
 					end
-				else
-					error("UICheckBox Style is not a `table`")
 				end
 
 				RageUI.ItemOffset = RageUI.ItemOffset + SettingsButton.Rectangle.Height
@@ -166,17 +166,17 @@ function RageUI.List(Label, Items, Index, Description, Style, Enabled, Callback,
 				end
 
 				if (Enabled) then
-					Callback(Hovered, Selected, ((CurrentMenu.Controls.Select.Active or ((Hovered and CurrentMenu.Controls.Click.Active) and (not LeftArrowHovered and not RightArrowHovered))) and Selected), Index)
+					if Callback then
+						Callback(Hovered, Selected, ((CurrentMenu.Controls.Select.Active or ((Hovered and CurrentMenu.Controls.Click.Active) and (not LeftArrowHovered and not RightArrowHovered))) and Selected), Index)
+					end
 				end
 
 				if Selected and (CurrentMenu.Controls.Select.Active or ((Hovered and CurrentMenu.Controls.Click.Active) and (not LeftArrowHovered and not RightArrowHovered))) then
 					local Audio = RageUI.Settings.Audio
 					RageUI.PlaySound(Audio[Audio.Use].Select.audioName, Audio[Audio.Use].Select.audioRef)
 
-					if Submenu ~= nil then
-						if Submenu() then
-							RageUI.NextMenu = Submenu
-						end
+					if Submenu and Submenu() then
+						RageUI.NextMenu = Submenu
 					end
 				end
 			end
