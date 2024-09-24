@@ -603,6 +603,8 @@ getPersonalMenuCategory('wallet').drawer = function()
             if PersonalMenu.WalletIndex[account.name] == nil then PersonalMenu.WalletIndex[account.name] = 1 end
 
             RageUI.List(i18nU(accountInPockets[account.name], GroupDigits(account.money)), PersonalMenu.WalletList, PersonalMenu.WalletIndex[account.name] or 1, nil, nil, true, function(Hovered, Active, Selected, Index)
+                PersonalMenu.WalletIndex[account.name] = Index
+
                 if not Selected then return end
 
                 if Index == 1 then
@@ -640,8 +642,6 @@ getPersonalMenuCategory('wallet').drawer = function()
                         GameNotification(i18nU('amount_invalid'))
                     end
                 end
-
-                PersonalMenu.WalletIndex[account.name] = Index
             end)
         elseif account.name == 'bank' then
             RageUI.Button(i18nU('wallet_bankmoney_button', GroupDigits(account.money)), nil, nil, true, nil)
